@@ -6,6 +6,7 @@ export interface IUser extends ICommonModel {
   firstname: string,
   lastname: string,
   email: string,
+  password?: string,
   
   phone: string | null,
   temp_phone: string | null,

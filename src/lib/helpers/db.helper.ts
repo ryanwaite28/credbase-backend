@@ -61,7 +61,7 @@ export const create_model_crud_repo_from_model_class = <T> (givenModelClass: MyM
   const modelClass = givenModelClass as MyModelStatic;
 
   const create = (createObj: any, createOptions?: CreateOptions) => {
-    return modelClass.create(createObj, createOptions).then(convertTypeCurry);
+    return modelClass.create(createObj, createOptions).then(convertTypeCurry).then(model => model!);
   };
 
   const count = (findOptions: FindOptions) => {

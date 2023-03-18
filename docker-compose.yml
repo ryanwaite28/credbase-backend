@@ -71,8 +71,7 @@ services:
     command: npm run webpack -- --watch --env entry=gateways/web/web.gateway.ts --env app=web.gateway.js
     env_file:
       - env/common.env
-    environment:
-      RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
+      - env/rabbitmq.env
     depends_on:
       - rabbitmq
     volumes:
@@ -94,10 +93,10 @@ services:
     # command: npm run start-watch build/users.microservice.js
     env_file:
       - env/common.env
+      - env/rabbitmq.env
     environment:
       APP_NAME: USERS_MICROSERVICE
       DATABASE_URL: postgres://postgres:postgres_password@users-db:5432 
-      RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
     depends_on:
       - rabbitmq
       - users-db
