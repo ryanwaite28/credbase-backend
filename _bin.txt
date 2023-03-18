@@ -1,0 +1,26 @@
+AppRouter.post('/file', (request, response) => {
+  const demo_png: UploadedFile | undefined | null = request.files && (<UploadedFile> request.files['demo']) as UploadedFile | undefined;
+
+  console.log(`demo png:`, demo_png);
+  if (!demo_png) {
+    return response.status(400).json({
+      message: `missing demo png`
+    });
+  }
+
+  rmqClient.sendRequest({
+    queue: MicroservicesQueues.USER_MESSAGES,
+    data: { id: 1, icon: demo_png!.data },
+    publishOptions: {
+      type: UsersQueueMessageTypes.FETCH_USER_BY_ID,
+      contentType: ContentTypes.JSON,
+      correlationId: Date.now().toString(),
+      replyTo: MicroservicesQueues.USER_EVENTS
+    }
+  })
+  .then((event) => event.data as ServiceMethodAsyncResults)
+  .then((serviceMethodResults) => {
+    response.status(serviceMethodResults.status).json(serviceMethodResults.info);
+  })
+
+});

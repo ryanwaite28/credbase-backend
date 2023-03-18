@@ -1,0 +1,107 @@
+version: "3.8"
+
+
+
+
+volumes:
+
+  jenkins_vol:
+    driver: local
+  rabbitmq_db:
+    driver: local
+  rabbitmq_config:
+    driver: local
+  users_db:
+    driver: local
+
+
+services:
+
+  # QA - CI/CD
+
+  jenkins:
+    image: jenkins
+    ports:
+      - '8080:8080'
+      - '50000:50000'
+    volumes:
+      - jenkins_vol:/var/jenkins_home
+
+
+
+  # Message broker
+
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    hostname: rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    volumes:
+      - rabbitmq_db:/var
+      - rabbitmq_config:/etc
+
+
+
+  # Databases
+
+  users-db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - '5430:5432'
+    volumes: 
+      - users_db:/var/lib/postgresql/data
+
+
+  
+  # Gateways
+
+  web-gw:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: gateways/web/web.gateway.ts
+        APP_FILE_NAME: web.gateway.js
+    ports:
+      - '3000:80'
+    command: npm run webpack -- --watch --env entry=gateways/web/web.gateway.ts --env app=web.gateway.js
+    env_file:
+      - env/common.env
+    environment:
+      RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+    
+
+
+  # Microservices
+
+  users-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/users/users.microservice.ts
+        APP_FILE_NAME: users.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/users/users.microservice.ts --env app=users.microservice.js
+    # command: npm run start-watch build/users.microservice.js
+    env_file:
+      - env/common.env
+    environment:
+      APP_NAME: USERS_MICROSERVICE
+      DATABASE_URL: postgres://postgres:postgres_password@users-db:5432 
+      RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+      - users-db
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+

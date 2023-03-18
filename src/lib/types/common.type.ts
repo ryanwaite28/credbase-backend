@@ -1,0 +1,1 @@
+export type ContentType = 'application/json' | 'application/octet-stream' | 'text/plain' | null;
