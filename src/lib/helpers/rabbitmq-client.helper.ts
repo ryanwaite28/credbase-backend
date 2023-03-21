@@ -12,7 +12,7 @@ import {
 } from "rxjs";
 import { SERIALIZERS } from "../utils/serializers.utils";
 import { mapify, wait } from "../utils/fn.utils";
-import { MapType } from "../interfaces/common.interface";
+import { MapType, ServiceMethodResults } from "../interfaces/common.interface";
 import { ContentTypes } from "../enums/common.enum";
 
 
@@ -255,8 +255,9 @@ export class RabbitMQClient {
     }
   }
 
-  ack(msg: amqplib.ConsumeMessage) {
-    this.channel.ack(msg);
+  ack(message: amqplib.ConsumeMessage) {
+    this.channel.ack(message);
+    console.log(`Acknoledged message.`);
   }
 
   sendMessage(options: {
@@ -284,7 +285,7 @@ export class RabbitMQClient {
     }
   }
 
-  sendRequest(options: {
+  sendRequest <T = any> (options: {
     queue: string,
     data: any,
     publishOptions: amqplib.Options.Publish
@@ -296,7 +297,7 @@ export class RabbitMQClient {
       throw new Error(`correlationId queue must be specified`);
     }
 
-    return new Promise<EventMessage>((resolve, reject) => {
+    return new Promise<EventMessage<ServiceMethodResults<T>>>((resolve, reject) => {
       const send = () => {
         const { data, publishOptions, queue } = options;
         const useContentType = publishOptions.contentType || ContentTypes.TEXT;
@@ -310,10 +311,10 @@ export class RabbitMQClient {
 
         this.channel.consume(options.publishOptions.replyTo!, (message: amqplib.ConsumeMessage | null) => {
           if (message && message?.properties.correlationId === options.publishOptions.correlationId) {
-            console.log(`received response`, { consumerTag, options });
             const useContentType = message.properties.contentType;
             const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(message.content) : message.content;
             const messageObj: EventMessage = { data: useData, message };
+            console.log(`received response`, { consumerTag, options, messageObj });
             resolve(messageObj);
             this.ack(message);
             this.channel.cancel(consumerTag);
@@ -340,7 +341,7 @@ export class RabbitMQClient {
 
   publishEvent(options: {
     exchange: string,
-    data: any,
+    data: ServiceMethodResults,
     routingKey: string,
     publishOptions: amqplib.Options.Publish
   }) {

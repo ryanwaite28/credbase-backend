@@ -68,21 +68,21 @@ export class UserUpdatesDto {
   @IsPhoneNumber()
   temp_phone?: string;
   
-  @IsOptional()
-  @IsString()
-  stripe_customer_account_id?: string;
+  // @IsOptional()
+  // @IsString()
+  // stripe_customer_account_id?: string;
 
-  @IsOptional()
-  @IsString()
-  stripe_account_id?: string;
+  // @IsOptional()
+  // @IsString()
+  // stripe_account_id?: string;
 
-  @IsOptional()
-  @IsBoolean()
-  stripe_account_verified: boolean;
+  // @IsOptional()
+  // @IsBoolean()
+  // stripe_account_verified: boolean;
 
-  @IsOptional()
-  @IsString()
-  platform_subscription_id?: string;
+  // @IsOptional()
+  // @IsString()
+  // platform_subscription_id?: string;
 
   @IsOptional()
   @IsString()

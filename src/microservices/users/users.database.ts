@@ -5,18 +5,9 @@ import {
 } from '@lib/shared';
 import {
   Sequelize,
-  InitOptions,
   STRING,
-  INTEGER,
-  UUIDV1,
-  TEXT,
   BOOLEAN,
-  JSON as JSON_TYPE,
-  Model,
-  BuildOptions,
   SyncOptions,
-  DATE,
-  NOW,
 } from 'sequelize';
 
 const { DATABASE_URL } = process.env;

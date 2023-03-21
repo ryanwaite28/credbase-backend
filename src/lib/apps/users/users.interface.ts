@@ -10,10 +10,6 @@ export interface IUser extends ICommonModel {
   
   phone: string | null,
   temp_phone: string | null,
-  stripe_customer_account_id: string | null,
-  stripe_account_id: string | null,
-  stripe_account_verified: boolean,
-  platform_subscription_id: string | null,
 
   icon_link: string,
   icon_id: string,

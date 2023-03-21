@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { UsersRouter } from './users/users.router';
 import { MicroservicesQueues, UsersQueueMessageTypes, ContentTypes, ServiceMethodAsyncResults } from '@lib/shared';
-import { rmqClient } from './users/users.rmq';
+import { rmqClient } from '../web/web.rmq';
 import { UploadedFile } from 'express-fileupload';
 
 

@@ -1,7 +1,6 @@
 import {
   ContentTypes,
   EventMessage,
-  generateJWT,
   HttpStatusCode,
   IUser,
   MicroservicesExchanges,
@@ -19,7 +18,9 @@ import {
   get_user_by_id,
   get_user_by_email,
   update_user,
-  get_users
+  get_users,
+  get_user_password_by_email,
+  delete_user
 } from "./users.repo";
 import {
   hashSync,
@@ -27,9 +28,9 @@ import {
 } from 'bcryptjs';
 
 
+
 export async function FETCH_USERS(event: EventMessage, rmqClient: RabbitMQClient) {
   console.log(`[${UsersQueueMessageTypes.FETCH_USERS}] Received fetch users message:`);
-  // console.log(JSON.stringify(data));
 
   const users = await get_users();
 
@@ -55,11 +56,9 @@ export async function FETCH_USERS(event: EventMessage, rmqClient: RabbitMQClient
 }
 
 export async function FETCH_USER_BY_ID(event: EventMessage, rmqClient: RabbitMQClient) {
-  const data = event.data as { id: number };
-  console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_ID}] Received message:`, { data });
-  // console.log(JSON.stringify(data));
+  console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_ID}] Received message:`, { data: event.data });
 
-  const user = await get_user_by_id(data.id);
+  const user = await get_user_by_id(event.data.id);
 
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
@@ -83,10 +82,9 @@ export async function FETCH_USER_BY_ID(event: EventMessage, rmqClient: RabbitMQC
 }
 
 export async function FETCH_USER_BY_EMAIL(event: EventMessage, rmqClient: RabbitMQClient) {
-  const data = event.data as { email: string };
-  console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_EMAIL}] Received message:`, { data });
+  console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_EMAIL}] Received message:`, { data: event.data });
 
-  const user = await get_user_by_email(data.email);
+  const user = await get_user_by_email(event.data.email);
 
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
@@ -149,26 +147,11 @@ export async function CREATE_USER(event: EventMessage, rmqClient: RabbitMQClient
   const new_user: IUser = await create_user(createInfo);
   delete new_user['password'];
 
-  const token = generateJWT(new_user);
-
-  // create stripe customer account       stripe_customer_account_id
-  // const customer = await StripeService.stripe.customers.create({
-  //   name: data.displayname,
-  //   description: `Avenger Customer: ${data.displayname}`,
-  //   email: new_user.email,
-  //   metadata: {
-  //     user_id: new_user.id,
-  //   }
-  // });
-
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
     error: false,
     info: {
-      data: {
-        user: new_user,
-        token
-      }
+      data: new_user
     }
   };
 
@@ -188,19 +171,15 @@ export async function CREATE_USER(event: EventMessage, rmqClient: RabbitMQClient
 
 export async function UPDATE_USER(event: EventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as { user_id: number, updates: UserUpdatesDto };
-  console.log(`[${UsersQueueMessageTypes.UPDATE_USER}] Received message:`, { data });
+  console.log(`[${UsersQueueMessageTypes.UPDATE_USER}] Received message:`);
 
   const user = await update_user(data.user_id, data.updates);
-  const token = generateJWT(user);
 
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
     error: false,
     info: {
-      data: {
-        user,
-        token
-      }
+      data: user
     }
   };
 
@@ -218,11 +197,39 @@ export async function UPDATE_USER(event: EventMessage, rmqClient: RabbitMQClient
   });
 }
 
+export async function DELETE_USER(event: EventMessage, rmqClient: RabbitMQClient) {
+  const data = event.data as { user_id: number };
+  console.log(`[${UsersQueueMessageTypes.DELETE_USER}] Received message:`);
+
+  const results = await delete_user(data.user_id);
+
+  const serviceMethodResults: ServiceMethodResults = {
+    status: HttpStatusCode.OK,
+    error: false,
+    info: {
+      data: results
+    }
+  };
+
+  rmqClient.ack(event.message);
+  return rmqClient.publishEvent({
+    exchange: MicroservicesExchanges.USER_EVENTS,
+    routingKey: RoutingKeys.EVENT,
+    data: serviceMethodResults,
+    publishOptions: {
+      type: UsersQueueEventTypes.USER_DELETED,
+      contentType: ContentTypes.JSON,
+      correlationId: event.message.properties.correlationId,
+      // replyTo: event.message.properties.replyTo,
+    }
+  });
+}
+
 export async function LOGIN_USER(event: EventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as UserSignInDto;
   console.log(`[${UsersQueueMessageTypes.LOGIN_USER}] Received message:`, { data });
 
-  const check_email = await get_user_by_email(data.email);
+  const check_email = await get_user_password_by_email(data.email);
   if (!check_email) {
     const serviceMethodResults: ServiceMethodResults = {
       status: HttpStatusCode.BAD_REQUEST,
@@ -274,17 +281,13 @@ export async function LOGIN_USER(event: EventMessage, rmqClient: RabbitMQClient)
     });
   }
   
-  delete check_email.password;
-  const token = generateJWT(check_email);
+  const user = await get_user_by_email(data.email);
 
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
     error: false,
     info: {
-      data: {
-        user: check_email,
-        token
-      }
+      data: user
     }
   };
 

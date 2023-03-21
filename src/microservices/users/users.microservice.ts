@@ -14,16 +14,16 @@ import {
   FETCH_USER_BY_EMAIL,
   UPDATE_USER,
   LOGIN_USER,
-  FETCH_USERS
+  FETCH_USERS,
+  DELETE_USER
 } from "./users.service";
 
 
-console.log(`RABBIT_MQ_URL`, process.env['RABBIT_MQ_URL'], '\n\n');
 
 const rmqClient = new RabbitMQClient({
   connection_url: process.env['RABBIT_MQ_URL'] || '',
   delayStart: 5000,
-  prefetch: 1,
+  prefetch: 5,
   retryAttempts: 3,
   retryDelay: 3000,
   queues: [
@@ -48,6 +48,8 @@ const rmqClient = new RabbitMQClient({
 
 const usersQueue = rmqClient.onQueue(MicroservicesQueues.USER_MESSAGES);
 
+
+
 usersQueue.handle(UsersQueueMessageTypes.FETCH_USERS).subscribe({
   next: (event: EventMessage) => FETCH_USERS(event, rmqClient)
 });
@@ -60,6 +62,10 @@ usersQueue.handle(UsersQueueMessageTypes.FETCH_USER_BY_EMAIL).subscribe({
   next: (event: EventMessage) => FETCH_USER_BY_EMAIL(event, rmqClient)
 });
 
+usersQueue.handle(UsersQueueMessageTypes.LOGIN_USER).subscribe({
+  next: (event: EventMessage) => LOGIN_USER(event, rmqClient)
+});
+
 usersQueue.handle(UsersQueueMessageTypes.CREATE_USER).subscribe({
   next: (event: EventMessage) => CREATE_USER(event, rmqClient)
 });
@@ -68,6 +74,6 @@ usersQueue.handle(UsersQueueMessageTypes.UPDATE_USER).subscribe({
   next: (event: EventMessage) => UPDATE_USER(event, rmqClient)
 });
 
-usersQueue.handle(UsersQueueMessageTypes.LOGIN_USER).subscribe({
-  next: (event: EventMessage) => LOGIN_USER(event, rmqClient)
+usersQueue.handle(UsersQueueMessageTypes.DELETE_USER).subscribe({
+  next: (event: EventMessage) => DELETE_USER(event, rmqClient)
 });

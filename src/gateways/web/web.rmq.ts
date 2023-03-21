@@ -14,7 +14,7 @@ console.log(`RABBIT_MQ_URL`, process.env['RABBIT_MQ_URL'], '\n\n');
 export const rmqClient = new RabbitMQClient({
   connection_url: process.env['RABBIT_MQ_URL'] || '',
   delayStart: 5000,
-  prefetch: 1,
+  prefetch: 5,
   retryAttempts: 3,
   retryDelay: 3000,
   queues: [
@@ -23,7 +23,7 @@ export const rmqClient = new RabbitMQClient({
   ],
   exchanges: [
     { name: MicroservicesExchanges.USER_MESSAGES, type: 'direct', options: { durable: true } },
-    { name: MicroservicesExchanges.USER_EVENTS, type: 'direct', options: { durable: true } },
+    { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
   ],
   bindings: [
     { queue: MicroservicesQueues.USER_MESSAGES, exchange: MicroservicesExchanges.USER_MESSAGES, routingKey: RoutingKeys.MESSAGE },

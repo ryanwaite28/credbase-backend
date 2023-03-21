@@ -5,9 +5,11 @@ import {
   ServiceMethodResults,
   UserSignUpDto,
   UserSignInDto,
-  UsersQueueMessageTypes
+  UsersQueueMessageTypes,
+  UserUpdatesDto,
+  generateJWT
 } from "@lib/shared";
-import { rmqClient } from "./users.rmq";
+import { rmqClient } from "../../web/web.rmq";
 
 
 
@@ -27,7 +29,7 @@ export class UsersService {
         replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
-    .then((event) => event.data as ServiceMethodResults);
+    .then((event) => event.data);
   }
 
   static get_user_by_id(id: number): ServiceMethodAsyncResults {
@@ -36,6 +38,20 @@ export class UsersService {
       data: { id },
       publishOptions: {
         type: UsersQueueMessageTypes.FETCH_USER_BY_ID,
+        contentType: ContentTypes.JSON,
+        correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS
+      }
+    })
+    .then((event) => event.data);
+  }
+
+  static get_user_by_email(email: string): ServiceMethodAsyncResults {
+    return rmqClient.sendRequest({
+      queue: MicroservicesQueues.USER_MESSAGES,
+      data: { email },
+      publishOptions: {
+        type: UsersQueueMessageTypes.FETCH_USER_BY_EMAIL,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
         replyTo: MicroservicesQueues.USER_EVENTS
@@ -55,7 +71,13 @@ export class UsersService {
         replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
-    .then((event) => event.data as ServiceMethodResults);
+    .then((event) => {
+      event.data.info.data = {
+        user: event.data.info.data,
+        token: generateJWT(event.data.info.data),
+      };
+      return event.data;
+    });
   }
 
   static sign_in(data: UserSignInDto): ServiceMethodAsyncResults {
@@ -69,7 +91,47 @@ export class UsersService {
         replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
-    .then((event) => event.data as ServiceMethodResults);
+    .then((event) => {
+      event.data.info.data = {
+        user: event.data.info.data,
+        token: generateJWT(event.data.info.data),
+      };
+      return event.data;
+    });
+  }
+
+  static update_user(user_id: number, updates: UserUpdatesDto): ServiceMethodAsyncResults {
+    return rmqClient.sendRequest({
+      queue: MicroservicesQueues.USER_MESSAGES,
+      data: { user_id, updates },
+      publishOptions: {
+        type: UsersQueueMessageTypes.UPDATE_USER,
+        contentType: ContentTypes.JSON,
+        correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS
+      }
+    })
+    .then((event) => {
+      event.data.info.data = {
+        user: event.data.info.data,
+        token: generateJWT(event.data.info.data),
+      };
+      return event.data;
+    });
+  }
+
+  static delete_user(user_id: number): ServiceMethodAsyncResults {
+    return rmqClient.sendRequest({
+      queue: MicroservicesQueues.USER_MESSAGES,
+      data: { user_id },
+      publishOptions: {
+        type: UsersQueueMessageTypes.DELETE_USER,
+        contentType: ContentTypes.JSON,
+        correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS
+      }
+    })
+    .then((event) => event.data);
   }
 
 }

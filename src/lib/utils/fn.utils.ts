@@ -18,7 +18,7 @@ export const wait = (time) => {
   });
 };
 
-export function generateJWT(data: any, secret?: string) {
+export function generateJWT(data: any, secret?: string): string | null {
   // console.log(`generateJWT:`, { data });
   try {
     const jwt_token = jwt_sign(data, secret || (<string> process.env.JWT_SECRET));

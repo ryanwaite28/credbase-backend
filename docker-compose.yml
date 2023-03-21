@@ -104,3 +104,23 @@ services:
       - ./src:/app/src
       - /app/node_modules
 
+  emails-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/emails/emails.microservice.ts
+        APP_FILE_NAME: emails.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/emails/emails.microservice.ts --env app=emails.microservice.js
+    # command: npm run start-watch build/emails.microservice.js
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    environment:
+      APP_NAME: EMAILS_MICROSERVICE
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
