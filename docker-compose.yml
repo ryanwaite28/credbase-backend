@@ -13,6 +13,8 @@ volumes:
     driver: local
   users_db:
     driver: local
+  authorities_db:
+    driver: local
 
 
 services:
@@ -55,6 +57,16 @@ services:
     volumes: 
       - users_db:/var/lib/postgresql/data
 
+  authorities-db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - '5430:5432'
+    volumes: 
+      - authorities_db:/var/lib/postgresql/data
+
 
   
   # Gateways
@@ -68,7 +80,7 @@ services:
         APP_FILE_NAME: web.gateway.js
     ports:
       - '3000:80'
-    command: npm run webpack -- --watch --env entry=gateways/web/web.gateway.ts --env app=web.gateway.js
+    command: npm run webpack -- --watch --env entry=gateways/web/web.gateway.ts --env app=web.gateway.js --env dir=web-gw
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -89,7 +101,7 @@ services:
       args:
         APP_ENTRY_POINT: microservices/users/users.microservice.ts
         APP_FILE_NAME: users.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/users/users.microservice.ts --env app=users.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/users/users.microservice.ts --env app=users.microservice.js --env dir=users-ms
     # command: npm run start-watch build/users.microservice.js
     env_file:
       - env/common.env
@@ -104,6 +116,28 @@ services:
       - ./src:/app/src
       - /app/node_modules
 
+  authorities-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/authorities/authorities.microservice.ts
+        APP_FILE_NAME: authorities.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/authorities/authorities.microservice.ts --env app=authorities.microservice.js --env dir=authorities-ms
+    # command: npm run start-watch build/authorities.microservice.js
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    environment:
+      APP_NAME: AUTHORITIES_MICROSERVICE
+      DATABASE_URL: postgres://postgres:postgres_password@authorities-db:5432 
+    depends_on:
+      - rabbitmq
+      - authorities-db
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
   emails-ms:
     build:
       context: .
@@ -111,7 +145,7 @@ services:
       args:
         APP_ENTRY_POINT: microservices/emails/emails.microservice.ts
         APP_FILE_NAME: emails.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/emails/emails.microservice.ts --env app=emails.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/emails/emails.microservice.ts --env app=emails.microservice.js --env dir=emails-ms --env static=microservices/emails/static
     # command: npm run start-watch build/emails.microservice.js
     env_file:
       - env/common.env

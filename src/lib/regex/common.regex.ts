@@ -4,3 +4,5 @@ export const PERSON_NAME_REGEX: RegExp = /^[a-zA-Z\s\'\-\_\.]{2,50}$/;
 export const URL_REGEX = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
 export const BASE64_REGEX = /^data:([A-Za-z-+\/]+);base64,(.+)$/;
 export const MENTIONS_REGEX = /@[a-zA-Z0-9\-\_\.]{2,50}/gi;
+
+export const PASSWORD_REGEX: RegExp = /^(.*){5,75}$/;

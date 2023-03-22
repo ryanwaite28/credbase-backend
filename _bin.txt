@@ -24,3 +24,18 @@ AppRouter.post('/file', (request, response) => {
   })
 
 });
+
+
+
+
+
+
+
+:([\s]+)\{(.*)(STRING|DATE|TEXT|JSON)(.*)allowNull: true(.*)\},?       ->   : string | null,
+:([\s]+)\{(.*)(STRING|DATE|TEXT|JSON)(.*)allowNull: false(.*)\},?       ->   : string,
+
+:([\s]+)\{(.*)(INTEGER|FLOAT|DOUBLE)(.*)allowNull: true(.*)\},?   ->   : number | null,
+:([\s]+)\{(.*)(INTEGER|FLOAT|DOUBLE)(.*)allowNull: false(.*)\},?   ->   : number,
+
+:([\s]+)\{(.*)(BOOLEAN)(.*)allowNull: true(.*)\},?                ->   : boolean | null,
+:([\s]+)\{(.*)(BOOLEAN)(.*)allowNull: false(.*)\},?                ->   : boolean,

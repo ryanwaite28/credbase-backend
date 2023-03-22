@@ -8,11 +8,9 @@ import {
   Matches,
 } from 'class-validator';
 import {
+  PASSWORD_REGEX,
   PERSON_NAME_REGEX,
 } from '../../regex/common.regex';
-import {
-  PASSWORD_REGEX
-} from './users.regex';
 
 
 export class UserSignUpDto {
