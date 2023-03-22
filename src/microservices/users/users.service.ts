@@ -1,19 +1,4 @@
 import {
-  ContentTypes,
-  EventMessage,
-  HttpStatusCode,
-  IUser,
-  MicroservicesExchanges,
-  RabbitMQClient,
-  RoutingKeys,
-  ServiceMethodResults,
-  UserSignInDto,
-  UserSignUpDto,
-  UsersQueueEventTypes,
-  UsersQueueMessageTypes,
-  UserUpdatesDto
-} from "@lib/shared";
-import {
   create_user,
   get_user_by_id,
   get_user_by_email,
@@ -26,6 +11,23 @@ import {
   hashSync,
   compareSync
 } from 'bcryptjs';
+import {
+  EventMessage,
+  RabbitMQClient,
+  ServiceMethodResults
+} from "@lib/backend-shared";
+import {
+  UsersQueueMessageTypes,
+  MicroservicesExchanges,
+  RoutingKeys,
+  UsersQueueEventTypes,
+  ContentTypes,
+  UserSignUpDto,
+  IUser,
+  UserUpdatesDto,
+  UserSignInDto,
+  HttpStatusCode
+} from "@lib/fullstack-shared";
 
 
 

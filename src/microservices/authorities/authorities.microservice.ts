@@ -1,12 +1,11 @@
+import { EventMessage, RabbitMQClient } from "@lib/backend-shared";
 import {
-  EventMessage,
   MicroservicesExchanges,
   MicroservicesQueues,
-  RabbitMQClient,
   RoutingKeys,
   AuthoritiesQueueEventTypes,
   AuthoritiesQueueMessageTypes
-} from "@lib/shared";
+} from "@lib/fullstack-shared";
 import { authorities_db_init } from "./authorities.database";
 import {
   CREATE_AUTHORITY,

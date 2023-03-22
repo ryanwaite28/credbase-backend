@@ -1,14 +1,7 @@
-import {
-  ContentTypes,
-  MicroservicesQueues,
-  ServiceMethodAsyncResults,
-  ServiceMethodResults,
-  UserSignUpDto,
-  UserSignInDto,
-  UsersQueueMessageTypes,
-  UserUpdatesDto,
-  generateJWT
-} from "@lib/shared";
+
+import { generateJWT, ServiceMethodAsyncResults, ServiceMethodResults } from "@lib/backend-shared";
+import { ContentTypes, MicroservicesQueues, UserSignInDto, UserSignUpDto, UsersQueueMessageTypes, UserUpdatesDto } from "@lib/fullstack-shared";
+import { AppEnvironment } from "src/lib/backend-shared/environment/app.enviornment";
 import { rmqClient } from "../../web/web.rmq";
 
 
@@ -26,7 +19,6 @@ export class UsersService {
         type: UsersQueueMessageTypes.FETCH_USERS,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
     .then((event) => event.data);
@@ -40,7 +32,6 @@ export class UsersService {
         type: UsersQueueMessageTypes.FETCH_USER_BY_ID,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
     .then((event) => event.data);
@@ -54,7 +45,6 @@ export class UsersService {
         type: UsersQueueMessageTypes.FETCH_USER_BY_EMAIL,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
     .then((event) => event.data as ServiceMethodResults);
@@ -68,13 +58,12 @@ export class UsersService {
         type: UsersQueueMessageTypes.CREATE_USER,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
     .then((event) => {
       event.data.info.data = {
         user: event.data.info.data,
-        token: generateJWT(event.data.info.data),
+        token: AppEnvironment.JWT_SECRETS.USER.encode(event.data.info.data),
       };
       return event.data;
     });
@@ -88,13 +77,12 @@ export class UsersService {
         type: UsersQueueMessageTypes.LOGIN_USER,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
     .then((event) => {
       event.data.info.data = {
         user: event.data.info.data,
-        token: generateJWT(event.data.info.data),
+        token: AppEnvironment.JWT_SECRETS.USER.encode(event.data.info.data),
       };
       return event.data;
     });
@@ -108,13 +96,12 @@ export class UsersService {
         type: UsersQueueMessageTypes.UPDATE_USER,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
     .then((event) => {
       event.data.info.data = {
         user: event.data.info.data,
-        token: generateJWT(event.data.info.data),
+        token: AppEnvironment.JWT_SECRETS.USER.encode(event.data.info.data),
       };
       return event.data;
     });
@@ -128,7 +115,6 @@ export class UsersService {
         type: UsersQueueMessageTypes.DELETE_USER,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS
       }
     })
     .then((event) => event.data);

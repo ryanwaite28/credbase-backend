@@ -1,18 +1,8 @@
 import {
-  ContentTypes,
   EventMessage,
-  HttpStatusCode,
-  IAuthority,
-  MicroservicesExchanges,
   RabbitMQClient,
-  RoutingKeys,
-  ServiceMethodResults,
-  AuthoritiesQueueEventTypes,
-  AuthoritiesQueueMessageTypes,
-  CreateAuthorityDto,
-  LoginAuthorityDto,
-  UpdateAuthorityDto
-} from "@lib/shared";
+  ServiceMethodResults
+} from "@lib/backend-shared";
 import {
   create_authority,
   get_authority_by_id,
@@ -26,6 +16,18 @@ import {
   hashSync,
   compareSync
 } from 'bcryptjs';
+import {
+  AuthoritiesQueueEventTypes,
+  AuthoritiesQueueMessageTypes,
+  ContentTypes,
+  CreateAuthorityDto,
+  HttpStatusCode,
+  IAuthority,
+  LoginAuthorityDto,
+  MicroservicesExchanges,
+  RoutingKeys,
+  UpdateAuthorityDto
+} from "@lib/fullstack-shared";
 
 
 

@@ -1,8 +1,9 @@
 import {
+  common_icon_wallpaper_fields,
   common_model_fields,
   get_common_model_options,
   MyModelStatic
-} from '@lib/shared';
+} from '@lib/backend-shared';
 import {
   Sequelize,
   STRING,
@@ -68,12 +69,14 @@ export const authorities_db_init = async () => {
 
 export const Authority = <MyModelStatic> sequelize.define('Authority', {
   ...common_model_fields,
+  ...common_icon_wallpaper_fields,
 
   email:                               { type: STRING, unique: true, allowNull: false },
   password:                            { type: STRING, allowNull: false },
   
   name:                                { type: STRING, allowNull: false },
   description:                         { type: STRING, allowNull: false },
+  industry:                            { type: STRING, allowNull: true },
   support_email:                       { type: STRING, allowNull: true },
   business_website:                    { type: STRING, allowNull: true },
   support_website:                     { type: STRING, allowNull: true },
@@ -86,11 +89,6 @@ export const Authority = <MyModelStatic> sequelize.define('Authority', {
   
   phone:                               { type: STRING, allowNull: true, defaultValue: null },
   temp_phone:                          { type: STRING, allowNull: true, defaultValue: null },
-
-  icon_link:                           { type: STRING, allowNull: true, defaultValue: '' },
-  icon_id:                             { type: STRING, allowNull: true, defaultValue: '' },
-  wallpaper_link:                      { type: STRING, allowNull: true, defaultValue: '' },
-  wallpaper_id:                        { type: STRING, allowNull: true, defaultValue: '' },
 
   account_verified:                    { type: BOOLEAN, allowNull: false, defaultValue: false },
   email_verified:                      { type: BOOLEAN, allowNull: false, defaultValue: false },

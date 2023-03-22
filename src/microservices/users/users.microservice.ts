@@ -1,13 +1,12 @@
+
+import { EventMessage, RabbitMQClient } from "@lib/backend-shared";
 import {
-  EventMessage,
-  MicroservicesExchanges,
   MicroservicesQueues,
-  RabbitMQClient,
-  RoutingKeys,
+  UsersQueueMessageTypes,
   UsersQueueEventTypes,
-  UsersQueueMessageTypes
-} from "@lib/shared";
-import { users_db_init } from "./users.database";
+  MicroservicesExchanges,
+  RoutingKeys
+} from "@lib/fullstack-shared";
 import {
   CREATE_USER,
   FETCH_USER_BY_ID,
@@ -17,6 +16,7 @@ import {
   FETCH_USERS,
   DELETE_USER
 } from "./users.service";
+import { users_db_init } from "./users.database";
 
 
 

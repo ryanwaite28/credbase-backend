@@ -1,9 +1,7 @@
 import {
-  UserSignInDto,
-  UserSignUpDto,
-  UserUpdatesDto,
   ValidateRequestBodyDto
-} from '@lib/shared';
+} from '@lib/backend-shared';
+import { UserSignInDto, UserSignUpDto, UserUpdatesDto } from '@lib/fullstack-shared';
 import { Router } from 'express';
 import { UsersRequestHandler } from './users.handler';
 

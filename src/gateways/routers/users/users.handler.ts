@@ -1,12 +1,6 @@
+import { CatchRequestHandlerError, ExpressResponse, ServiceMethodResults } from '@lib/backend-shared';
+import { UserSignUpDto, UserSignInDto, UserUpdatesDto } from '@lib/fullstack-shared';
 import { Request, Response } from 'express';
-import {
-  CatchRequestHandlerError,
-  ExpressResponse,
-  ServiceMethodResults,
-  UserSignUpDto,
-  UserSignInDto,
-  UserUpdatesDto
-} from '@lib/shared';
 import { UsersService } from './users.service';
 
 

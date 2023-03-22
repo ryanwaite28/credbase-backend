@@ -1,9 +1,5 @@
-import {
-  create_model_crud_repo_from_model_class,
-  IUser,
-  UserSignUpDto,
-  UserUpdatesDto,
-} from '@lib/shared';
+import { create_model_crud_repo_from_model_class } from '@lib/backend-shared';
+import { IUser, UserSignUpDto, UserUpdatesDto } from '@lib/fullstack-shared';
 import { User } from './users.database';
 
 

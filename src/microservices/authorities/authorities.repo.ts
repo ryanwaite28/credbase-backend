@@ -1,9 +1,5 @@
-import {
-  create_model_crud_repo_from_model_class,
-  IAuthority,
-  CreateAuthorityDto,
-  UpdateAuthorityDto
-} from '@lib/shared';
+import { create_model_crud_repo_from_model_class } from '@lib/backend-shared';
+import { CreateAuthorityDto, IAuthority, UpdateAuthorityDto } from '@lib/fullstack-shared';
 import { Authority } from './authorities.database';
 
 

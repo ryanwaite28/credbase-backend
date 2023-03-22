@@ -1,8 +1,9 @@
 import {
+  common_icon_wallpaper_fields,
   common_model_fields,
   get_common_model_options,
   MyModelStatic
-} from '@lib/shared';
+} from '@lib/backend-shared';
 import {
   Sequelize,
   STRING,
@@ -67,6 +68,7 @@ export const users_db_init = async () => {
 
 export const User = <MyModelStatic> sequelize.define('User', {
   ...common_model_fields,
+  ...common_icon_wallpaper_fields,
 
   firstname:                           { type: STRING, allowNull: false },
   lastname:                            { type: STRING, allowNull: false },
@@ -75,20 +77,6 @@ export const User = <MyModelStatic> sequelize.define('User', {
   
   phone:                               { type: STRING, allowNull: true, defaultValue: null },
   temp_phone:                          { type: STRING, allowNull: true, defaultValue: null },
-  stripe_customer_account_id:          { type: STRING, allowNull: true, defaultValue: null },
-  stripe_account_id:                   { type: STRING, allowNull: true, defaultValue: null },
-  stripe_account_verified:             { type: BOOLEAN, allowNull: false, defaultValue: false },
-  platform_subscription_id:            { type: STRING, allowNull: true, defaultValue: null },
-
-  icon_link:                           { type: STRING, allowNull: true, defaultValue: '' },
-  icon_id:                             { type: STRING, allowNull: true, defaultValue: '' },
-  wallpaper_link:                      { type: STRING, allowNull: true, defaultValue: '' },
-  wallpaper_id:                        { type: STRING, allowNull: true, defaultValue: '' },
-
-  id_card_front_link:                  { type: STRING, allowNull: true, defaultValue: '' },
-  id_card_front_id:                    { type: STRING, allowNull: true, defaultValue: '' },
-  id_card_back_link:                   { type: STRING, allowNull: true, defaultValue: '' },
-  id_card_back_id:                     { type: STRING, allowNull: true, defaultValue: '' },
 
   person_verified:                     { type: BOOLEAN, allowNull: false, defaultValue: false },
   email_verified:                      { type: BOOLEAN, allowNull: false, defaultValue: false },

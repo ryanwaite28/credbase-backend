@@ -1,11 +1,11 @@
+import { RabbitMQClient } from "@lib/backend-shared";
 import {
   MicroservicesExchanges,
   MicroservicesQueues,
-  RabbitMQClient,
   RoutingKeys,
   UsersQueueEventTypes,
   UsersQueueMessageTypes,
-} from "@lib/shared";
+} from "@lib/fullstack-shared";
 
 
 
