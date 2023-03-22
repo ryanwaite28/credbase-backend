@@ -5,15 +5,28 @@ version: "3.8"
 
 volumes:
 
-  jenkins_vol:
+  jenkins-vol:
     driver: local
-  rabbitmq_db:
+
+  rabbitmq-db:
     driver: local
-  rabbitmq_config:
+  rabbitmq-config:
     driver: local
-  users_db:
+
+  # Databases
+  users-db:
     driver: local
-  authorities_db:
+  authorities-db:
+    driver: local
+  assets-db:
+    driver: local
+  items-db:
+    driver: local
+  storage-db:
+    driver: local
+  developer-db:
+    driver: local
+  stripe-db:
     driver: local
 
 
@@ -27,7 +40,7 @@ services:
       - '8080:8080'
       - '50000:50000'
     volumes:
-      - jenkins_vol:/var/jenkins_home
+      - jenkins-vol:/var/jenkins_home
 
 
 
@@ -40,8 +53,8 @@ services:
       - '5672:5672'
       - '15672:15672'
     volumes:
-      - rabbitmq_db:/var
-      - rabbitmq_config:/etc
+      - rabbitmq-db:/var
+      - rabbitmq-config:/etc
 
 
 
@@ -55,7 +68,7 @@ services:
     ports:
       - '5430:5432'
     volumes: 
-      - users_db:/var/lib/postgresql/data
+      - users-db:/var/lib/postgresql/data
 
   authorities-db:
     image: postgres:latest
@@ -63,9 +76,59 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres_password
     ports:
-      - '5430:5432'
+      - '5431:5432'
     volumes: 
-      - authorities_db:/var/lib/postgresql/data
+      - authorities-db:/var/lib/postgresql/data
+
+  assets-db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - '5433:5432'
+    volumes: 
+      - assets-db:/var/lib/postgresql/data
+
+  items-db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - '5434:5432'
+    volumes: 
+      - items-db:/var/lib/postgresql/data
+
+  storage-db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - '5435:5432'
+    volumes: 
+      - storage-db:/var/lib/postgresql/data
+
+  developer-db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - '5436:5432'
+    volumes: 
+      - developer-db:/var/lib/postgresql/data
+
+  stripe-db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - '5437:5432'
+    volumes: 
+      - stripe-db:/var/lib/postgresql/data
 
 
   
@@ -81,6 +144,44 @@ services:
     ports:
       - '3000:80'
     command: npm run webpack -- --watch --env entry=gateways/web/web.gateway.ts --env app=web.gateway.js --env dir=web-gw
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
+  mobile-gw:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: gateways/mobile/mobile.gateway.ts
+        APP_FILE_NAME: mobile.gateway.js
+    ports:
+      - '3000:80'
+    command: npm run webpack -- --watch --env entry=gateways/mobile/mobile.gateway.ts --env app=mobile.gateway.js --env dir=mobile-gw
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
+  developer-gw:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: gateways/developer/developer.gateway.ts
+        APP_FILE_NAME: developer.gateway.js
+    ports:
+      - '3000:80'
+    command: npm run webpack -- --watch --env entry=gateways/developer/developer.gateway.ts --env app=developer.gateway.js --env dir=developer-gw
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -134,6 +235,116 @@ services:
     depends_on:
       - rabbitmq
       - authorities-db
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
+  assets-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/assets/assets.microservice.ts
+        APP_FILE_NAME: assets.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/assets/assets.microservice.ts --env app=assets.microservice.js --env dir=assets-ms
+    # command: npm run start-watch build/assets.microservice.js
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    environment:
+      APP_NAME: ASSETS_MICROSERVICE
+      DATABASE_URL: postgres://postgres:postgres_password@assets-db:5432 
+    depends_on:
+      - rabbitmq
+      - assets-db
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
+  items-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/items/items.microservice.ts
+        APP_FILE_NAME: items.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/items/items.microservice.ts --env app=items.microservice.js --env dir=items-ms
+    # command: npm run start-watch build/items.microservice.js
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    environment:
+      APP_NAME: ITEMS_MICROSERVICE
+      DATABASE_URL: postgres://postgres:postgres_password@items-db:5432 
+    depends_on:
+      - rabbitmq
+      - items-db
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
+  storage-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/storage/storage.microservice.ts
+        APP_FILE_NAME: storage.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/storage/storage.microservice.ts --env app=storage.microservice.js --env dir=storage-ms
+    # command: npm run start-watch build/storage.microservice.js
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    environment:
+      APP_NAME: STORAGE_MICROSERVICE
+      DATABASE_URL: postgres://postgres:postgres_password@storage-db:5432 
+    depends_on:
+      - rabbitmq
+      - storage-db
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
+  developer-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/developer/developer.microservice.ts
+        APP_FILE_NAME: developer.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/developer/developer.microservice.ts --env app=developer.microservice.js --env dir=developer-ms
+    # command: npm run start-watch build/developer.microservice.js
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    environment:
+      APP_NAME: DEVELOPER_MICROSERVICE
+      DATABASE_URL: postgres://postgres:postgres_password@developer-db:5432 
+    depends_on:
+      - rabbitmq
+      - developer-db
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
+  stripe-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/stripe/stripe.microservice.ts
+        APP_FILE_NAME: stripe.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/stripe/stripe.microservice.ts --env app=stripe.microservice.js --env dir=stripe-ms
+    # command: npm run start-watch build/stripe.microservice.js
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    environment:
+      APP_NAME: STRIPE_MICROSERVICE
+      DATABASE_URL: postgres://postgres:postgres_password@stripe-db:5432 
+    depends_on:
+      - rabbitmq
+      - stripe-db
     volumes:
       - ./src:/app/src
       - /app/node_modules
