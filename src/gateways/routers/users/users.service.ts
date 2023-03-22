@@ -1,7 +1,7 @@
 
-import { generateJWT, ServiceMethodAsyncResults, ServiceMethodResults } from "@lib/backend-shared";
+import { ServiceMethodAsyncResults, ServiceMethodResults } from "@lib/backend-shared";
 import { ContentTypes, MicroservicesQueues, UserSignInDto, UserSignUpDto, UsersQueueMessageTypes, UserUpdatesDto } from "@lib/fullstack-shared";
-import { AppEnvironment } from "src/lib/backend-shared/environment/app.enviornment";
+import { AppEnvironment } from "@lib/backend-shared";
 import { rmqClient } from "../../web/web.rmq";
 
 

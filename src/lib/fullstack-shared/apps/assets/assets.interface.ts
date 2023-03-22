@@ -1,7 +1,5 @@
-import {
-  ICommonModel,
-  ICommonIconWallpaperModel
-} from "../../interfaces/models.interface";
+import { ICommonModel, ICommonIconWallpaperModel } from "../../interfaces/common.interface";
+
 
 export interface IAsset extends ICommonModel, ICommonIconWallpaperModel {
   authority_id: number,

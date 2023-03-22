@@ -1,12 +1,5 @@
-import {
-  RabbitMQClient,
-  MicroservicesQueues,
-  UsersQueueEventTypes,
-  MicroservicesExchanges,
-  RoutingKeys,
-  EventMessage,
-  AuthoritiesQueueEventTypes
-} from "@lib/shared";
+import { RabbitMQClient, RmqEventMessage } from "@lib/backend-shared";
+import { AuthoritiesQueueEventTypes, MicroservicesExchanges, MicroservicesQueues, RoutingKeys, UsersQueueEventTypes } from "@lib/fullstack-shared";
 import {
   AUTHORITY_CREATED,
   AUTHORITY_DELETED,
@@ -48,19 +41,19 @@ const emailsQueue = rmqClient.onQueue(MicroservicesQueues.EMAILS);
 
 
 emailsQueue.handle(UsersQueueEventTypes.USER_CREATED).subscribe({
-  next: (event: EventMessage) => USER_CREATED(event, rmqClient)
+  next: (event: RmqEventMessage) => USER_CREATED(event, rmqClient)
 });
 
 emailsQueue.handle(UsersQueueEventTypes.USER_DELETED).subscribe({
-  next: (event: EventMessage) => USER_DELETED(event, rmqClient)
+  next: (event: RmqEventMessage) => USER_DELETED(event, rmqClient)
 });
 
 
 
 emailsQueue.handle(AuthoritiesQueueEventTypes.AUTHORITY_CREATED).subscribe({
-  next: (event: EventMessage) => AUTHORITY_CREATED(event, rmqClient)
+  next: (event: RmqEventMessage) => AUTHORITY_CREATED(event, rmqClient)
 });
 
 emailsQueue.handle(AuthoritiesQueueEventTypes.AUTHORITY_DELETED).subscribe({
-  next: (event: EventMessage) => AUTHORITY_DELETED(event, rmqClient)
+  next: (event: RmqEventMessage) => AUTHORITY_DELETED(event, rmqClient)
 });

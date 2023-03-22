@@ -12,7 +12,7 @@ import {
   compareSync
 } from 'bcryptjs';
 import {
-  EventMessage,
+  RmqEventMessage,
   RabbitMQClient,
   ServiceMethodResults
 } from "@lib/backend-shared";
@@ -31,7 +31,7 @@ import {
 
 
 
-export async function FETCH_USERS(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_USERS(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   console.log(`[${UsersQueueMessageTypes.FETCH_USERS}] Received fetch users message:`);
 
   const users = await get_users();
@@ -57,7 +57,7 @@ export async function FETCH_USERS(event: EventMessage, rmqClient: RabbitMQClient
   });
 }
 
-export async function FETCH_USER_BY_ID(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_USER_BY_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_ID}] Received message:`, { data: event.data });
 
   const user = await get_user_by_id(event.data.id);
@@ -83,7 +83,7 @@ export async function FETCH_USER_BY_ID(event: EventMessage, rmqClient: RabbitMQC
   });
 }
 
-export async function FETCH_USER_BY_EMAIL(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_USER_BY_EMAIL(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_EMAIL}] Received message:`, { data: event.data });
 
   const user = await get_user_by_email(event.data.email);
@@ -110,7 +110,7 @@ export async function FETCH_USER_BY_EMAIL(event: EventMessage, rmqClient: Rabbit
 }
 
 
-export async function CREATE_USER(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function CREATE_USER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as UserSignUpDto;
   console.log(`[${UsersQueueMessageTypes.CREATE_USER}] Received message:`, { data });
 
@@ -171,7 +171,7 @@ export async function CREATE_USER(event: EventMessage, rmqClient: RabbitMQClient
   });
 }
 
-export async function UPDATE_USER(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function UPDATE_USER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as { user_id: number, updates: UserUpdatesDto };
   console.log(`[${UsersQueueMessageTypes.UPDATE_USER}] Received message:`);
 
@@ -199,7 +199,7 @@ export async function UPDATE_USER(event: EventMessage, rmqClient: RabbitMQClient
   });
 }
 
-export async function DELETE_USER(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function DELETE_USER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as { user_id: number };
   console.log(`[${UsersQueueMessageTypes.DELETE_USER}] Received message:`);
 
@@ -227,7 +227,7 @@ export async function DELETE_USER(event: EventMessage, rmqClient: RabbitMQClient
   });
 }
 
-export async function LOGIN_USER(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as UserSignInDto;
   console.log(`[${UsersQueueMessageTypes.LOGIN_USER}] Received message:`, { data });
 

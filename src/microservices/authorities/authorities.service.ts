@@ -1,5 +1,5 @@
 import {
-  EventMessage,
+  RmqEventMessage,
   RabbitMQClient,
   ServiceMethodResults
 } from "@lib/backend-shared";
@@ -31,7 +31,7 @@ import {
 
 
 
-export async function FETCH_AUTHORITIES(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_AUTHORITIES(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   console.log(`[${AuthoritiesQueueMessageTypes.FETCH_AUTHORITIES}] Received fetch authorities message:`);
 
   const authorities = await get_authorities();
@@ -57,7 +57,7 @@ export async function FETCH_AUTHORITIES(event: EventMessage, rmqClient: RabbitMQ
   });
 }
 
-export async function FETCH_AUTHORITY_BY_ID(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_AUTHORITY_BY_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   console.log(`[${AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_ID}] Received message:`, { data: event.data });
 
   const authority = await get_authority_by_id(event.data.id);
@@ -83,7 +83,7 @@ export async function FETCH_AUTHORITY_BY_ID(event: EventMessage, rmqClient: Rabb
   });
 }
 
-export async function FETCH_AUTHORITY_BY_EMAIL(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_AUTHORITY_BY_EMAIL(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   console.log(`[${AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_EMAIL}] Received message:`, { data: event.data });
 
   const authority = await get_authority_by_email(event.data.email);
@@ -110,7 +110,7 @@ export async function FETCH_AUTHORITY_BY_EMAIL(event: EventMessage, rmqClient: R
 }
 
 
-export async function CREATE_AUTHORITY(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function CREATE_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as CreateAuthorityDto;
   console.log(`[${AuthoritiesQueueMessageTypes.CREATE_AUTHORITY}] Received message:`, { data });
 
@@ -171,7 +171,7 @@ export async function CREATE_AUTHORITY(event: EventMessage, rmqClient: RabbitMQC
   });
 }
 
-export async function UPDATE_AUTHORITY(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function UPDATE_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as { authority_id: number, updates: UpdateAuthorityDto };
   console.log(`[${AuthoritiesQueueMessageTypes.UPDATE_AUTHORITY}] Received message:`);
 
@@ -199,7 +199,7 @@ export async function UPDATE_AUTHORITY(event: EventMessage, rmqClient: RabbitMQC
   });
 }
 
-export async function DELETE_AUTHORITY(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function DELETE_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as { authority_id: number };
   console.log(`[${AuthoritiesQueueMessageTypes.DELETE_AUTHORITY}] Received message:`);
 
@@ -227,7 +227,7 @@ export async function DELETE_AUTHORITY(event: EventMessage, rmqClient: RabbitMQC
   });
 }
 
-export async function LOGIN_AUTHORITY(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function LOGIN_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const data = event.data as LoginAuthorityDto;
   console.log(`[${AuthoritiesQueueMessageTypes.LOGIN_AUTHORITY}] Received message:`, { data });
 

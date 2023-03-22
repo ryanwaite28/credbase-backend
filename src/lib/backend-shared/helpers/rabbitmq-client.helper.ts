@@ -20,7 +20,7 @@ export interface QueueConfig { name: string, messageTypes: string[], options?: a
 export interface ExchangeConfig { name: string, type: string, options?: amqplib.Options.AssertExchange }
 export interface QueueExchangeBindingConfig { queue: string, exchange: string, routingKey: string }
 
-export type EventMessage<T = any> = { data: T, message: amqplib.ConsumeMessage };
+export type RmqEventMessage<T = any> = { data: T, message: amqplib.ConsumeMessage };
 
 export type AckFn = (message: amqplib.Message) => void;
 
@@ -55,7 +55,7 @@ export class RabbitMQClient {
 
   private queueListeners: MapType<Subscription> = {};
   private queueToEventHandleMapping: MapType<
-    MapType<Subject<EventMessage>>
+    MapType<Subject<RmqEventMessage>>
   > = {};
 
 
@@ -202,7 +202,7 @@ export class RabbitMQClient {
           const messageType = msg.properties.type;
           const useContentType = msg.properties.contentType;
           const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(msg.content) : msg.content;
-          const messageObj: EventMessage = { data: useData, message: msg };
+          const messageObj: RmqEventMessage = { data: useData, message: msg };
 
           // console.log({ messageObj });
 
@@ -296,7 +296,7 @@ export class RabbitMQClient {
       throw new Error(`correlationId queue must be specified`);
     }
 
-    return new Promise<EventMessage<ServiceMethodResults<T>>>((resolve, reject) => {
+    return new Promise<RmqEventMessage<ServiceMethodResults<T>>>((resolve, reject) => {
       const send = () => {
         const { data, publishOptions, queue } = options;
         const useContentType = publishOptions.contentType || ContentTypes.TEXT;
@@ -312,7 +312,7 @@ export class RabbitMQClient {
           if (message && message?.properties.correlationId === options.publishOptions.correlationId) {
             const useContentType = message.properties.contentType;
             const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(message.content) : message.content;
-            const messageObj: EventMessage = { data: useData, message };
+            const messageObj: RmqEventMessage = { data: useData, message };
             console.log(`received response`, { consumerTag, options, messageObj });
             resolve(messageObj);
             this.ack(message);

@@ -2,6 +2,10 @@
 
 export * from './decorators/service-method-error-handler.decorator';
 
+// Environment
+
+export * from './environment/app.enviornment';
+
 
 // Interfaces
 
@@ -25,7 +29,6 @@ export * from './helpers/_common.repo';
 
 export * from './utils/fn.utils';
 export * from './utils/serializers.utils';
-export * from './utils/cloudinary-manager.utils';
 export * from './utils/constants.utils';
 
 

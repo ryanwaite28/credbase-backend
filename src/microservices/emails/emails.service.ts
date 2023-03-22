@@ -1,12 +1,5 @@
-import {
-  AuthoritiesQueueEventTypes,
-  EventMessage,
-  IAuthority,
-  IUser,
-  RabbitMQClient,
-  ServiceMethodResults,
-  UsersQueueEventTypes
-} from "@lib/shared";
+import { RmqEventMessage, RabbitMQClient, ServiceMethodResults } from "@lib/backend-shared";
+import { IUser, UsersQueueEventTypes, IAuthority, AuthoritiesQueueEventTypes } from "@lib/fullstack-shared";
 import {
   HandlebarsEmailTemplates,
   HandlebarsEmailSubjects
@@ -16,7 +9,7 @@ import { sendAwsEmail } from "./ses.aws.utils";
 
 
 
-export async function USER_CREATED(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function USER_CREATED(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const results = event.data as ServiceMethodResults;
   const user = results.info.data! as IUser;
   console.log(`[${UsersQueueEventTypes.USER_CREATED}] Received message:`, { results });
@@ -33,7 +26,7 @@ export async function USER_CREATED(event: EventMessage, rmqClient: RabbitMQClien
   console.log(email_send_results);
 }
 
-export async function USER_DELETED(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function USER_DELETED(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const results = event.data as ServiceMethodResults;
   const user = results.info.data! as IUser;
   console.log(`[${UsersQueueEventTypes.USER_DELETED}] Received message:`, { results });
@@ -52,7 +45,7 @@ export async function USER_DELETED(event: EventMessage, rmqClient: RabbitMQClien
 
 
 
-export async function AUTHORITY_CREATED(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function AUTHORITY_CREATED(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const results = event.data as ServiceMethodResults;
   const authority = results.info.data! as IAuthority;
   console.log(`[${AuthoritiesQueueEventTypes.AUTHORITY_CREATED}] Received message:`, { results });
@@ -68,7 +61,7 @@ export async function AUTHORITY_CREATED(event: EventMessage, rmqClient: RabbitMQ
   console.log(email_send_results);
 }
 
-export async function AUTHORITY_DELETED(event: EventMessage, rmqClient: RabbitMQClient) {
+export async function AUTHORITY_DELETED(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   const results = event.data as ServiceMethodResults;
   const authority = results.info.data! as IAuthority;
   console.log(`[${AuthoritiesQueueEventTypes.AUTHORITY_DELETED}] Received message:`, { results });

@@ -1,5 +1,5 @@
 
-import { EventMessage, RabbitMQClient } from "@lib/backend-shared";
+import { RmqEventMessage, RabbitMQClient } from "@lib/backend-shared";
 import {
   MicroservicesQueues,
   UsersQueueMessageTypes,
@@ -51,29 +51,29 @@ const usersQueue = rmqClient.onQueue(MicroservicesQueues.USER_MESSAGES);
 
 
 usersQueue.handle(UsersQueueMessageTypes.FETCH_USERS).subscribe({
-  next: (event: EventMessage) => FETCH_USERS(event, rmqClient)
+  next: (event: RmqEventMessage) => FETCH_USERS(event, rmqClient)
 });
 
 usersQueue.handle(UsersQueueMessageTypes.FETCH_USER_BY_ID).subscribe({
-  next: (event: EventMessage) => FETCH_USER_BY_ID(event, rmqClient)
+  next: (event: RmqEventMessage) => FETCH_USER_BY_ID(event, rmqClient)
 });
 
 usersQueue.handle(UsersQueueMessageTypes.FETCH_USER_BY_EMAIL).subscribe({
-  next: (event: EventMessage) => FETCH_USER_BY_EMAIL(event, rmqClient)
+  next: (event: RmqEventMessage) => FETCH_USER_BY_EMAIL(event, rmqClient)
 });
 
 usersQueue.handle(UsersQueueMessageTypes.LOGIN_USER).subscribe({
-  next: (event: EventMessage) => LOGIN_USER(event, rmqClient)
+  next: (event: RmqEventMessage) => LOGIN_USER(event, rmqClient)
 });
 
 usersQueue.handle(UsersQueueMessageTypes.CREATE_USER).subscribe({
-  next: (event: EventMessage) => CREATE_USER(event, rmqClient)
+  next: (event: RmqEventMessage) => CREATE_USER(event, rmqClient)
 });
 
 usersQueue.handle(UsersQueueMessageTypes.UPDATE_USER).subscribe({
-  next: (event: EventMessage) => UPDATE_USER(event, rmqClient)
+  next: (event: RmqEventMessage) => UPDATE_USER(event, rmqClient)
 });
 
 usersQueue.handle(UsersQueueMessageTypes.DELETE_USER).subscribe({
-  next: (event: EventMessage) => DELETE_USER(event, rmqClient)
+  next: (event: RmqEventMessage) => DELETE_USER(event, rmqClient)
 });

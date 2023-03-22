@@ -1,4 +1,4 @@
-import { EventMessage, RabbitMQClient } from "@lib/backend-shared";
+import { RmqEventMessage, RabbitMQClient } from "@lib/backend-shared";
 import {
   MicroservicesExchanges,
   MicroservicesQueues,
@@ -50,29 +50,29 @@ const authoritiesQueue = rmqClient.onQueue(MicroservicesQueues.AUTHORITY_MESSAGE
 
 
 authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITIES).subscribe({
-  next: (event: EventMessage) => FETCH_AUTHORITIES(event, rmqClient)
+  next: (event: RmqEventMessage) => FETCH_AUTHORITIES(event, rmqClient)
 });
 
 authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_ID).subscribe({
-  next: (event: EventMessage) => FETCH_AUTHORITY_BY_ID(event, rmqClient)
+  next: (event: RmqEventMessage) => FETCH_AUTHORITY_BY_ID(event, rmqClient)
 });
 
 authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_EMAIL).subscribe({
-  next: (event: EventMessage) => FETCH_AUTHORITY_BY_EMAIL(event, rmqClient)
+  next: (event: RmqEventMessage) => FETCH_AUTHORITY_BY_EMAIL(event, rmqClient)
 });
 
 authoritiesQueue.handle(AuthoritiesQueueMessageTypes.LOGIN_AUTHORITY).subscribe({
-  next: (event: EventMessage) => LOGIN_AUTHORITY(event, rmqClient)
+  next: (event: RmqEventMessage) => LOGIN_AUTHORITY(event, rmqClient)
 });
 
 authoritiesQueue.handle(AuthoritiesQueueMessageTypes.CREATE_AUTHORITY).subscribe({
-  next: (event: EventMessage) => CREATE_AUTHORITY(event, rmqClient)
+  next: (event: RmqEventMessage) => CREATE_AUTHORITY(event, rmqClient)
 });
 
 authoritiesQueue.handle(AuthoritiesQueueMessageTypes.UPDATE_AUTHORITY).subscribe({
-  next: (event: EventMessage) => UPDATE_AUTHORITY(event, rmqClient)
+  next: (event: RmqEventMessage) => UPDATE_AUTHORITY(event, rmqClient)
 });
 
 authoritiesQueue.handle(AuthoritiesQueueMessageTypes.DELETE_AUTHORITY).subscribe({
-  next: (event: EventMessage) => DELETE_AUTHORITY(event, rmqClient)
+  next: (event: RmqEventMessage) => DELETE_AUTHORITY(event, rmqClient)
 });
