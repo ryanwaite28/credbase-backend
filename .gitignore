@@ -6,7 +6,6 @@
 /out-tsc
 /bazel-out
 
-.env
 deploy-cloudfront-logs/
 
 # Node
