@@ -13,13 +13,13 @@ import {
   INTEGER,
 } from 'sequelize';
 
-console.log(`AppEnvironment.database.CONNECTION_STRING:`, AppEnvironment.database.CONNECTION_STRING);
+console.log(`AppEnvironment.database.URL:`, AppEnvironment.database.URL);
 
-if (!AppEnvironment.database.CONNECTION_STRING) {
-  throw new Error(`"DATABASE_URL" not set in environment variables...`);
+if (!AppEnvironment.database.URL) {
+  throw new Error(`"URL" not set in environment variables...`);
 }
 
-const sequelize = new Sequelize(AppEnvironment.database.CONNECTION_STRING, {
+const sequelize = new Sequelize(AppEnvironment.database.URL, {
   logging: false,
   dialect: 'postgres',
   dialectOptions: {

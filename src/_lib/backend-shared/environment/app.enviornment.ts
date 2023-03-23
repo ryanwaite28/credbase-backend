@@ -41,7 +41,10 @@ export class AppEnvironment {
   */
 
   public static readonly AWS = {
-    SES_EMAIL: process.env[`PLATFORM_AWS_SES_EMAIL`]!,
+    SES: {
+      EMAIL: process.env[`PLATFORM_AWS_SES_EMAIL`]!,
+      ARN: process.env[`PLATFORM_AWS_SES_ARN`]!,
+    }
   };
 
 
@@ -108,6 +111,8 @@ export class AppEnvironment {
   */
 
   public static readonly database = {
+    URL: process.env['DATABASE_URL'],
+
     SCHEMA: process.env['DATABASE_SCHEMA'],
     USERNAME: process.env['DATABASE_USER'],
     PASSWORD: process.env['DATABASE_PASS'],
