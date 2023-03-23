@@ -15,6 +15,12 @@ export async function get_asset_by_id(id: number) {
   });
 }
 
+export function get_asset_by_uuid(uuid: string) {
+  return asset_crud.findOne({
+    where: { uuid },
+  });
+}
+
 export async function get_assets_by_authority_id(authority_id: number) {
   return asset_crud.findOne({
     where: { authority_id },

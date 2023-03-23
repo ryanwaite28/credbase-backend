@@ -1,51 +1,49 @@
 import {
   RabbitMQClient,
   RmqEventMessage,
-  ServiceMethodResults
+  ServiceMethodResults,
 } from "@lib/backend-shared";
 import {
-  AssetsQueueMessageTypes,
-  AssetsQueueEventTypes,
+  AddClientDto,
+  ClientsQueueEventTypes,
+  ClientsQueueMessageTypes,
   ContentTypes,
   HttpStatusCode,
   MicroservicesExchanges,
   RoutingKeys,
-  CreateAssetDto,
-  UpdateAssetDto,
 } from "@lib/fullstack-shared";
 import {
-  create_asset,
-  delete_asset,
-  get_assets_by_authority_id,
-  get_assets_by_authority_id_paginate,
-  get_asset_by_id,
-  get_asset_by_uuid,
-  update_asset
-} from "./assets.repo";
+  get_client_by_id,
+  get_client_by_uuid,
+  get_clients_by_authority_id,
+  get_clients_by_authority_id_paginate,
+  add_client,
+  get_clients_by_user_id,
+  get_clients_by_user_id_paginate,
+} from "./clients.repo";
 
 
 
+export async function FETCH_CLIENT_BY_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ClientsQueueMessageTypes.FETCH_CLIENT_BY_ID}] Received message:`);
 
-export async function FETCH_ASSET_BY_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
-  console.log(`[${AssetsQueueMessageTypes.FETCH_ASSET_BY_ID}] Received message:`);
-
-  const asset = await get_asset_by_id(event.data.id);
+  const client = await get_client_by_id(event.data.id);
 
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
     error: false,
     info: {
-      data: asset
+      data: client
     }
   };
 
   rmqClient.ack(event.message);
   return rmqClient.publishEvent({
-    exchange: MicroservicesExchanges.ASSET_EVENTS,
+    exchange: MicroservicesExchanges.CLIENT_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
     publishOptions: {
-      type: AssetsQueueEventTypes.FETCHED_ASSET_BY_ID,
+      type: ClientsQueueEventTypes.FETCHED_CLIENT_BY_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
       replyTo: event.message.properties.replyTo,
@@ -53,26 +51,26 @@ export async function FETCH_ASSET_BY_ID(event: RmqEventMessage, rmqClient: Rabbi
   });
 }
 
-export async function FETCH_ASSET_BY_UUID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
-  console.log(`[${AssetsQueueMessageTypes.FETCH_ASSET_BY_UUID}] Received message:`);
+export async function FETCH_CLIENT_BY_UUID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ClientsQueueMessageTypes.FETCH_CLIENT_BY_UUID}] Received message:`);
 
-  const asset = await get_asset_by_uuid(event.data.uuid);
+  const client = await get_client_by_uuid(event.data.uuid);
 
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
     error: false,
     info: {
-      data: asset
+      data: client
     }
   };
 
   rmqClient.ack(event.message);
   return rmqClient.publishEvent({
-    exchange: MicroservicesExchanges.ASSET_EVENTS,
+    exchange: MicroservicesExchanges.CLIENT_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
     publishOptions: {
-      type: AssetsQueueEventTypes.FETCHED_ASSET_BY_UUID,
+      type: ClientsQueueEventTypes.FETCHED_CLIENT_BY_UUID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
       replyTo: event.message.properties.replyTo,
@@ -80,26 +78,26 @@ export async function FETCH_ASSET_BY_UUID(event: RmqEventMessage, rmqClient: Rab
   });
 }
 
-export async function FETCH_ASSETS_BY_AUTHORITY_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
-  console.log(`[${AssetsQueueMessageTypes.FETCH_ASSETS_BY_AUTHORITY_ID}] Received message:`);
+export async function FETCH_CLIENTS_BY_AUTHORITY_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ClientsQueueMessageTypes.FETCH_CLIENTS_BY_AUTHORITY_ID}] Received message:`);
 
-  const assets = await get_assets_by_authority_id(event.data.authority_id);
+  const clients = await get_clients_by_authority_id(event.data.authority_id);
 
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
     error: false,
     info: {
-      data: assets
+      data: clients
     }
   };
 
   rmqClient.ack(event.message);
   return rmqClient.publishEvent({
-    exchange: MicroservicesExchanges.ASSET_EVENTS,
+    exchange: MicroservicesExchanges.CLIENT_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
     publishOptions: {
-      type: AssetsQueueEventTypes.FETCHED_ASSETS_BY_AUTHORITY_ID,
+      type: ClientsQueueEventTypes.FETCHED_CLIENTS_BY_AUTHORITY_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
       replyTo: event.message.properties.replyTo,
@@ -107,10 +105,10 @@ export async function FETCH_ASSETS_BY_AUTHORITY_ID(event: RmqEventMessage, rmqCl
   });
 }
 
-export async function FETCH_ASSETS_BY_AUTHORITY_ID_PAGINATE(event: RmqEventMessage, rmqClient: RabbitMQClient) {
-  console.log(`[${AssetsQueueMessageTypes.FETCH_ASSETS_BY_AUTHORITY_ID_PAGINATE}] Received message:`);
+export async function FETCH_CLIENTS_BY_AUTHORITY_ID_PAGINATE(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ClientsQueueMessageTypes.FETCH_CLIENTS_BY_AUTHORITY_ID_PAGINATE}] Received message:`);
 
-  const assets = await get_assets_by_authority_id_paginate({
+  const clients = await get_clients_by_authority_id_paginate({
     authority_id: event.data.authority_id,
     min_id:  event.data.min_id,
     limit: event.data.limit,
@@ -120,17 +118,75 @@ export async function FETCH_ASSETS_BY_AUTHORITY_ID_PAGINATE(event: RmqEventMessa
     status: HttpStatusCode.OK,
     error: false,
     info: {
-      data: assets
+      data: clients
     }
   };
 
   rmqClient.ack(event.message);
   return rmqClient.publishEvent({
-    exchange: MicroservicesExchanges.ASSET_EVENTS,
+    exchange: MicroservicesExchanges.CLIENT_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
     publishOptions: {
-      type: AssetsQueueEventTypes.FETCHED_ASSETS_BY_AUTHORITY_ID_PAGINATE,
+      type: ClientsQueueEventTypes.FETCHED_CLIENTS_BY_AUTHORITY_ID_PAGINATE,
+      contentType: ContentTypes.JSON,
+      correlationId: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
+    }
+  });
+}
+
+export async function FETCH_CLIENTS_BY_USER_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ClientsQueueMessageTypes.FETCH_CLIENTS_BY_USER_ID}] Received message:`);
+
+  const clients = await get_clients_by_user_id(event.data.user_id);
+
+  const serviceMethodResults: ServiceMethodResults = {
+    status: HttpStatusCode.OK,
+    error: false,
+    info: {
+      data: clients
+    }
+  };
+
+  rmqClient.ack(event.message);
+  return rmqClient.publishEvent({
+    exchange: MicroservicesExchanges.CLIENT_EVENTS,
+    routingKey: RoutingKeys.EVENT,
+    data: serviceMethodResults,
+    publishOptions: {
+      type: ClientsQueueEventTypes.FETCHED_CLIENTS_BY_USER_ID,
+      contentType: ContentTypes.JSON,
+      correlationId: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
+    }
+  });
+}
+
+export async function FETCH_CLIENTS_BY_USER_ID_PAGINATE(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ClientsQueueMessageTypes.FETCH_CLIENTS_BY_USER_ID_PAGINATE}] Received message:`);
+
+  const clients = await get_clients_by_user_id_paginate({
+    user_id: event.data.user_id,
+    min_id:  event.data.min_id,
+    limit: event.data.limit,
+  });
+
+  const serviceMethodResults: ServiceMethodResults = {
+    status: HttpStatusCode.OK,
+    error: false,
+    info: {
+      data: clients
+    }
+  };
+
+  rmqClient.ack(event.message);
+  return rmqClient.publishEvent({
+    exchange: MicroservicesExchanges.CLIENT_EVENTS,
+    routingKey: RoutingKeys.EVENT,
+    data: serviceMethodResults,
+    publishOptions: {
+      type: ClientsQueueEventTypes.FETCHED_CLIENTS_BY_USER_ID_PAGINATE,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
       replyTo: event.message.properties.replyTo,
@@ -139,80 +195,26 @@ export async function FETCH_ASSETS_BY_AUTHORITY_ID_PAGINATE(event: RmqEventMessa
 }
 
 
-export async function CREATE_ASSET(event: RmqEventMessage, rmqClient: RabbitMQClient) {
-  console.log(`[${AssetsQueueMessageTypes.CREATE_ASSET}] Received message:`);
+export async function ADD_CLIENT(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ClientsQueueMessageTypes.ADD_CLIENT}] Received message:`);
   
-  const asset = await create_asset(event.data as CreateAssetDto);
+  const client = await add_client(event.data as AddClientDto);
 
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
     error: false,
     info: {
-      data: asset
+      data: client
     }
   };
 
   rmqClient.ack(event.message);
   return rmqClient.publishEvent({
-    exchange: MicroservicesExchanges.ASSET_EVENTS,
+    exchange: MicroservicesExchanges.CLIENT_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
     publishOptions: {
-      type: AssetsQueueEventTypes.ASSET_CREATED,
-      contentType: ContentTypes.JSON,
-      correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
-    }
-  });
-}
-
-export async function UPDATE_ASSET(event: RmqEventMessage, rmqClient: RabbitMQClient) {
-  console.log(`[${AssetsQueueMessageTypes.UPDATE_ASSET}] Received message:`);
-
-  const asset = await update_asset(event.data.id as number, event.data.updates as UpdateAssetDto);
-
-  const serviceMethodResults: ServiceMethodResults = {
-    status: HttpStatusCode.OK,
-    error: false,
-    info: {
-      data: asset
-    }
-  };
-
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
-    exchange: MicroservicesExchanges.ASSET_EVENTS,
-    routingKey: RoutingKeys.EVENT,
-    data: serviceMethodResults,
-    publishOptions: {
-      type: AssetsQueueEventTypes.ASSET_UPDATED,
-      contentType: ContentTypes.JSON,
-      correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
-    }
-  });
-}
-
-export async function DELETE_ASSET(event: RmqEventMessage, rmqClient: RabbitMQClient) {
-  console.log(`[${AssetsQueueMessageTypes.DELETE_ASSET}] Received message:`);
-
-  const asset = await delete_asset(event.data.id as number);
-
-  const serviceMethodResults: ServiceMethodResults = {
-    status: HttpStatusCode.OK,
-    error: false,
-    info: {
-      data: asset
-    }
-  };
-
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
-    exchange: MicroservicesExchanges.ASSET_EVENTS,
-    routingKey: RoutingKeys.EVENT,
-    data: serviceMethodResults,
-    publishOptions: {
-      type: AssetsQueueEventTypes.ASSET_DELETED,
+      type: ClientsQueueEventTypes.CLIENT_ADDED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
       replyTo: event.message.properties.replyTo,

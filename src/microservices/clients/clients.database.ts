@@ -1,5 +1,6 @@
 import {
   AppEnvironment,
+  common_icon_wallpaper_fields,
   common_model_fields,
   get_common_model_options,
   MyModelStatic
@@ -7,8 +8,9 @@ import {
 import {
   Sequelize,
   STRING,
-  INTEGER,
+  BOOLEAN,
   SyncOptions,
+  INTEGER,
 } from 'sequelize';
 
 console.log(`AppEnvironment.database.CONNECTION_STRING:`, AppEnvironment.database.CONNECTION_STRING);
@@ -37,7 +39,7 @@ const common_model_options = get_common_model_options(sequelize);
 
 /** Init Database */
 
-export const users_db_init = async () => {
+export const clients_db_init = async () => {
   const sequelize_db_sync_options: SyncOptions = {
     force: false,
     alter: false,
@@ -62,17 +64,16 @@ export const users_db_init = async () => {
 
 
 
-export const Storage = <MyModelStatic> sequelize.define('Storage', {
+
+/** Models */
+
+export const Client = <MyModelStatic> sequelize.define('Client', {
   ...common_model_fields,
 
-  model_type:          { type: STRING, allowNull: true }, // determines if post belongs to a particular model; default (null) is user
-  model_id:            { type: INTEGER, allowNull: true },
+  user_id:                             { type: INTEGER, allowNull: false },
+  authority_id:                        { type: INTEGER, allowNull: false },
 
-  description:         { type: STRING(500), allowNull: false, defaultValue: '' },
-  file_type:           { type: STRING(500), allowNull: false, defaultValue: '' },
-  file_size:           { type: STRING(500), allowNull: false, defaultValue: '' },
-  full_url:            { type: STRING(500), allowNull: false, defaultValue: '' },
-  bucket:              { type: STRING, allowNull: false, defaultValue: '' },
-  path_key:            { type: STRING, allowNull: false, defaultValue: '' },
-}, common_model_options);
-
+}, {
+  ...common_model_options,
+  indexes: [{ unique: true, fields: ['user_id', 'authority_id'] }]
+});

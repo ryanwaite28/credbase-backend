@@ -5,6 +5,7 @@ export * from './enums/http-codes.enum';
 
 export * from './enums/microservices/users.enum';
 export * from './enums/microservices/authorities.enum';
+export * from './enums/microservices/clients.enum';
 export * from './enums/microservices/assets.enum';
 
 
@@ -34,6 +35,9 @@ export * from './apps/users/users.dto';
 
 export * from './apps/authorities/authorities.interface';
 export * from './apps/authorities/authorities.dto';
+
+export * from './apps/clients/clients.interface';
+export * from './apps/clients/clients.dto';
 
 export * from './apps/assets/assets.interface';
 export * from './apps/assets/assets.dto';

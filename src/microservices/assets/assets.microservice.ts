@@ -1,5 +1,5 @@
 
-import { RmqEventMessage, RabbitMQClient } from "@lib/backend-shared";
+import { RmqEventMessage, RabbitMQClient, AppEnvironment } from "@lib/backend-shared";
 import {
   MicroservicesQueues,
   AssetsQueueMessageTypes,
@@ -14,6 +14,7 @@ import {
   FETCH_ASSETS_BY_AUTHORITY_ID,
   FETCH_ASSETS_BY_AUTHORITY_ID_PAGINATE,
   FETCH_ASSET_BY_ID,
+  FETCH_ASSET_BY_UUID,
   UPDATE_ASSET
 } from "./assets.service";
 
@@ -21,7 +22,7 @@ import {
 
 
 const rmqClient = new RabbitMQClient({
-  connection_url: process.env['RABBIT_MQ_URL'] || '',
+  connection_url: AppEnvironment.RABBIT_MQ_URL,
   delayStart: 5000,
   prefetch: 5,
   retryAttempts: 3,
@@ -47,6 +48,10 @@ const assetsQueue = rmqClient.onQueue(MicroservicesQueues.ASSET_MESSAGES);
 
 assetsQueue.handle(AssetsQueueMessageTypes.FETCH_ASSET_BY_ID).subscribe({
   next: (event: RmqEventMessage) => FETCH_ASSET_BY_ID(event, rmqClient)
+});
+
+assetsQueue.handle(AssetsQueueMessageTypes.FETCH_ASSET_BY_UUID).subscribe({
+  next: (event: RmqEventMessage) => FETCH_ASSET_BY_UUID(event, rmqClient)
 });
 
 assetsQueue.handle(AssetsQueueMessageTypes.FETCH_ASSETS_BY_AUTHORITY_ID).subscribe({

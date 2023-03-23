@@ -1,5 +1,5 @@
 
-import { RmqEventMessage, RabbitMQClient } from "@lib/backend-shared";
+import { RmqEventMessage, RabbitMQClient, AppEnvironment } from "@lib/backend-shared";
 import {
   MicroservicesQueues,
   UsersQueueMessageTypes,
@@ -14,14 +14,15 @@ import {
   UPDATE_USER,
   LOGIN_USER,
   FETCH_USERS,
-  DELETE_USER
+  DELETE_USER,
+  FETCH_USER_BY_UUID
 } from "./users.service";
 import { users_db_init } from "./users.database";
 
 
 
 const rmqClient = new RabbitMQClient({
-  connection_url: process.env['RABBIT_MQ_URL'] || '',
+  connection_url: AppEnvironment.RABBIT_MQ_URL,
   delayStart: 5000,
   prefetch: 5,
   retryAttempts: 3,
@@ -52,6 +53,10 @@ const usersQueue = rmqClient.onQueue(MicroservicesQueues.USER_MESSAGES);
 
 usersQueue.handle(UsersQueueMessageTypes.FETCH_USERS).subscribe({
   next: (event: RmqEventMessage) => FETCH_USERS(event, rmqClient)
+});
+
+usersQueue.handle(UsersQueueMessageTypes.FETCH_USER_BY_UUID).subscribe({
+  next: (event: RmqEventMessage) => FETCH_USER_BY_UUID(event, rmqClient)
 });
 
 usersQueue.handle(UsersQueueMessageTypes.FETCH_USER_BY_ID).subscribe({

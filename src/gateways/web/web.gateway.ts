@@ -3,13 +3,13 @@ import express_fileupload from 'express-fileupload';
 import * as cookie_parser from 'cookie-parser';
 import {
   RequestLoggerMiddleware,
-  CsrfSetCookieMiddle
+  CsrfSetCookieMiddle,
+  AppEnvironment
 } from '@lib/backend-shared';
 import { AppRouter } from '../routers/_app.router';
 
 
 
-const PORT: string | number = process.env.PORT || 80;
 const app: express.Application = express();
 app.set('trust proxy', true);
 
@@ -31,6 +31,6 @@ app.use(AppRouter);
 
 
 /** Start Server */
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}...\n\n`);
+app.listen(AppEnvironment.PORT, () => {
+  console.log(`Listening on port ${AppEnvironment.PORT}...\n\n`);
 });

@@ -12,7 +12,7 @@ const CSRF_SAFE_METHODS = ['GET', 'OPTIONS', 'HEAD'];
 const cookieOptions: CookieOptions = {
   httpOnly: false,
   path: `/`,
-  // domain: process.env.NODE_ENV && process.env.NODE_ENV === 'production' ? 'https://rmw-modern-client.herokuapp.com' : undefined,
+  // domain: null,
   sameSite: 'none',
   secure: true,
   // expires: moment().add(1, 'hour').toDate()

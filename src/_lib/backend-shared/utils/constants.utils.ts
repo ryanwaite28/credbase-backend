@@ -1,14 +1,11 @@
 import cors, { CorsOptions } from "cors";
+import { AppEnvironment } from "../environment/app.enviornment";
 
 
 
 export const specialCaracters = ['!', '@', '#', '$', '%', '&', '+', ')', ']', '}', ':', ';', '?'];
 export const codeCharacters = ['!', '@', '#', '$', '%', '&', '|', '*', ':', '-', '_', '+'];
 export const allowedImages = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
-export const isAppEnvSet: boolean = ('APP_ENV' in process.env);
-export const isDevEnv: boolean = isAppEnvSet && process.env.APP_ENV === "DEV";
-export const isProd: boolean = (process.env.NODE_ENV === 'production') && !isDevEnv;
-export const WHITELIST_DOMAINS = process.env[`CORS_WHITELIST_ORIGINS`] ? process.env[`CORS_WHITELIST_ORIGINS`].split(',') : [];
 export const VALID_RATINGS = new Set([1, 2, 3, 4, 5]);
 
 
@@ -36,7 +33,7 @@ export const corsOptions: CorsOptions = {
   optionsSuccessStatus: 200,
   origin(origin: string | undefined, callback: any) {
     const useOrigin = (origin || '');
-    const originIsAllowed = WHITELIST_DOMAINS.includes(useOrigin);
+    const originIsAllowed = AppEnvironment.CORS.WHITELIST.includes(useOrigin);
     // console.log({
     //   origin,
     //   callback,
@@ -59,7 +56,7 @@ export const corsMobileOptions: CorsOptions = {
   origin(origin: string | undefined, callback: any) {
     // console.log(`mobile request:`, { origin });
     const useOrigin = (origin || '');
-    const originIsAllowed = !useOrigin || WHITELIST_DOMAINS.includes(useOrigin);
+    const originIsAllowed = !useOrigin || AppEnvironment.CORS.WHITELIST.includes(useOrigin);
     // console.log({
     //   origin,
     //   callback,
@@ -82,7 +79,7 @@ export const corsApiOptions: CorsOptions = {
   origin(origin: string | undefined, callback: any) {
     // console.log(`mobile request:`, { origin });
     const useOrigin = (origin || '');
-    const originIsAllowed = !useOrigin || WHITELIST_DOMAINS.includes(useOrigin);
+    const originIsAllowed = !useOrigin || AppEnvironment.CORS.WHITELIST.includes(useOrigin);
     // console.log({
     //   origin,
     //   callback,

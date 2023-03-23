@@ -10,7 +10,8 @@ import {
   update_authority,
   get_authorities,
   get_authority_password_by_email,
-  delete_authority
+  delete_authority,
+  get_authority_by_uuid
 } from "./authorities.repo";
 import {
   hashSync,
@@ -77,6 +78,32 @@ export async function FETCH_AUTHORITY_BY_ID(event: RmqEventMessage, rmqClient: R
     data: serviceMethodResults,
     publishOptions: {
       type: AuthoritiesQueueEventTypes.AUTHORITY_FETCHED_BY_ID,
+      contentType: ContentTypes.JSON,
+      correlationId: event.message.properties.correlationId
+    }
+  });
+}
+
+export async function FETCH_AUTHORITY_BY_UUID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_UUID}] Received message:`, { data: event.data });
+
+  const authority = await get_authority_by_uuid(event.data.uuid);
+
+  const serviceMethodResults: ServiceMethodResults = {
+    status: HttpStatusCode.OK,
+    error: false,
+    info: {
+      data: authority
+    }
+  };
+
+  rmqClient.ack(event.message);
+  return rmqClient.publishEvent({
+    exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
+    routingKey: RoutingKeys.EVENT,
+    data: serviceMethodResults,
+    publishOptions: {
+      type: AuthoritiesQueueEventTypes.AUTHORITY_FETCHED_BY_UUID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId
     }

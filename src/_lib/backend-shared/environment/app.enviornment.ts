@@ -25,6 +25,27 @@ export class AppEnvironment {
     DISPLAY: process.env['APP_DISPLAY_NAME'],
   };
 
+  public static readonly RABBIT_MQ_URL: string = process.env['RABBIT_MQ_URL']!;
+
+  /*
+  
+  */
+
+  public static readonly CORS = {
+    WHITELIST: process.env[`CORS_WHITELIST_ORIGINS`] ? process.env[`CORS_WHITELIST_ORIGINS`].split(',') : []
+  };
+
+
+  /*
+  
+  */
+
+  public static readonly AWS = {
+    SES_EMAIL: process.env[`PLATFORM_AWS_SES_EMAIL`]!,
+  };
+
+
+
 
   /*
     JWT Secrets

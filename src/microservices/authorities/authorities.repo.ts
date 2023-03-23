@@ -24,6 +24,15 @@ export async function get_authority_by_id(id: number) {
   });
 }
 
+export async function get_authority_by_uuid(uuid: string) {
+  return authority_crud.findOne({
+    where: { uuid },
+    attributes: {
+      exclude: ['password']
+    }
+  });
+}
+
 export async function get_authority_by_email(email: string) {
   return authority_crud.findOne({
     where: { email },

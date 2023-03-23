@@ -1,4 +1,4 @@
-import { RabbitMQClient } from "@lib/backend-shared";
+import { AppEnvironment, RabbitMQClient } from "@lib/backend-shared";
 import {
   MicroservicesExchanges,
   MicroservicesQueues,
@@ -9,10 +9,9 @@ import {
 
 
 
-console.log(`RABBIT_MQ_URL`, process.env['RABBIT_MQ_URL'], '\n\n');
 
 export const rmqClient = new RabbitMQClient({
-  connection_url: process.env['RABBIT_MQ_URL'] || '',
+  connection_url: AppEnvironment.RABBIT_MQ_URL,
   delayStart: 5000,
   prefetch: 5,
   retryAttempts: 3,

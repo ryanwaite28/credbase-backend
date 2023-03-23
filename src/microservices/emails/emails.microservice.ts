@@ -1,4 +1,4 @@
-import { RabbitMQClient, RmqEventMessage } from "@lib/backend-shared";
+import { AppEnvironment, RabbitMQClient, RmqEventMessage } from "@lib/backend-shared";
 import { AuthoritiesQueueEventTypes, MicroservicesExchanges, MicroservicesQueues, RoutingKeys, UsersQueueEventTypes } from "@lib/fullstack-shared";
 import {
   AUTHORITY_CREATED,
@@ -16,7 +16,7 @@ const handleMessageTypes: string[] = [
 ];
 
 const rmqClient = new RabbitMQClient({
-  connection_url: process.env['RABBIT_MQ_URL'] || '',
+  connection_url: AppEnvironment.RABBIT_MQ_URL,
   delayStart: 5000,
   prefetch: 5,
   retryAttempts: 3,

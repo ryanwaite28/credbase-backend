@@ -24,6 +24,15 @@ export async function get_user_by_id(id: number) {
   });
 }
 
+export async function get_user_by_uuid(uuid: string) {
+  return user_crud.findOne({
+    where: { uuid },
+    attributes: {
+      exclude: ['password']
+    }
+  });
+}
+
 export async function get_user_by_email(email: string) {
   return user_crud.findOne({
     where: { email },

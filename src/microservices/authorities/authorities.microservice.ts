@@ -1,4 +1,4 @@
-import { RmqEventMessage, RabbitMQClient } from "@lib/backend-shared";
+import { RmqEventMessage, RabbitMQClient, AppEnvironment } from "@lib/backend-shared";
 import {
   MicroservicesExchanges,
   MicroservicesQueues,
@@ -14,13 +14,14 @@ import {
   UPDATE_AUTHORITY,
   LOGIN_AUTHORITY,
   FETCH_AUTHORITIES,
-  DELETE_AUTHORITY
+  DELETE_AUTHORITY,
+  FETCH_AUTHORITY_BY_UUID
 } from "./authorities.service";
 
 
 
 const rmqClient = new RabbitMQClient({
-  connection_url: process.env['RABBIT_MQ_URL'] || '',
+  connection_url: AppEnvironment.RABBIT_MQ_URL,
   delayStart: 5000,
   prefetch: 5,
   retryAttempts: 3,
@@ -55,6 +56,10 @@ authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITIES).subscrib
 
 authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_ID).subscribe({
   next: (event: RmqEventMessage) => FETCH_AUTHORITY_BY_ID(event, rmqClient)
+});
+
+authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_UUID).subscribe({
+  next: (event: RmqEventMessage) => FETCH_AUTHORITY_BY_UUID(event, rmqClient)
 });
 
 authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_EMAIL).subscribe({

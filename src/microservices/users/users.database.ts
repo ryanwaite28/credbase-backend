@@ -1,4 +1,5 @@
 import {
+  AppEnvironment,
   common_icon_wallpaper_fields,
   common_model_fields,
   get_common_model_options,
@@ -11,14 +12,13 @@ import {
   SyncOptions,
 } from 'sequelize';
 
-const { DATABASE_URL } = process.env;
-console.log(`DATABASE_URL:`, DATABASE_URL);
+console.log(`AppEnvironment.database.CONNECTION_STRING:`, AppEnvironment.database.CONNECTION_STRING);
 
-if (!DATABASE_URL) {
+if (!AppEnvironment.database.CONNECTION_STRING) {
   throw new Error(`"DATABASE_URL" not set in environment variables...`);
 }
 
-const sequelize = new Sequelize(DATABASE_URL, {
+const sequelize = new Sequelize(AppEnvironment.database.CONNECTION_STRING, {
   logging: false,
   dialect: 'postgres',
   dialectOptions: {
@@ -81,4 +81,7 @@ export const User = <MyModelStatic> sequelize.define('User', {
   person_verified:                     { type: BOOLEAN, allowNull: false, defaultValue: false },
   email_verified:                      { type: BOOLEAN, allowNull: false, defaultValue: false },
   phone_verified:                      { type: BOOLEAN, allowNull: false, defaultValue: false },
-}, common_model_options);
+}, {
+  ...common_model_options,
+  indexes: [{ unique: true, fields: ['email'] }]
+});

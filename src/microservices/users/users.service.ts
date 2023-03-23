@@ -5,7 +5,8 @@ import {
   update_user,
   get_users,
   get_user_password_by_email,
-  delete_user
+  delete_user,
+  get_user_by_uuid
 } from "./users.repo";
 import {
   hashSync,
@@ -77,6 +78,32 @@ export async function FETCH_USER_BY_ID(event: RmqEventMessage, rmqClient: Rabbit
     data: serviceMethodResults,
     publishOptions: {
       type: UsersQueueEventTypes.USER_FETCHED_BY_ID,
+      contentType: ContentTypes.JSON,
+      correlationId: event.message.properties.correlationId
+    }
+  });
+}
+
+export async function FETCH_USER_BY_UUID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_UUID}] Received message:`, { data: event.data });
+
+  const user = await get_user_by_uuid(event.data.uuid);
+
+  const serviceMethodResults: ServiceMethodResults = {
+    status: HttpStatusCode.OK,
+    error: false,
+    info: {
+      data: user
+    }
+  };
+
+  rmqClient.ack(event.message);
+  return rmqClient.publishEvent({
+    exchange: MicroservicesExchanges.USER_EVENTS,
+    routingKey: RoutingKeys.EVENT,
+    data: serviceMethodResults,
+    publishOptions: {
+      type: UsersQueueEventTypes.USER_FETCHED_BY_UUID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId
     }

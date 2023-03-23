@@ -1,4 +1,5 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { AppEnvironment } from "@lib/backend-shared";
 const aws_ses_client = new SESClient({ region: "us-east-1" });
 
 
@@ -10,7 +11,7 @@ export function sendAwsEmail(params: {
   html?: string,
 }) {
   const command = new SendEmailCommand({
-    Source: process.env.PLATFORM_AWS_SES_EMAIL,
+    Source: AppEnvironment.AWS.SES.EMAIL,
     Destination: {
       ToAddresses: [params.to]
     },
@@ -22,8 +23,8 @@ export function sendAwsEmail(params: {
         ? { Html: { Data: params.html, Charset: `utf-8` } }
         : { Text: { Data: params.message, Charset: `utf-8` } }
     },
-    ReplyToAddresses: [process.env.PLATFORM_AWS_SES_EMAIL!],
-    SourceArn: process.env.PLATFORM_AWS_SES_ARN
+    ReplyToAddresses: [],
+    SourceArn: AppEnvironment.AWS.SES.ARN
   });
   return aws_ses_client.send(command);
 }
