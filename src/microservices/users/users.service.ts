@@ -121,9 +121,6 @@ export async function CREATE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
       error: true,
       info: {
         message: `Email already in use.`,
-        data: {
-          email: data.email
-        }
       }
     };
 

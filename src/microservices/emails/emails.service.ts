@@ -16,14 +16,14 @@ export async function USER_CREATED(event: RmqEventMessage, rmqClient: RabbitMQCl
   rmqClient.ack(event.message);
   
   // send welcome email
-  const name = `${user.firstname} ${user.lastname}`;
-  const html_email = HandlebarsEmailTemplates.USERS.welcome({ name });
-  const email_send_results = await sendAwsEmail({
-    to: user.email,
-    subject: HandlebarsEmailSubjects.USERS.welcome,
-    html: html_email
-  });
-  console.log(email_send_results);
+  // const name = `${user.firstname} ${user.lastname}`;
+  // const html_email = HandlebarsEmailTemplates.USERS.welcome({ name });
+  // const email_send_results = await sendAwsEmail({
+  //   to: user.email,
+  //   subject: HandlebarsEmailSubjects.USERS.welcome,
+  //   html: html_email
+  // });
+  // console.log(email_send_results);
 }
 
 export async function USER_DELETED(event: RmqEventMessage, rmqClient: RabbitMQClient) {

@@ -20,11 +20,21 @@ import { MapType } from "@lib/fullstack-shared";
 
 
 export async function paginateTable(model: MyModelStatic, options: IPaginateModelsOptions)  {
-  const { user_id_field, user_id, min_id, include, attributes, group, whereClause, orderBy } = options;
+  const {
+    parent_model_id_field,
+    parent_model_id,
+    min_id,
+    include,
+    attributes,
+    group,
+    whereClause,
+    orderBy,
+    limit
+  } = options;
 
   const useWhereClause: WhereOptions = <MapType> (!min_id
-    ? { [user_id_field]: user_id }
-    : { [user_id_field]: user_id, id: { [Op.lt]: min_id } }
+    ? { [parent_model_id_field]: parent_model_id }
+    : { [parent_model_id_field]: parent_model_id, id: { [Op.lt]: min_id } }
   );
   if (whereClause) {
     Object.assign(useWhereClause, whereClause);
@@ -37,7 +47,7 @@ export async function paginateTable(model: MyModelStatic, options: IPaginateMode
     group,
     where: useWhereClause,
     include: include || [],
-    limit: 5,
+    limit: limit || 5,
     order: orderBy || [['id', 'DESC']]
   });
 

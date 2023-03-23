@@ -1,9 +1,11 @@
 // Enums
 
 export * from './enums/microservices/_microservices.enum';
+export * from './enums/http-codes.enum';
+
 export * from './enums/microservices/users.enum';
 export * from './enums/microservices/authorities.enum';
-export * from './enums/http-codes.enum';
+export * from './enums/microservices/assets.enum';
 
 
 // Interfaces

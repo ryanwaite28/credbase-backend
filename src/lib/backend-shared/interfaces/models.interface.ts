@@ -10,14 +10,15 @@ import {
 
 
 export interface IPaginateModelsOptions {
-  user_id_field: string,
-  user_id?: number,
+  parent_model_id_field: string,
+  parent_model_id?: number,
   min_id?: number,
   include?: Includeable[],
   attributes?: FindAttributeOptions,
   group?: GroupOption,
   whereClause?: WhereOptions,
-  orderBy?: Order
+  orderBy?: Order,
+  limit?: number
 }
 
 export interface IRandomModelsOptions {

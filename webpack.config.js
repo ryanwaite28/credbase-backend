@@ -14,9 +14,10 @@ module.exports = (env) => {
   
   const ENTRY_FILE = path.resolve(__dirname, 'src', env.entry);
   const OUTPUT_PATH = path.resolve(__dirname, 'build', env.dir);
+  const TSCONFIG_PATH = path.resolve(__dirname, 'tsconfig.json');
   const OUTPUT_FILE = env.app;
   
-  console.log({ ENTRY_FILE, OUTPUT_PATH, OUTPUT_FILE });
+  console.log({ ENTRY_FILE, OUTPUT_PATH, OUTPUT_FILE, TSCONFIG_PATH });
 
 
 
@@ -25,6 +26,7 @@ module.exports = (env) => {
   ];
   
   if (!!env.static) {
+    console.log(`including static resources...`);
     usePlugins.push(
       new CopyPlugin({
         patterns: [
@@ -59,8 +61,7 @@ module.exports = (env) => {
       extensions: ['.tsx', '.ts', '.js'],
       plugins: [
         new TsconfigPathsPlugin({
-          baseUrl: __dirname,
-          configFile: 'tsconfig.json'
+          configFile: TSCONFIG_PATH
         })
       ]
     },

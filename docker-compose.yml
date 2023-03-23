@@ -144,6 +144,9 @@ services:
     ports:
       - '3000:80'
     command: npm run webpack -- --watch --env entry=gateways/web/web.gateway.ts --env app=web.gateway.js --env dir=web-gw
+    environment:
+      APP_MACHINE_NAME: WEB_GATEWAY
+      APP_DISPLAY_NAME: Web Gateway
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -163,6 +166,9 @@ services:
     ports:
       - '3000:80'
     command: npm run webpack -- --watch --env entry=gateways/mobile/mobile.gateway.ts --env app=mobile.gateway.js --env dir=mobile-gw
+    environment:
+      APP_MACHINE_NAME: MOBILE_GATEWAY
+      APP_DISPLAY_NAME: Mobile Gateway
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -182,6 +188,9 @@ services:
     ports:
       - '3000:80'
     command: npm run webpack -- --watch --env entry=gateways/developer/developer.gateway.ts --env app=developer.gateway.js --env dir=developer-gw
+    environment:
+      APP_MACHINE_NAME: DEVELOPER_GATEWAY
+      APP_DISPLAY_NAME: Developer Gateway
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -208,8 +217,9 @@ services:
       - env/common.env
       - env/rabbitmq.env
     environment:
-      APP_NAME: USERS_MICROSERVICE
-      DATABASE_URL: postgres://postgres:postgres_password@users-db:5432 
+      APP_MACHINE_NAME: USERS_MICROSERVICE
+      APP_DISPLAY_NAME: Users Microservice
+      DATABASE_URL: postgres://postgres:postgres_password@users-db:5432
     depends_on:
       - rabbitmq
       - users-db
@@ -230,7 +240,8 @@ services:
       - env/common.env
       - env/rabbitmq.env
     environment:
-      APP_NAME: AUTHORITIES_MICROSERVICE
+      APP_MACHINE_NAME: AUTHORITIES_MICROSERVICE
+      APP_DISPLAY_NAME: Authorities Microservice
       DATABASE_URL: postgres://postgres:postgres_password@authorities-db:5432 
     depends_on:
       - rabbitmq
@@ -252,7 +263,8 @@ services:
       - env/common.env
       - env/rabbitmq.env
     environment:
-      APP_NAME: ASSETS_MICROSERVICE
+      APP_MACHINE_NAME: USERS_MICROSERVICE
+      APP_DISPLAY_NAME: Users Microservice
       DATABASE_URL: postgres://postgres:postgres_password@assets-db:5432 
     depends_on:
       - rabbitmq
@@ -274,7 +286,8 @@ services:
       - env/common.env
       - env/rabbitmq.env
     environment:
-      APP_NAME: ITEMS_MICROSERVICE
+      APP_MACHINE_NAME: ITEMS_MICROSERVICE
+      APP_DISPLAY_NAME: Items Microservice
       DATABASE_URL: postgres://postgres:postgres_password@items-db:5432 
     depends_on:
       - rabbitmq
@@ -296,7 +309,8 @@ services:
       - env/common.env
       - env/rabbitmq.env
     environment:
-      APP_NAME: STORAGE_MICROSERVICE
+      APP_MACHINE_NAME: STORAGE_MICROSERVICE
+      APP_DISPLAY_NAME: Storage Microservice
       DATABASE_URL: postgres://postgres:postgres_password@storage-db:5432 
     depends_on:
       - rabbitmq
@@ -318,7 +332,8 @@ services:
       - env/common.env
       - env/rabbitmq.env
     environment:
-      APP_NAME: DEVELOPER_MICROSERVICE
+      APP_MACHINE_NAME: DEVELOPER_MICROSERVICE
+      APP_DISPLAY_NAME: Developer Microservice
       DATABASE_URL: postgres://postgres:postgres_password@developer-db:5432 
     depends_on:
       - rabbitmq
@@ -340,7 +355,8 @@ services:
       - env/common.env
       - env/rabbitmq.env
     environment:
-      APP_NAME: STRIPE_MICROSERVICE
+      APP_MACHINE_NAME: STRIPE_MICROSERVICE
+      APP_DISPLAY_NAME: Stripe Microservice
       DATABASE_URL: postgres://postgres:postgres_password@stripe-db:5432 
     depends_on:
       - rabbitmq
@@ -362,7 +378,8 @@ services:
       - env/common.env
       - env/rabbitmq.env
     environment:
-      APP_NAME: EMAILS_MICROSERVICE
+      APP_MACHINE_NAME: EMAILS_MICROSERVICE
+      APP_DISPLAY_NAME: Emails Microservice
     depends_on:
       - rabbitmq
     volumes:

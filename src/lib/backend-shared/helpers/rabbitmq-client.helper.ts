@@ -297,6 +297,8 @@ export class RabbitMQClient {
     }
 
     return new Promise<RmqEventMessage<ServiceMethodResults<T>>>((resolve, reject) => {
+      const start_time = Date.now();
+
       const send = () => {
         const { data, publishOptions, queue } = options;
         const useContentType = publishOptions.contentType || ContentTypes.TEXT;
@@ -313,8 +315,11 @@ export class RabbitMQClient {
             const useContentType = message.properties.contentType;
             const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(message.content) : message.content;
             const messageObj: RmqEventMessage = { data: useData, message };
-            console.log(`received response`, { consumerTag, options, messageObj });
-            resolve(messageObj);
+            const end_time = Date.now();
+            const total_time = (end_time - start_time) / 1000;
+            const time_in_seconds = total_time.toFixed();
+            console.log(`received response`, { consumerTag, options, messageObj, start_time, end_time, total_time, time_in_seconds });
+            (messageObj.data as ServiceMethodResults<T>).error ? reject(messageObj) : resolve(messageObj);
             this.ack(message);
             this.channel.cancel(consumerTag);
             console.log(`Closing consumer via tag:`, { consumerTag });

@@ -30,8 +30,8 @@ const rmqClient = new RabbitMQClient({
     { name: MicroservicesQueues.AUTHORITY_EVENTS, messageTypes: Object.values(AuthoritiesQueueEventTypes), options: { durable: true } },
   ],
   exchanges: [
-    { name: MicroservicesExchanges.AUTHORITY_MESSAGES, type: 'direct', options: { durable: true } },
-    { name: MicroservicesExchanges.AUTHORITY_EVENTS, type: 'direct', options: { durable: true } },
+    { name: MicroservicesExchanges.AUTHORITY_MESSAGES, type: 'fanout', options: { durable: true } },
+    { name: MicroservicesExchanges.AUTHORITY_EVENTS, type: 'fanout', options: { durable: true } },
   ],
   bindings: [
     { queue: MicroservicesQueues.AUTHORITY_MESSAGES, exchange: MicroservicesExchanges.AUTHORITY_MESSAGES, routingKey: RoutingKeys.MESSAGE },

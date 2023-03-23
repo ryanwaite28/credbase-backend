@@ -39,7 +39,7 @@ const common_model_options = get_common_model_options(sequelize);
 
 /** Init Database */
 
-export const authorities_db_init = async () => {
+export const assets_db_init = async () => {
   const sequelize_db_sync_options: SyncOptions = {
     force: false,
     alter: false,

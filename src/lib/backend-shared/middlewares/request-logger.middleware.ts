@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-
+import moment from 'moment';
 
 export function RequestLoggerMiddleware(request: Request, response: Response, next: NextFunction) {
   console.log(`\n\n\n======= BEGIN RequestLoggerMiddleware =======`);
+  console.log(`\n${moment().format('dddd, MMMM Do YYYY, h:mm:ss A')}\n`);
   console.log({
     url: request.url,
     method: request.method,

@@ -27,6 +27,12 @@ AppRouter.post('/file', (request, response) => {
 
 
 
+export async function RMQ_HANDLER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ENUM.RMQ_HANDLER}] Received message:`);
+
+}
+
+
 
 
 

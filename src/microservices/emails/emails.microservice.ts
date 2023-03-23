@@ -31,6 +31,7 @@ const rmqClient = new RabbitMQClient({
   bindings: [
     { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.USER_EVENTS, routingKey: RoutingKeys.EVENT },
     { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.AUTHORITY_EVENTS, routingKey: RoutingKeys.EVENT },
+    // { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.ASSET_EVENTS, routingKey: RoutingKeys.EVENT },
   ]
 });
 

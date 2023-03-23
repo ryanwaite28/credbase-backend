@@ -31,8 +31,8 @@ const rmqClient = new RabbitMQClient({
     { name: MicroservicesQueues.USER_EVENTS, messageTypes: Object.values(UsersQueueEventTypes), options: { durable: true } },
   ],
   exchanges: [
-    { name: MicroservicesExchanges.USER_MESSAGES, type: 'direct', options: { durable: true } },
-    { name: MicroservicesExchanges.USER_EVENTS, type: 'direct', options: { durable: true } },
+    { name: MicroservicesExchanges.USER_MESSAGES, type: 'fanout', options: { durable: true } },
+    { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
   ],
   bindings: [
     { queue: MicroservicesQueues.USER_MESSAGES, exchange: MicroservicesExchanges.USER_MESSAGES, routingKey: RoutingKeys.MESSAGE },

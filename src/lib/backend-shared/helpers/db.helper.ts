@@ -70,22 +70,22 @@ export const create_model_crud_repo_from_model_class = <T> (givenModelClass: MyM
 
 
 
-  const findOne = (findOptions: FindOptions) => {
+  const findOne = (findOptions: FindOptions<T>) => {
     return modelClass.findOne(findOptions).then(convertTypeCurry);
   };
-  const findById = (id: number, findOptions?: FindOptions) => {
+  const findById = (id: number, findOptions?: FindOptions<T>) => {
     const useWhere = findOptions
       ? { ...findOptions, where: { id } }
       : { where: { id } };
     return modelClass.findOne(useWhere).then(convertTypeCurry);
   };
-  const findAll = (findOptions: FindOptions) => {
+  const findAll = (findOptions: FindOptions<T>) => {
     return modelClass.findAll(findOptions).then(convertTypeListCurry);
   };
 
 
 
-  const update = (updateObj: any, options: UpdateOptions) => {
+  const update = (updateObj: any, options: UpdateOptions<T>) => {
     return modelClass.update(updateObj, { ...options, returning: true })
       .then((updates) => ({ rows: updates[0], models: updates[1].map(convertTypeCurry) }));
   };
@@ -102,7 +102,7 @@ export const create_model_crud_repo_from_model_class = <T> (givenModelClass: MyM
 
 
 
-  const deleteFn = async (destroyOptions: DestroyOptions) => {
+  const deleteFn = async (destroyOptions: DestroyOptions<T>) => {
     const results = await modelClass.destroy(destroyOptions);
     const models = !destroyOptions.where ? [] : await modelClass.findAll({ where: destroyOptions.where, paranoid: false }).then(convertTypeListCurry);
     return { results, models };

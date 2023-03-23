@@ -19,9 +19,11 @@ export class UsersService {
         type: UsersQueueMessageTypes.FETCH_USERS,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
-    .then((event) => event.data);
+    .then((event) => event.data)
+    .catch((event) => event.data);
   }
 
   static get_user_by_id(id: number): ServiceMethodAsyncResults {
@@ -32,9 +34,11 @@ export class UsersService {
         type: UsersQueueMessageTypes.FETCH_USER_BY_ID,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
-    .then((event) => event.data);
+    .then((event) => event.data)
+    .catch((event) => event.data);
   }
 
   static get_user_by_email(email: string): ServiceMethodAsyncResults {
@@ -45,9 +49,11 @@ export class UsersService {
         type: UsersQueueMessageTypes.FETCH_USER_BY_EMAIL,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
-    .then((event) => event.data as ServiceMethodResults);
+    .then((event) => event.data as ServiceMethodResults)
+    .catch((event) => event.data);
   }
 
   static sign_up(data: UserSignUpDto, request_origin: string): ServiceMethodAsyncResults {
@@ -58,6 +64,7 @@ export class UsersService {
         type: UsersQueueMessageTypes.CREATE_USER,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => {
@@ -66,7 +73,8 @@ export class UsersService {
         token: AppEnvironment.JWT_SECRETS.USER.encode(event.data.info.data),
       };
       return event.data;
-    });
+    })
+    .catch((event) => event.data);
   }
 
   static sign_in(data: UserSignInDto): ServiceMethodAsyncResults {
@@ -77,6 +85,7 @@ export class UsersService {
         type: UsersQueueMessageTypes.LOGIN_USER,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => {
@@ -85,7 +94,8 @@ export class UsersService {
         token: AppEnvironment.JWT_SECRETS.USER.encode(event.data.info.data),
       };
       return event.data;
-    });
+    })
+    .catch((event) => event.data);
   }
 
   static update_user(user_id: number, updates: UserUpdatesDto): ServiceMethodAsyncResults {
@@ -96,6 +106,7 @@ export class UsersService {
         type: UsersQueueMessageTypes.UPDATE_USER,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => {
@@ -104,7 +115,8 @@ export class UsersService {
         token: AppEnvironment.JWT_SECRETS.USER.encode(event.data.info.data),
       };
       return event.data;
-    });
+    })
+    .catch((event) => event.data);
   }
 
   static delete_user(user_id: number): ServiceMethodAsyncResults {
@@ -115,9 +127,11 @@ export class UsersService {
         type: UsersQueueMessageTypes.DELETE_USER,
         contentType: ContentTypes.JSON,
         correlationId: Date.now().toString(),
+        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
-    .then((event) => event.data);
+    .then((event) => event.data)
+    .catch((event) => event.data);
   }
 
 }
