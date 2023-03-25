@@ -3,7 +3,7 @@ import { AuthResults } from '../interfaces/common.interface';
 
 export type ContentType = 'application/json' | 'application/octet-stream' | 'text/plain' | null;
 
-export type AuthRequestCurry = (request: Request, checkUrlYouIdMatch: boolean) => AuthResults;
+export type AuthRequestCurry = (request: Request, checkUrlYouIdMatch?: boolean) => AuthResults;
 
 export type ExpressMiddlewareFn = (
   request: Request, 

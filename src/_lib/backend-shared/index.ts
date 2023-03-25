@@ -45,3 +45,4 @@ export * from './configs/db-models.config';
 export * from './middlewares/class-transformer-validator.middleware';
 export * from './middlewares/csrf.middleware';
 export * from './middlewares/request-logger.middleware';
+export * from './middlewares/request-logging-ms-logger.middleware';

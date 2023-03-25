@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import {
   sign as jwt_sign,
   verify as jwt_verify
@@ -23,4 +24,33 @@ export function decodeJWT(token: any, secret: string) {
     console.log(e);
     return null;
   }
+}
+
+export function getExpressRequestInfo(request: Request) {
+  return {
+    accepted: request.accepted,
+    url: request.url,
+    baseUrl: request.baseUrl,
+    path: request.path,
+    originalUrl: request.originalUrl,
+    protocol: request.protocol,
+    secure: request.secure,
+    route: request.route,
+    hostname: request.hostname || request.host,
+    httpVersion: request.httpVersion,
+    ip: request.ip,
+    ips: request.ips,
+    origin: request.get('origin'),
+    method: request.method,
+    body: request.body,
+    headers: request.headers,
+    raw_headers: request.rawHeaders,
+    cookies: request.cookies,
+    device: JSON.stringify(request['device']),
+    params: request.params,
+    query: request.query,
+    signed_cookies: request.signedCookies,
+    subdomains: request.subdomains,
+    xhr: request.xhr,
+  };
 }

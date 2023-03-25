@@ -1,6 +1,7 @@
 import {
   ValidateRequestBodyDto
 } from '@lib/backend-shared';
+import { UserAuthorizedGuard } from '@lib/backend-shared/express-guards/authorizations.guard';
 import { UserSignInDto, UserSignUpDto, UserUpdatesDto } from '@lib/fullstack-shared';
 import { Router } from 'express';
 import { UsersRequestHandler } from './users.handler';
@@ -20,16 +21,16 @@ UsersRouter.get('/:id', UsersRequestHandler.get_user_by_id);
 
 
 // POST
-UsersRouter.post('/', ValidateRequestBodyDto(UserSignUpDto), UsersRequestHandler.sign_up);
+UsersRouter.post('/', UserAuthorizedGuard, ValidateRequestBodyDto(UserSignUpDto), UsersRequestHandler.sign_up);
 
 
 
 // PUT
-UsersRouter.put('/:id', ValidateRequestBodyDto(UserUpdatesDto), UsersRequestHandler.update_user);
+UsersRouter.put('/:id', UserAuthorizedGuard, ValidateRequestBodyDto(UserUpdatesDto), UsersRequestHandler.update_user);
 
-UsersRouter.put('/', ValidateRequestBodyDto(UserSignInDto), UsersRequestHandler.sign_in);
+UsersRouter.put('/', UserAuthorizedGuard, ValidateRequestBodyDto(UserSignInDto), UsersRequestHandler.sign_in);
 
 
 
 // DELETE
-UsersRouter.delete('/:id', UsersRequestHandler.delete_user);
+UsersRouter.delete('/:id', UserAuthorizedGuard, UsersRequestHandler.delete_user);

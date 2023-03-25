@@ -83,7 +83,12 @@ for (const messageType of handleMessageTypes) {
 
       LOGGER.info(messageType, {
         messageType,
-        event: { fields: event.message.fields, properties: event.message.properties, data: event.data },
+        event: {
+          fields: event.message.fields,
+          properties: event.message.properties,
+          data: event.data,
+          metadata: event.metadata
+        },
       });
     }
   });

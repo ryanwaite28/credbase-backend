@@ -176,6 +176,7 @@ services:
     environment:
       APP_MACHINE_NAME: WEB_GATEWAY
       APP_DISPLAY_NAME: Web Gateway
+      APP_ENV: LOCAL
       PORT: 80
     env_file:
       - env/common.env
@@ -199,6 +200,7 @@ services:
     environment:
       APP_MACHINE_NAME: MOBILE_GATEWAY
       APP_DISPLAY_NAME: Mobile Gateway
+      APP_ENV: LOCAL
       PORT: 80
     env_file:
       - env/common.env
@@ -222,6 +224,7 @@ services:
     environment:
       APP_MACHINE_NAME: DEVELOPER_GATEWAY
       APP_DISPLAY_NAME: Developer Gateway
+      APP_ENV: LOCAL
       PORT: 80
     env_file:
       - env/common.env
@@ -252,6 +255,7 @@ services:
       APP_MACHINE_NAME: USERS_MICROSERVICE
       APP_DISPLAY_NAME: Users Microservice
       DATABASE_URL: postgres://postgres:postgres_password@users-db:5432
+      APP_ENV: LOCAL
     depends_on:
       - rabbitmq
       - users-db
@@ -274,7 +278,8 @@ services:
     environment:
       APP_MACHINE_NAME: AUTHORITIES_MICROSERVICE
       APP_DISPLAY_NAME: Authorities Microservice
-      DATABASE_URL: postgres://postgres:postgres_password@authorities-db:5432 
+      DATABASE_URL: postgres://postgres:postgres_password@authorities-db:5432
+      APP_ENV: LOCAL
     depends_on:
       - rabbitmq
       - authorities-db
@@ -297,7 +302,8 @@ services:
     environment:
       APP_MACHINE_NAME: USERS_MICROSERVICE
       APP_DISPLAY_NAME: Users Microservice
-      DATABASE_URL: postgres://postgres:postgres_password@assets-db:5432 
+      DATABASE_URL: postgres://postgres:postgres_password@assets-db:5432
+      APP_ENV: LOCAL
     depends_on:
       - rabbitmq
       - assets-db
@@ -320,7 +326,8 @@ services:
     environment:
       APP_MACHINE_NAME: ITEMS_MICROSERVICE
       APP_DISPLAY_NAME: Items Microservice
-      DATABASE_URL: postgres://postgres:postgres_password@items-db:5432 
+      DATABASE_URL: postgres://postgres:postgres_password@items-db:5432
+      APP_ENV: LOCAL
     depends_on:
       - rabbitmq
       - items-db
@@ -343,7 +350,8 @@ services:
     environment:
       APP_MACHINE_NAME: STORAGE_MICROSERVICE
       APP_DISPLAY_NAME: Storage Microservice
-      DATABASE_URL: postgres://postgres:postgres_password@storage-db:5432 
+      DATABASE_URL: postgres://postgres:postgres_password@storage-db:5432
+      APP_ENV: LOCAL
     depends_on:
       - rabbitmq
       - storage-db
@@ -366,7 +374,8 @@ services:
     environment:
       APP_MACHINE_NAME: DEVELOPER_MICROSERVICE
       APP_DISPLAY_NAME: Developer Microservice
-      DATABASE_URL: postgres://postgres:postgres_password@developer-db:5432 
+      DATABASE_URL: postgres://postgres:postgres_password@developer-db:5432
+      APP_ENV: LOCAL
     depends_on:
       - rabbitmq
       - developer-db
@@ -389,7 +398,8 @@ services:
     environment:
       APP_MACHINE_NAME: STRIPE_MICROSERVICE
       APP_DISPLAY_NAME: Stripe Microservice
-      DATABASE_URL: postgres://postgres:postgres_password@stripe-db:5432 
+      DATABASE_URL: postgres://postgres:postgres_password@stripe-db:5432
+      APP_ENV: LOCAL
     depends_on:
       - rabbitmq
       - stripe-db
@@ -412,6 +422,7 @@ services:
     environment:
       APP_MACHINE_NAME: EMAILS_MICROSERVICE
       APP_DISPLAY_NAME: Emails Microservice
+      APP_ENV: LOCAL
     depends_on:
       - rabbitmq
     volumes:
@@ -434,6 +445,7 @@ services:
     environment:
       APP_MACHINE_NAME: EMAILS_MICROSERVICE
       APP_DISPLAY_NAME: Emails Microservice
+      APP_ENV: LOCAL
     depends_on:
       - rabbitmq
       - users-ms

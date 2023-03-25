@@ -136,20 +136,4 @@ export class AppEnvironment {
     })(),
   };
 
- 
-
-  /*
-    The email client configurations for sending emails.
-    All apps are expected and assumed to use/set these environment variable key names with their own values.
-  */
-
-  public static readonly email = {
-    HOST: process.env['EMAIL_HOST_NAME'],
-    PORT: process.env['EMAIL_HOST_PORT'] ? parseInt(process.env['EMAIL_HOST_PORT']) : 5432,
-    SECURE: process.env['EMAIL_HOST_SECURE']?.toLowerCase() == "true",
-    USER: process.env['EMAIL_USERNAME'],
-    PASS: process.env['EMAIL_PASSWORD'],
- 
-    FROM: process.env['EMAIL_FROM'],
-  };
 }

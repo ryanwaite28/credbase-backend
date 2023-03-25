@@ -11,6 +11,7 @@ import {
   Subscription,
   take,
 } from "rxjs";
+import { AppEnvironment } from "../environment/app.enviornment";
 import { ServiceMethodResults } from "../interfaces/common.interface";
 import { SERIALIZERS } from "../utils/serializers.utils";
 
@@ -20,7 +21,15 @@ export interface QueueConfig { name: string, handleMessageTypes: string[], optio
 export interface ExchangeConfig { name: string, type: string, options?: amqplib.Options.AssertExchange }
 export interface QueueExchangeBindingConfig { queue: string, exchange: string, routingKey: string }
 
-export type RmqEventMessage<T = any> = { data: T, message: amqplib.ConsumeMessage };
+export type RmqEventMessage<T = any> = {
+  data: T,
+  message: amqplib.ConsumeMessage,
+  metadata: {
+    env?: string,
+    appName?: any,
+    isEnv?: any,
+  }
+};
 
 export type AckFn = (message: amqplib.Message) => void;
 
@@ -202,7 +211,15 @@ export class RabbitMQClient {
           const messageType = msg.properties.type;
           const useContentType = msg.properties.contentType;
           const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(msg.content) : msg.content;
-          const messageObj: RmqEventMessage = { data: useData, message: msg };
+          const messageObj: RmqEventMessage = {
+            data: useData,
+            message: msg,
+            metadata: {
+              env: AppEnvironment.APP_ENV,
+              isEnv: AppEnvironment.IS_ENV,
+              appName: AppEnvironment.APP_NAME,
+            }
+          };
 
           // console.log({ messageObj });
 
@@ -244,7 +261,7 @@ export class RabbitMQClient {
 
     const handleDefault = () => {
       return this.onReady.pipe(
-        mergeMap((ready: boolean, index: number) => this.queueToEventHandleMapping[queue]['__default'].asObservable())
+        mergeMap((ready: boolean, index: number) => this.queueToEventHandleMapping[queue][this.DEFAULT_LISTENER_TYPE].asObservable())
       );
     }
 
@@ -317,7 +334,15 @@ export class RabbitMQClient {
           if (message && message?.properties.correlationId === options.publishOptions.correlationId) {
             const useContentType = message.properties.contentType;
             const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(message.content) : message.content;
-            const messageObj: RmqEventMessage = { data: useData, message };
+            const messageObj: RmqEventMessage = {
+              data: useData,
+              message,
+              metadata: {
+                env: AppEnvironment.APP_ENV,
+                isEnv: AppEnvironment.IS_ENV,
+                appName: AppEnvironment.APP_NAME,
+              }
+            };
             const end_time = Date.now();
             const total_time = (end_time - start_time) / 1000;
             const time_in_seconds = total_time.toFixed();

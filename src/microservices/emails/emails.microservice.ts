@@ -24,10 +24,13 @@ import {
 
 const handleMessageTypes: string[] = [
   ...Object.values(EmailsQueueMessageTypes),
-  ...Object.values(ClientsQueueMessageTypes),
 
-  ...Object.values(UsersQueueEventTypes),
-  ...Object.values(AuthoritiesQueueEventTypes),
+  ClientsQueueMessageTypes.ADD_CLIENT,
+
+  UsersQueueEventTypes.USER_CREATED,
+  UsersQueueEventTypes.USER_DELETED,
+  AuthoritiesQueueEventTypes.AUTHORITY_CREATED,
+  AuthoritiesQueueEventTypes.AUTHORITY_DELETED,
 ];
 
 const rmqClient = new RabbitMQClient({
@@ -41,13 +44,8 @@ const rmqClient = new RabbitMQClient({
   ],
   exchanges: [
     { name: MicroservicesExchanges.EMAIL_EVENTS, type: 'fanout', options: { durable: true } },
-    { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
-    { name: MicroservicesExchanges.AUTHORITY_EVENTS, type: 'fanout', options: { durable: true } },
   ],
-  bindings: [
-    { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.USER_EVENTS, routingKey: RoutingKeys.EVENT },
-    { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.AUTHORITY_EVENTS, routingKey: RoutingKeys.EVENT },
-  ]
+  bindings: []
 });
 
 
@@ -72,4 +70,14 @@ emailsQueue.handle(AuthoritiesQueueEventTypes.AUTHORITY_CREATED).subscribe({
 
 emailsQueue.handle(AuthoritiesQueueEventTypes.AUTHORITY_DELETED).subscribe({
   next: (event: RmqEventMessage) => AUTHORITY_DELETED(event, rmqClient)
+});
+
+
+
+// for other unwanted messages, get them from the default queue and ack
+emailsQueue.handleDefault().subscribe({
+  next: (event: RmqEventMessage) => {
+    console.log(`Handling unwanted message`, event);
+    rmqClient.ack(event.message);
+  }
 });

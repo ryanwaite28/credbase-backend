@@ -24,35 +24,43 @@ export function CsrfSetCookieMiddle(request: Request, response: Response, next: 
   next();
 }
 
-export function CsrfAuthGuard(request: Request, response: Response, next: NextFunction) {
-  const csrf_token_cookie = request.cookies[CSRF_COOKIE] || request.cookies[CSRF_COOKIE.toLowerCase()] || request.cookies[CSRF_COOKIE.toUpperCase()];
-  const csrf_token_header = request.headers[CSRF_HEADER] || request.headers[CSRF_HEADER.toLowerCase()] || request.headers[CSRF_HEADER.toUpperCase()];
-
-  const valid = csrf_token_header === csrf_token_cookie;
-  const isSafeMethod = CSRF_SAFE_METHODS.includes(request.method.toUpperCase());
+export function CreateCsrfAuthGuard(params?: {
+  whitelist_requests?: { method: string, path: string }[]
+}) {
+  return (request: Request, response: Response, next: NextFunction) => {
+    const csrf_token_cookie = request.cookies[CSRF_COOKIE] || request.cookies[CSRF_COOKIE.toLowerCase()] || request.cookies[CSRF_COOKIE.toUpperCase()];
+    const csrf_token_header = request.headers[CSRF_HEADER] || request.headers[CSRF_HEADER.toLowerCase()] || request.headers[CSRF_HEADER.toUpperCase()];
   
-  console.log(`CSRF Validating:`, { isSafeMethod, csrf_token_cookie, csrf_token_header, valid, url: request.url, method: request.method });
+    const valid = csrf_token_header === csrf_token_cookie;
+    const isSafeMethod = CSRF_SAFE_METHODS.includes(request.method.toUpperCase());
+    const isWhitelistedRequest = params?.whitelist_requests?.some(config => request.method.toUpperCase() === config.method && request.path === config.path);
+    
+    console.log(`CSRF Validating:`, { isWhitelistedRequest, isSafeMethod, csrf_token_cookie, csrf_token_header, valid, url: request.url, method: request.method });
+    
+    if (isSafeMethod || isWhitelistedRequest) {
+      return next();
+    }
+    
+    if (!csrf_token_cookie) {
+      return response.status(HttpStatusCode.BAD_REQUEST).json({
+        message: `${CSRF_COOKIE} cookie not found on request.`
+      });
+    }
+    if (!csrf_token_header) {
+      return response.status(HttpStatusCode.BAD_REQUEST).json({
+        message: `${CSRF_HEADER} header not found on request.`
+      });
+    }
+    if (!valid) {
+      return response.status(HttpStatusCode.BAD_REQUEST).json({
+        message: `CSRF validation failed.`
+      });
+    }
   
-  if (isSafeMethod) {
-    return next();
+    console.log(`CSRF Validation Successful; continuing request...`);
+  
+    next();
   }
-  if (!csrf_token_cookie) {
-    return response.status(HttpStatusCode.BAD_REQUEST).json({
-      message: `${CSRF_COOKIE} cookie not found on request.`
-    });
-  }
-  if (!csrf_token_header) {
-    return response.status(HttpStatusCode.BAD_REQUEST).json({
-      message: `${CSRF_HEADER} header not found on request.`
-    });
-  }
-  if (!valid) {
-    return response.status(HttpStatusCode.BAD_REQUEST).json({
-      message: `CSRF validation failed.`
-    });
-  }
-
-  console.log(`CSRF Validation Successful; continuing request...`);
-
-  next();
 }
+
+export const WebCsrfAuthGuard = CreateCsrfAuthGuard({ whitelist_requests: [{ method: 'POST', path: '/users' }, { method: 'PUT', path: '/users' }] });

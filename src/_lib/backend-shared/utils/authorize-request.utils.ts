@@ -1,19 +1,26 @@
 import { AUTH_BEARER_HEADER_REGEX, HttpStatusCode } from '@lib/fullstack-shared';
 import {
   Request,
+  Response,
+  NextFunction
 } from 'express';
-import { AuthRequestCurry } from '../types/common.type';
+import { AuthRequestCurry, ExpressMiddlewareFn } from '../types/common.type';
 import { decodeJWT } from './fn.utils';
 
 
 
 
-
-export function AuthorizeJwtGuard(
+export type JwtAuthorizer = (
   secret: string,
   model: string
-): AuthRequestCurry {
-  const fn: AuthRequestCurry = (request: Request, checkUrlYouIdMatch: boolean) => {
+) => AuthRequestCurry;
+
+
+export const AuthorizeJwtGuard: JwtAuthorizer = (
+  secret: string,
+  model: string
+) => {
+  const fn: AuthRequestCurry = (request: Request, checkUrlYouIdMatch?: boolean) => {
     try {
       /* First, check Authorization header */
       const auth = request.get('Authorization');
@@ -68,4 +75,19 @@ export function AuthorizeJwtGuard(
   }
 
   return fn;
+}
+
+export function CreateJwtAuthGuard(authorizer: AuthRequestCurry): ExpressMiddlewareFn {
+  return (
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) => {
+    const auth = authorizer(request, true);
+    if (auth.error) {
+      return response.status(auth.status).json(auth);
+    }
+    response.locals.user = auth['user'];
+    return next();
+  } 
 }
