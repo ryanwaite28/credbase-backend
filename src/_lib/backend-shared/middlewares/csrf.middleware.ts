@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "@lib/fullstack-shared";
+import { GatewayEndpointPrefixes, HttpStatusCode } from "@lib/fullstack-shared";
 import { Request, Response, NextFunction, CookieOptions } from "express";
 import { v1 as uuidv1 } from "uuid";
 
@@ -65,8 +65,7 @@ export function CreateCsrfAuthGuard(params?: {
 
 export const WebCsrfAuthGuard = CreateCsrfAuthGuard({
   whitelist_requests: [
-    { method: 'POST', path: '/users' },
-    { method: 'PUT', path: '/users' },
-    { method: 'POST', path: '/file' },
+    { method: 'POST', path: GatewayEndpointPrefixes.WEB + '/users' },
+    { method: 'PUT', path:  GatewayEndpointPrefixes.WEB + '/users' },
   ]
 });

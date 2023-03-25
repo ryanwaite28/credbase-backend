@@ -13,6 +13,9 @@ export * from './enums/microservices/items.enum';
 export * from './enums/microservices/storage.enum';
 
 
+export * from './enums/gateways/_gateways.enum';
+
+
 // Interfaces
 
 export * from './interfaces/common.interface';

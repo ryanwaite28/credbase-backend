@@ -12,7 +12,7 @@ import {
 
 import { AppRouter } from '../_routers/_app.router';
 import { rmqClient } from './web.rmq';
-import { MicroservicesQueues, UsersQueueMessageTypes, ContentTypes } from '@lib/fullstack-shared';
+import { MicroservicesQueues, UsersQueueMessageTypes, ContentTypes, GatewayEndpointPrefixes } from '@lib/fullstack-shared';
 
 
 
@@ -36,7 +36,7 @@ app.use(WebCsrfAuthGuard);
 
 
 // mount application router
-app.use('/web', AppRouter);
+app.use(GatewayEndpointPrefixes.WEB, AppRouter);
 
 
 
