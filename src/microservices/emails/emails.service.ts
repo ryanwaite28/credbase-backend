@@ -52,7 +52,7 @@ export async function USER_DELETED(event: RmqEventMessage, rmqClient: RabbitMQCl
   console.log(`[${UsersQueueEventTypes.USER_DELETED}] Received message:`, { data: event.data });
 
   const results = event.data as ServiceMethodResults;
-  const user = results.info.data! as IUser;
+  const user = results.info.data!.model as IUser;
   
   // send goodbye email
 
@@ -129,7 +129,7 @@ export async function AUTHORITY_DELETED(event: RmqEventMessage, rmqClient: Rabbi
   console.log(`[${AuthoritiesQueueEventTypes.AUTHORITY_DELETED}] Received message:`, { data: event.data });
   
   const results = event.data as ServiceMethodResults;
-  const authority = results.info.data! as IAuthority;
+  const authority = results.info.data!.model as IAuthority;
   
   // send goodbye email
 

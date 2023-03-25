@@ -33,4 +33,4 @@ UsersRouter.put('/', UserAuthorizedGuard, ValidateRequestBodyDto(UserSignInDto),
 
 
 // DELETE
-UsersRouter.delete('/:id', UserAuthorizedGuard, UsersRequestHandler.delete_user);
+// UsersRouter.delete('/:id', UserAuthorizedGuard, UsersRequestHandler.delete_user);
