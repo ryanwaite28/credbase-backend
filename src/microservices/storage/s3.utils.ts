@@ -5,6 +5,7 @@ import {
   GetObjectCommand,
   DeleteObjectCommand,
   DeleteBucketCommand,
+  HeadBucketCommand
 } from "@aws-sdk/client-s3";
 
 // Set the AWS Region.
@@ -82,5 +83,16 @@ export class AwsS3Service {
     );
     
     return results;
+  }
+
+
+  static async bucketExists(Bucket: string): Promise<boolean> {
+    try {
+      const response = await s3Client.send(new HeadBucketCommand({ Bucket }));
+      return true;
+    }
+    catch {
+      return false;
+    }
   }
 }

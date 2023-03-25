@@ -12,3 +12,7 @@ export const wait = (time) => {
     setTimeout(resolve, time);
   });
 };
+
+export function uniqueValue() {
+  return Math.random().toString(33).substring(2) + '-' + Date.now();
+}

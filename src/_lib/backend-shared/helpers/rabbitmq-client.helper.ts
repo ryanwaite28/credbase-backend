@@ -16,7 +16,7 @@ import { SERIALIZERS } from "../utils/serializers.utils";
 
 
 
-export interface QueueConfig { name: string, messageTypes: string[], options?: amqplib.Options.AssertQueue }
+export interface QueueConfig { name: string, handleMessageTypes: string[], options?: amqplib.Options.AssertQueue }
 export interface ExchangeConfig { name: string, type: string, options?: amqplib.Options.AssertExchange }
 export interface QueueExchangeBindingConfig { queue: string, exchange: string, routingKey: string }
 
@@ -112,7 +112,7 @@ export class RabbitMQClient {
 
             const queueListenersMap = this.queueToEventHandleMapping[queueConfig.name];
             queueListenersMap[this.DEFAULT_LISTENER_TYPE] = new Subject();
-            for (const messageType of queueConfig.messageTypes) {
+            for (const messageType of queueConfig.handleMessageTypes) {
               queueListenersMap[messageType] = new Subject();
             }
             promises.push(this.channel.assertQueue(queueConfig.name, queueConfig.options));
@@ -331,8 +331,8 @@ export class RabbitMQClient {
         console.log(`wait until ready to send message`);
         firstValueFrom(this.onReady).then((readyState) => {
           console.log(`now ready to publish event`, { readyState });
-          awaitResponse();
-          send();
+          awaitResponse(); // first listen on the reply queue
+          send(); // then send the rpc/rmq message
         });
       }
       else {

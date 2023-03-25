@@ -28,7 +28,7 @@ const rmqClient = new RabbitMQClient({
   retryAttempts: 3,
   retryDelay: 3000,
   queues: [
-    { name: MicroservicesQueues.ASSET_MESSAGES, messageTypes: Object.values(AssetsQueueMessageTypes), options: { durable: true } },
+    { name: MicroservicesQueues.ASSET_MESSAGES, handleMessageTypes: Object.values(AssetsQueueMessageTypes), options: { durable: true } },
   ],
   exchanges: [
     { name: MicroservicesExchanges.ASSET_EVENTS, type: 'fanout', options: { durable: true } },

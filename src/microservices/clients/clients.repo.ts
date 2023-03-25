@@ -20,7 +20,7 @@ export function get_client_by_uuid(uuid: string) {
 }
 
 export async function get_clients_by_authority_id(authority_id: number) {
-  return client_crud.findOne({
+  return client_crud.findAll({
     where: { authority_id },
   });
 }
@@ -39,7 +39,7 @@ export async function get_clients_by_authority_id_paginate(params: {
 }
 
 export async function get_clients_by_user_id(user_id: number) {
-  return client_crud.findOne({
+  return client_crud.findAll({
     where: { user_id },
   });
 }

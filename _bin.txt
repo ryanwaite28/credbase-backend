@@ -30,6 +30,28 @@ AppRouter.post('/file', (request, response) => {
 export async function RMQ_HANDLER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
   console.log(`[${ENUM.RMQ_HANDLER}] Received message:`);
 
+  const data = await db_method(event.data);
+
+  const serviceMethodResults: ServiceMethodResults = {
+    status: HttpStatusCode.OK,
+    error: false,
+    info: {
+      data
+    }
+  };
+
+  rmqClient.ack(event.message);
+  return rmqClient.publishEvent({
+    exchange: MicroservicesExchanges.EVENTS,
+    routingKey: RoutingKeys.EVENT,
+    data: serviceMethodResults,
+    publishOptions: {
+      type: ENUM.RMQ_HANDLER,
+      contentType: ContentTypes.JSON,
+      correlationId: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
+    }
+  });
 }
 
 

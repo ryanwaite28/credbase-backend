@@ -1,5 +1,17 @@
-import { AppEnvironment, RabbitMQClient, RmqEventMessage } from "@lib/backend-shared";
-import { AuthoritiesQueueEventTypes, MicroservicesExchanges, MicroservicesQueues, RoutingKeys, UsersQueueEventTypes } from "@lib/fullstack-shared";
+import {
+  AppEnvironment,
+  RabbitMQClient,
+  RmqEventMessage
+} from "@lib/backend-shared";
+import {
+  AuthoritiesQueueEventTypes,
+  ClientsQueueMessageTypes,
+  EmailsQueueMessageTypes,
+  MicroservicesExchanges,
+  MicroservicesQueues,
+  UsersQueueEventTypes,
+  RoutingKeys,
+} from "@lib/fullstack-shared";
 import {
   AUTHORITY_CREATED,
   AUTHORITY_DELETED,
@@ -11,6 +23,9 @@ import {
 
 
 const handleMessageTypes: string[] = [
+  ...Object.values(EmailsQueueMessageTypes),
+  ...Object.values(ClientsQueueMessageTypes),
+
   ...Object.values(UsersQueueEventTypes),
   ...Object.values(AuthoritiesQueueEventTypes),
 ];
@@ -22,7 +37,7 @@ const rmqClient = new RabbitMQClient({
   retryAttempts: 3,
   retryDelay: 3000,
   queues: [
-    { name: MicroservicesQueues.EMAILS, messageTypes: handleMessageTypes, options: { durable: true } },
+    { name: MicroservicesQueues.EMAILS, handleMessageTypes, options: { durable: true } },
   ],
   exchanges: [
     { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
@@ -31,7 +46,6 @@ const rmqClient = new RabbitMQClient({
   bindings: [
     { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.USER_EVENTS, routingKey: RoutingKeys.EVENT },
     { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.AUTHORITY_EVENTS, routingKey: RoutingKeys.EVENT },
-    // { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.ASSET_EVENTS, routingKey: RoutingKeys.EVENT },
   ]
 });
 

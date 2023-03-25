@@ -30,6 +30,7 @@ export * from './helpers/_common.repo';
 export * from './utils/fn.utils';
 export * from './utils/serializers.utils';
 export * from './utils/constants.utils';
+export * from './utils/logger.utils';
 
 
 

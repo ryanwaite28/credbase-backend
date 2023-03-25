@@ -60,11 +60,11 @@ export const create_model_crud_repo_from_model_class = <T> (givenModelClass: MyM
   const convertTypeListCurry = convertModelsCurry<T>();
   const modelClass = givenModelClass as MyModelStatic;
 
-  const create = (createObj: any, createOptions?: CreateOptions) => {
+  const create = (createObj: any, createOptions?: CreateOptions<T>) => {
     return modelClass.create(createObj, createOptions).then(convertTypeCurry).then(model => model!);
   };
 
-  const count = (findOptions: FindOptions) => {
+  const count = (findOptions: FindOptions<T>) => {
     return modelClass.count(findOptions);
   };
 
@@ -114,7 +114,7 @@ export const create_model_crud_repo_from_model_class = <T> (givenModelClass: MyM
   };
 
 
-  const paginate = (params: IPaginateModelsOptions) => {
+  const paginate = (params: IPaginateModelsOptions<T>) => {
     return paginateTable(modelClass, params).then(convertTypeListCurry);
   };
 

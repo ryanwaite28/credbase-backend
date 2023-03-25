@@ -9,14 +9,14 @@ import {
 
 
 
-export interface IPaginateModelsOptions {
+export interface IPaginateModelsOptions<T = any> {
   parent_model_id_field: string,
   parent_model_id?: number,
   min_id?: number,
   include?: Includeable[],
   attributes?: FindAttributeOptions,
   group?: GroupOption,
-  whereClause?: WhereOptions,
+  whereClause?: WhereOptions<T>,
   orderBy?: Order,
   limit?: number
 }

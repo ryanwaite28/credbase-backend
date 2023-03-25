@@ -3,10 +3,13 @@
 export * from './enums/microservices/_microservices.enum';
 export * from './enums/http-codes.enum';
 
+export * from './enums/microservices/emails.enum';
 export * from './enums/microservices/users.enum';
 export * from './enums/microservices/authorities.enum';
 export * from './enums/microservices/clients.enum';
 export * from './enums/microservices/assets.enum';
+export * from './enums/microservices/items.enum';
+export * from './enums/microservices/storage.enum';
 
 
 // Interfaces
@@ -41,3 +44,9 @@ export * from './apps/clients/clients.dto';
 
 export * from './apps/assets/assets.interface';
 export * from './apps/assets/assets.dto';
+
+export * from './apps/items/items.interface';
+export * from './apps/items/items.dto';
+
+export * from './apps/storage/storage.interface';
+export * from './apps/storage/storage.dto';

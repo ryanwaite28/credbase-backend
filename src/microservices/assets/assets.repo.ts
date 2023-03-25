@@ -22,7 +22,7 @@ export function get_asset_by_uuid(uuid: string) {
 }
 
 export async function get_assets_by_authority_id(authority_id: number) {
-  return asset_crud.findOne({
+  return asset_crud.findAll({
     where: { authority_id },
   });
 }

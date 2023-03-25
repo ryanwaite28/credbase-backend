@@ -27,16 +27,12 @@ const rmqClient = new RabbitMQClient({
   retryAttempts: 3,
   retryDelay: 3000,
   queues: [
-    { name: MicroservicesQueues.AUTHORITY_MESSAGES, messageTypes: Object.values(AuthoritiesQueueMessageTypes), options: { durable: true } },
-    { name: MicroservicesQueues.AUTHORITY_EVENTS, messageTypes: Object.values(AuthoritiesQueueEventTypes), options: { durable: true } },
+    { name: MicroservicesQueues.AUTHORITY_MESSAGES, handleMessageTypes: Object.values(AuthoritiesQueueMessageTypes), options: { durable: true } },
   ],
   exchanges: [
-    { name: MicroservicesExchanges.AUTHORITY_MESSAGES, type: 'fanout', options: { durable: true } },
     { name: MicroservicesExchanges.AUTHORITY_EVENTS, type: 'fanout', options: { durable: true } },
   ],
   bindings: [
-    { queue: MicroservicesQueues.AUTHORITY_MESSAGES, exchange: MicroservicesExchanges.AUTHORITY_MESSAGES, routingKey: RoutingKeys.MESSAGE },
-    { queue: MicroservicesQueues.AUTHORITY_EVENTS, exchange: MicroservicesExchanges.AUTHORITY_EVENTS, routingKey: RoutingKeys.EVENT },
   ],
 
   pre_init_promises: [
