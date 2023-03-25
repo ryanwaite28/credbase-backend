@@ -256,7 +256,7 @@ export class RabbitMQClient {
 
   ack(message: amqplib.ConsumeMessage) {
     this.channel.ack(message);
-    console.log(`Acknoledged message.`);
+    console.log(`Acknoledged rmq message.`);
   }
 
   sendMessage(options: {
@@ -264,24 +264,27 @@ export class RabbitMQClient {
     data: any,
     publishOptions: amqplib.Options.Publish
   }) {
-    const send = () => {
-      const { data, publishOptions, queue } = options;
-      const useContentType = publishOptions.contentType || ContentTypes.TEXT;
-      const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].serialize(data) : data;
-      this.channel.sendToQueue(queue, useData, publishOptions);
-    };
-
-    if (!this.isReady) {
-      console.log(`wait until ready to send message`);
-      firstValueFrom(this.onReady).then((readyState) => {
-        console.log(`now ready to publish event`, { readyState });
+    return new Promise((resolve, reject) => {
+      const send = () => {
+        const { data, publishOptions, queue } = options;
+        const useContentType = publishOptions.contentType || ContentTypes.TEXT;
+        const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].serialize(data) : data;
+        this.channel.sendToQueue(queue, useData, publishOptions);
+        resolve(undefined);
+      };
+  
+      if (!this.isReady) {
+        console.log(`wait until ready to send message...`);
+        firstValueFrom(this.onReady).then((readyState) => {
+          console.log(`now ready to send message`, { readyState });
+          send();
+        });
+      }
+      else {
+        console.log(`is ready to send message`);
         send();
-      });
-    }
-    else {
-      console.log(`is ready to send message`);
-      send();
-    }
+      }
+    });
   }
 
   sendRequest <T = any> (options: {
@@ -308,7 +311,7 @@ export class RabbitMQClient {
 
       const awaitResponse = () => {
         const consumerTag = Date.now().toString();
-        console.log(`awaiting response`, { consumerTag });
+        console.log(`request/rpc sent; awaiting response...`, { consumerTag });
 
         this.channel.consume(options.publishOptions.replyTo!, (message: amqplib.ConsumeMessage | null) => {
           if (message && message?.properties.correlationId === options.publishOptions.correlationId) {
@@ -318,17 +321,17 @@ export class RabbitMQClient {
             const end_time = Date.now();
             const total_time = (end_time - start_time) / 1000;
             const time_in_seconds = total_time.toFixed();
-            console.log(`received response`, { consumerTag, options, messageObj, start_time, end_time, total_time, time_in_seconds });
+            console.log(`received response from request/rpc:`, { consumerTag, options, messageObj, start_time, end_time, total_time, time_in_seconds });
             (messageObj.data as ServiceMethodResults<T>).error ? reject(messageObj) : resolve(messageObj);
             this.ack(message);
             this.channel.cancel(consumerTag);
-            console.log(`Closing consumer via tag:`, { consumerTag });
+            console.log(`Closing consumer via tag.`, { consumerTag });
           }
         }, { consumerTag });
       };
 
       if (!this.isReady) {
-        console.log(`wait until ready to send message`);
+        console.log(`wait until ready to send request`);
         firstValueFrom(this.onReady).then((readyState) => {
           console.log(`now ready to publish event`, { readyState });
           awaitResponse(); // first listen on the reply queue
@@ -336,7 +339,7 @@ export class RabbitMQClient {
         });
       }
       else {
-        console.log(`is ready to send message`);
+        console.log(`is ready to send request`);
         awaitResponse();
         send();
       }

@@ -1,11 +1,23 @@
 version: "3.8"
 
 
+networks:
+  splunknet:
+    driver: bridge
+    attachable: true
 
 
 volumes:
 
+  # https://splunk.github.io/docker-splunk/STORAGE_OPTIONS.html
+  # https://docs.docker.com/config/containers/logging/splunk/
+  splunk-vol:
+    driver: local
+
   jenkins-vol:
+    driver: local
+
+  logging-ms-vol:
     driver: local
 
   rabbitmq-db:
@@ -31,6 +43,23 @@ volumes:
 
 
 services:
+
+  # Logging / Analytics
+
+  splunk:
+    networks:
+      splunknet:
+        aliases:
+          - so1
+    image: splunk/splunk
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_PASSWORD=Admin123
+      - DEBUG=true
+    ports:
+      - '8000:8000'
+    volumes:
+      - logging-ms-vol:/var/log
 
   # QA - CI/CD
 
@@ -147,6 +176,7 @@ services:
     environment:
       APP_MACHINE_NAME: WEB_GATEWAY
       APP_DISPLAY_NAME: Web Gateway
+      PORT: 80
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -169,6 +199,7 @@ services:
     environment:
       APP_MACHINE_NAME: MOBILE_GATEWAY
       APP_DISPLAY_NAME: Mobile Gateway
+      PORT: 80
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -191,6 +222,7 @@ services:
     environment:
       APP_MACHINE_NAME: DEVELOPER_GATEWAY
       APP_DISPLAY_NAME: Developer Gateway
+      PORT: 80
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -383,6 +415,31 @@ services:
     depends_on:
       - rabbitmq
     volumes:
+      - ./src:/app/src
+      - /app/node_modules
+
+
+  logging-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/logging/logging.microservice.ts
+        APP_FILE_NAME: logging.microservice.js
+    command: npm run webpack -- --watch --env entry=microservices/logging/logging.microservice.ts --env app=logging.microservice.js --env dir=logging-ms
+    # command: npm run start-watch build/logging.microservice.js
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    environment:
+      APP_MACHINE_NAME: EMAILS_MICROSERVICE
+      APP_DISPLAY_NAME: Emails Microservice
+    depends_on:
+      - rabbitmq
+      - users-ms
+      - emails-ms
+    volumes:
+      - logging-ms-vol:/app/logs
       - ./src:/app/src
       - /app/node_modules
 

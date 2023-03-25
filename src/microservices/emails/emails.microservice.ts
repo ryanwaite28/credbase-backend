@@ -40,6 +40,7 @@ const rmqClient = new RabbitMQClient({
     { name: MicroservicesQueues.EMAILS, handleMessageTypes, options: { durable: true } },
   ],
   exchanges: [
+    { name: MicroservicesExchanges.EMAIL_EVENTS, type: 'fanout', options: { durable: true } },
     { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
     { name: MicroservicesExchanges.AUTHORITY_EVENTS, type: 'fanout', options: { durable: true } },
   ],

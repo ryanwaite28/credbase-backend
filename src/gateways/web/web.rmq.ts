@@ -24,7 +24,6 @@ export const rmqClient = new RabbitMQClient({
     { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
   ],
   bindings: [
-    { queue: MicroservicesQueues.USER_MESSAGES, exchange: MicroservicesExchanges.USER_MESSAGES, routingKey: RoutingKeys.MESSAGE },
     { queue: MicroservicesQueues.USER_EVENTS, exchange: MicroservicesExchanges.USER_EVENTS, routingKey: RoutingKeys.EVENT },
   ],
 
