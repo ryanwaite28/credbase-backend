@@ -63,4 +63,10 @@ export function CreateCsrfAuthGuard(params?: {
   }
 }
 
-export const WebCsrfAuthGuard = CreateCsrfAuthGuard({ whitelist_requests: [{ method: 'POST', path: '/users' }, { method: 'PUT', path: '/users' }] });
+export const WebCsrfAuthGuard = CreateCsrfAuthGuard({
+  whitelist_requests: [
+    { method: 'POST', path: '/users' },
+    { method: 'PUT', path: '/users' },
+    { method: 'POST', path: '/file' },
+  ]
+});

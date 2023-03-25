@@ -39,13 +39,19 @@ const rmqClient = new RabbitMQClient({
   prefetch: 5,
   retryAttempts: 3,
   retryDelay: 3000,
+  autoAckUnhandledMessageTypes: true,
   queues: [
     { name: MicroservicesQueues.EMAILS, handleMessageTypes, options: { durable: true } },
   ],
   exchanges: [
     { name: MicroservicesExchanges.EMAIL_EVENTS, type: 'fanout', options: { durable: true } },
+    { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
+    { name: MicroservicesExchanges.AUTHORITY_EVENTS, type: 'fanout', options: { durable: true } },
   ],
-  bindings: []
+  bindings: [
+    { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.USER_EVENTS, routingKey: RoutingKeys.EVENT },
+    { queue: MicroservicesQueues.EMAILS, exchange: MicroservicesExchanges.AUTHORITY_EVENTS, routingKey: RoutingKeys.EVENT },
+  ]
 });
 
 
@@ -73,11 +79,10 @@ emailsQueue.handle(AuthoritiesQueueEventTypes.AUTHORITY_DELETED).subscribe({
 });
 
 
-
-// for other unwanted messages, get them from the default queue and ack
-emailsQueue.handleDefault().subscribe({
-  next: (event: RmqEventMessage) => {
-    console.log(`Handling unwanted message`, event);
-    rmqClient.ack(event.message);
-  }
-});
+// // for other unwanted messages, get them from the default queue and ack
+// emailsQueue.handleDefault().subscribe({
+//   next: (event: RmqEventMessage) => {
+//     console.log(`Handling unwanted message`, event);
+//     rmqClient.ack(event.message);
+//   }
+// });

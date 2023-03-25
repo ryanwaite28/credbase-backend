@@ -44,7 +44,7 @@ Another important purpose of this vision is to make verification processes effor
 
 ### Items
 
-An `Item` can have any arbitrary piece of information through fields (a name and a value, like time=1:58 PM, cost=24.38); a field can also have sub fields. In the supermarket example, here is what an Item object would something look like:
+An `Item` can have any arbitrary piece of information through fields (a name and a value, like time=1:58 PM, cost=24.38); a field can also have sub fields and file attachments. In the supermarket example, here is what an Item object would something look like:
 
 ```json
 {
@@ -174,6 +174,9 @@ An `Item` can have any arbitrary piece of information through fields (a name and
       "value": "1",
       "type": "number",
       "key": "GROCERY_LIST",
+      "attachments": [
+        { "s3bucket": "bucket", "s3Key": "key", "url": "url" }
+      ],
       "fields": [
         {
           "id": 52,

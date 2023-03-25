@@ -72,18 +72,6 @@ export class UsersService {
         user: event.data.info.data,
         token: AppEnvironment.JWT_SECRETS.USER.encode(event.data.info.data),
       };
-
-      // send welcome email
-      rmqClient.sendMessage({
-        queue: MicroservicesQueues.EMAILS,
-        data: event.data,
-        publishOptions: {
-          type: UsersQueueEventTypes.USER_CREATED,
-          contentType: ContentTypes.JSON,
-          correlationId: Date.now().toString(),
-        }
-      });
-
       return event.data;
     })
     .catch((event) => event.data);
@@ -142,20 +130,7 @@ export class UsersService {
         replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
-    .then((event) => {
-      // send welcome email
-      rmqClient.sendMessage({
-        queue: MicroservicesQueues.EMAILS,
-        data: event.data,
-        publishOptions: {
-          type: UsersQueueEventTypes.USER_DELETED,
-          contentType: ContentTypes.JSON,
-          correlationId: Date.now().toString(),
-        }
-      });
-
-      return event.data;
-    })
+    .then((event) => event.data)
     .catch((event) => event.data);
   }
 

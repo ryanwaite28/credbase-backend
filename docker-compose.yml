@@ -443,8 +443,8 @@ services:
       - env/common.env
       - env/rabbitmq.env
     environment:
-      APP_MACHINE_NAME: EMAILS_MICROSERVICE
-      APP_DISPLAY_NAME: Emails Microservice
+      APP_MACHINE_NAME: LOGGING_MICROSERVICE
+      APP_DISPLAY_NAME: Logging Microservice
       APP_ENV: LOCAL
     depends_on:
       - rabbitmq

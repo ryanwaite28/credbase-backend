@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { UploadedFile } from 'express-fileupload';
 import {
   sign as jwt_sign,
   verify as jwt_verify
@@ -34,6 +35,13 @@ export function getExpressRequestInfo(request: Request) {
     path: request.path,
     originalUrl: request.originalUrl,
     protocol: request.protocol,
+    files: request.files && Object.values(request.files).map((file) => ({
+      name: (file as UploadedFile).name,
+      size: (file as UploadedFile).size,
+      encoding: (file as UploadedFile).encoding,
+      mimetype: (file as UploadedFile).mimetype,
+      tempFilePath: (file as UploadedFile).tempFilePath,
+    })),
     secure: request.secure,
     route: request.route,
     hostname: request.hostname || request.host,

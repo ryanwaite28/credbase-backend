@@ -7,6 +7,7 @@ import {
   map,
   mergeMap,
   Observable,
+  ReplaySubject,
   Subject,
   Subscription,
   take,
@@ -26,7 +27,7 @@ export type RmqEventMessage<T = any> = {
   message: amqplib.ConsumeMessage,
   metadata: {
     env?: string,
-    appName?: any,
+    // appName?: any,
     isEnv?: any,
   }
 };
@@ -34,6 +35,8 @@ export type RmqEventMessage<T = any> = {
 export type AckFn = (message: amqplib.Message) => void;
 
 export type RabbitMqInitConfig = {
+  autoAckUnhandledMessageTypes?: boolean,
+  pushUnhandledMessageTypesToDefaultHandler?: boolean,
   delayStart?: number,
   connection_url: string,
   retryAttempts: number,
@@ -49,6 +52,8 @@ export type RabbitMqInitConfig = {
 
 
 export class RabbitMQClient {
+  private clientInitConfig: RabbitMqInitConfig;
+
   private connection: amqplib.Connection;
   private channel: amqplib.Channel;
   private isReady: boolean = false;
@@ -64,7 +69,7 @@ export class RabbitMQClient {
 
   private queueListeners: MapType<Subscription> = {};
   private queueToEventHandleMapping: MapType<
-    MapType<Subject<RmqEventMessage>>
+    MapType<ReplaySubject<RmqEventMessage>>
   > = {};
 
 
@@ -83,7 +88,8 @@ export class RabbitMQClient {
     return this.connectionCloseStream.asObservable();
   }
 
-  constructor(options: RabbitMqInitConfig) {
+  constructor(clientInitConfig: RabbitMqInitConfig) {
+    this.clientInitConfig = clientInitConfig;
     const {
       delayStart,
       connection_url,
@@ -93,10 +99,10 @@ export class RabbitMQClient {
       bindings,
       pre_init_promises,
       post_init_promises
-    } = options;
+    } = clientInitConfig;
 
-    let retryAttempts = options.retryAttempts || 0;
-    const retryDelay = options.retryDelay || 0;
+    let retryAttempts = clientInitConfig.retryAttempts || 0;
+    const retryDelay = clientInitConfig.retryDelay || 0;
     
     const init = () => {
       console.log(`Attempting connection to Rabbit MQ...`);
@@ -120,9 +126,9 @@ export class RabbitMQClient {
             this.queueToEventHandleMapping[queueConfig.name] = {};
 
             const queueListenersMap = this.queueToEventHandleMapping[queueConfig.name];
-            queueListenersMap[this.DEFAULT_LISTENER_TYPE] = new Subject();
+            queueListenersMap[this.DEFAULT_LISTENER_TYPE] = new ReplaySubject();
             for (const messageType of queueConfig.handleMessageTypes) {
-              queueListenersMap[messageType] = new Subject();
+              queueListenersMap[messageType] = new ReplaySubject();
             }
             promises.push(this.channel.assertQueue(queueConfig.name, queueConfig.options));
           }
@@ -148,7 +154,7 @@ export class RabbitMQClient {
           console.log(`Client initialization complete; waiting for messages/events...\n`);
 
           // initialization complete; listen for connection issues to retry again
-          retryAttempts = options.retryAttempts;
+          retryAttempts = clientInitConfig.retryAttempts;
           
           this.connection.on("error", (err) => {
             this.connectionErrorStream.next(err);
@@ -200,42 +206,55 @@ export class RabbitMQClient {
     // listen for messages on the queue
     if (!this.queueListeners[queue]) {
       const queueListener = new Observable<void>((observer) => {
-        const handleCallback = (msg: amqplib.ConsumeMessage | null) => {
-          if (!msg) {
+        const handleCallback = (message: amqplib.ConsumeMessage | null) => {
+          if (!message) {
             console.log('Consumer cancelled by server');
             observer.error();
             return;
           }
           
           // see if a listener was created for the routing key
-          const messageType = msg.properties.type;
-          const useContentType = msg.properties.contentType;
-          const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(msg.content) : msg.content;
+          const messageType = message.properties.type;
+          const useContentType = message.properties.contentType;
+          const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(message.content) : message.content;
           const messageObj: RmqEventMessage = {
             data: useData,
-            message: msg,
+            message,
             metadata: {
               env: AppEnvironment.APP_ENV,
               isEnv: AppEnvironment.IS_ENV,
-              appName: AppEnvironment.APP_NAME,
             }
           };
-
-          // console.log({ messageObj });
+          
+          // console.log(`Message on queue ${queue}:`, messageObj);
 
           if (!messageType) {
             // no type key found, push to default stream
+            console.log(`No message type found; pushing to default handler on queue ${queue}`);
             this.queueToEventHandleMapping[queue][this.DEFAULT_LISTENER_TYPE].next(messageObj);
           }
           else {
             // type key found
             if (this.queueToEventHandleMapping[queue][messageType]) {
               // there is a registered listener for the type, push to that stream
+              console.log(`message type handler found; pushing to ${messageType} handler on queue ${queue}`);
               this.queueToEventHandleMapping[queue][messageType].next(messageObj);
             }
             else {
               // no registered listener
-              throw new Error(`Message received with unregistered routing key. Please add routing key "${messageType}" in the list of routing keys for the queue config in the constructor.`);
+              if (this.clientInitConfig.autoAckUnhandledMessageTypes) {
+                console.log(`No handler found for message type ${messageType} on queue ${queue}; auto acknowledging.`);
+                this.ack(message);
+                return;
+              }
+              else if (this.clientInitConfig.pushUnhandledMessageTypesToDefaultHandler) {
+                console.log(`No handler found for message type ${messageType} on queue ${queue}; pushing to ${this.DEFAULT_LISTENER_TYPE} handler.`);
+                this.queueToEventHandleMapping[queue][this.DEFAULT_LISTENER_TYPE].next(messageObj);
+                return;
+              }
+              else {
+                throw new Error(`Message received with unregistered message type handler. Please add message type "${messageType}" in the list of message types for the queue config in the constructor.`);
+              }
             }
           }
         };
@@ -340,13 +359,12 @@ export class RabbitMQClient {
               metadata: {
                 env: AppEnvironment.APP_ENV,
                 isEnv: AppEnvironment.IS_ENV,
-                appName: AppEnvironment.APP_NAME,
               }
             };
             const end_time = Date.now();
             const total_time = (end_time - start_time) / 1000;
             const time_in_seconds = total_time.toFixed();
-            console.log(`received response from request/rpc:`, { consumerTag, options, messageObj, start_time, end_time, total_time, time_in_seconds });
+            console.log(`received response from request/rpc:`, { consumerTag, start_time, end_time, total_time, time_in_seconds });
             (messageObj.data as ServiceMethodResults<T>).error ? reject(messageObj) : resolve(messageObj);
             this.ack(message);
             this.channel.cancel(consumerTag);

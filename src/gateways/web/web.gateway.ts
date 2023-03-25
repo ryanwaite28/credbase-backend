@@ -1,5 +1,5 @@
 import express from 'express';
-import express_fileupload from 'express-fileupload';
+import express_fileupload, { UploadedFile } from 'express-fileupload';
 import * as cookie_parser from 'cookie-parser';
 
 import {
@@ -7,11 +7,12 @@ import {
   CsrfSetCookieMiddle,
   AppEnvironment,
   SendRequestToLoggingMicroservice,
-  WebCsrfAuthGuard
+  WebCsrfAuthGuard,
 } from '@lib/backend-shared';
 
 import { AppRouter } from '../_routers/_app.router';
 import { rmqClient } from './web.rmq';
+import { MicroservicesQueues, UsersQueueMessageTypes, ContentTypes } from '@lib/fullstack-shared';
 
 
 
@@ -21,7 +22,7 @@ app.set('trust proxy', true);
 
 
 // utility middlewares
-app.use(express_fileupload({ debug: true, safeFileNames: true, preserveExtension: true }));
+app.use(express_fileupload({ debug: false, safeFileNames: true, preserveExtension: true }));
 app.use(cookie_parser.default());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -35,7 +36,9 @@ app.use(WebCsrfAuthGuard);
 
 
 // mount application router
-app.use(AppRouter);
+app.use('/web', AppRouter);
+
+
 
 
 

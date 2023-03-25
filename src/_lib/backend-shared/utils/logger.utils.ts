@@ -11,7 +11,7 @@ import  DailyRotateFile from 'winston-daily-rotate-file';
 
 const myFormat = format.printf((params) => {
   const { level, message, label, timestamp } = params;
-  console.log(params, params[SPLAT]);
+  // console.log(params, params[SPLAT]);
   return `${timestamp} [${label}] ${level}: ${message} - ${JSON.stringify(params)}`;
 });
 
