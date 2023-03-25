@@ -7,11 +7,15 @@ networks:
     attachable: true
 
 
+
+
+
+
 volumes:
 
   # https://splunk.github.io/docker-splunk/STORAGE_OPTIONS.html
   # https://docs.docker.com/config/containers/logging/splunk/
-  splunk-vol:
+  splunk-config-vol:
     driver: local
 
   jenkins-vol:
@@ -42,6 +46,10 @@ volumes:
     driver: local
 
 
+
+
+
+
 services:
 
   # Logging / Analytics
@@ -60,6 +68,13 @@ services:
       - '8000:8000'
     volumes:
       - logging-ms-vol:/var/log
+      - splunk-config-vol:/opt/splunk/etc
+
+
+
+
+
+
 
   # QA - CI/CD
 
@@ -70,6 +85,10 @@ services:
       - '50000:50000'
     volumes:
       - jenkins-vol:/var/jenkins_home
+
+
+
+
 
 
 
@@ -84,6 +103,10 @@ services:
     volumes:
       - rabbitmq-db:/var
       - rabbitmq-config:/etc
+
+
+
+
 
 
 
@@ -161,18 +184,23 @@ services:
 
 
   
+
+
+
+
   # Gateways
 
   web-gw:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: gateways/web/web.gateway.ts
         APP_FILE_NAME: web.gateway.js
+        APP_DIR: web-gw
+        APP_STATIC: 
     ports:
       - '3000:80'
-    command: npm run webpack -- --watch --env entry=gateways/web/web.gateway.ts --env app=web.gateway.js --env dir=web-gw
     environment:
       APP_MACHINE_NAME: WEB_GATEWAY
       APP_DISPLAY_NAME: Web Gateway
@@ -190,13 +218,14 @@ services:
   mobile-gw:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: gateways/mobile/mobile.gateway.ts
         APP_FILE_NAME: mobile.gateway.js
+        APP_DIR: mobile-gw
+        APP_STATIC: 
     ports:
       - '3000:80'
-    command: npm run webpack -- --watch --env entry=gateways/mobile/mobile.gateway.ts --env app=mobile.gateway.js --env dir=mobile-gw
     environment:
       APP_MACHINE_NAME: MOBILE_GATEWAY
       APP_DISPLAY_NAME: Mobile Gateway
@@ -214,13 +243,14 @@ services:
   developer-gw:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: gateways/developer/developer.gateway.ts
         APP_FILE_NAME: developer.gateway.js
+        APP_DIR: developer-gw
+        APP_STATIC: 
     ports:
       - '3000:80'
-    command: npm run webpack -- --watch --env entry=gateways/developer/developer.gateway.ts --env app=developer.gateway.js --env dir=developer-gw
     environment:
       APP_MACHINE_NAME: DEVELOPER_GATEWAY
       APP_DISPLAY_NAME: Developer Gateway
@@ -237,16 +267,21 @@ services:
     
 
 
+
+
+
+
   # Microservices
 
   users-ms:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: microservices/users/users.microservice.ts
         APP_FILE_NAME: users.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/users/users.microservice.ts --env app=users.microservice.js --env dir=users-ms
+        APP_DIR: users-ms
+        APP_STATIC: 
     # command: npm run start-watch build/users.microservice.js
     env_file:
       - env/common.env
@@ -266,12 +301,12 @@ services:
   authorities-ms:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: microservices/authorities/authorities.microservice.ts
         APP_FILE_NAME: authorities.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/authorities/authorities.microservice.ts --env app=authorities.microservice.js --env dir=authorities-ms
-    # command: npm run start-watch build/authorities.microservice.js
+        APP_DIR: authorities-ms
+        APP_STATIC: 
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -290,12 +325,12 @@ services:
   assets-ms:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: microservices/assets/assets.microservice.ts
         APP_FILE_NAME: assets.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/assets/assets.microservice.ts --env app=assets.microservice.js --env dir=assets-ms
-    # command: npm run start-watch build/assets.microservice.js
+        APP_DIR: assets-ms
+        APP_STATIC: 
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -314,12 +349,12 @@ services:
   items-ms:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: microservices/items/items.microservice.ts
         APP_FILE_NAME: items.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/items/items.microservice.ts --env app=items.microservice.js --env dir=items-ms
-    # command: npm run start-watch build/items.microservice.js
+        APP_DIR: items-ms
+        APP_STATIC: 
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -338,12 +373,12 @@ services:
   storage-ms:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: microservices/storage/storage.microservice.ts
         APP_FILE_NAME: storage.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/storage/storage.microservice.ts --env app=storage.microservice.js --env dir=storage-ms
-    # command: npm run start-watch build/storage.microservice.js
+        APP_DIR: storage-ms
+        APP_STATIC:
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -362,12 +397,12 @@ services:
   developer-ms:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: microservices/developer/developer.microservice.ts
         APP_FILE_NAME: developer.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/developer/developer.microservice.ts --env app=developer.microservice.js --env dir=developer-ms
-    # command: npm run start-watch build/developer.microservice.js
+        APP_DIR: developer-ms
+        APP_STATIC: 
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -386,12 +421,12 @@ services:
   stripe-ms:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: microservices/stripe/stripe.microservice.ts
         APP_FILE_NAME: stripe.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/stripe/stripe.microservice.ts --env app=stripe.microservice.js --env dir=stripe-ms
-    # command: npm run start-watch build/stripe.microservice.js
+        APP_DIR: stripe-ms
+        APP_STATIC: 
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -410,12 +445,12 @@ services:
   emails-ms:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: microservices/emails/emails.microservice.ts
         APP_FILE_NAME: emails.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/emails/emails.microservice.ts --env app=emails.microservice.js --env dir=emails-ms --env static=microservices/emails/static
-    # command: npm run start-watch build/emails.microservice.js
+        APP_DIR: emails-ms
+        APP_STATIC: microservices/emails/static
     env_file:
       - env/common.env
       - env/rabbitmq.env
@@ -433,12 +468,12 @@ services:
   logging-ms:
     build:
       context: .
-      dockerfile: dockerfiles/node.Dockerfile
+      dockerfile: dockerfiles/node.prod.Dockerfile
       args:
         APP_ENTRY_POINT: microservices/logging/logging.microservice.ts
         APP_FILE_NAME: logging.microservice.js
-    command: npm run webpack -- --watch --env entry=microservices/logging/logging.microservice.ts --env app=logging.microservice.js --env dir=logging-ms
-    # command: npm run start-watch build/logging.microservice.js
+        APP_DIR: logging-ms
+        APP_STATIC: 
     env_file:
       - env/common.env
       - env/rabbitmq.env
