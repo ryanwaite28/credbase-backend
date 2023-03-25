@@ -13,8 +13,8 @@ import {
   CREATE_ITEM,
   FETCH_ITEMS_BY_ASSET_ID,
   FETCH_ITEMS_BY_ASSET_ID_PAGINATE,
-  FETCH_ITEMS_BY_USER_ID,
-  FETCH_ITEMS_BY_USER_ID_PAGINATE,
+  FETCH_ITEMS_BY_CLIENT_ID,
+  FETCH_ITEMS_BY_CLIENT_ID_PAGINATE,
   FETCH_ITEM_BY_ID,
   FETCH_ITEM_BY_UUID,
   FETCH_ITEM_FIELDS_BY_ITEM_ID,
@@ -74,12 +74,12 @@ itemsQueue.handle(ItemsQueueMessageTypes.FETCH_ITEM_FIELD_BY_UUID).subscribe({
   next: (event: RmqEventMessage) => FETCH_ITEM_FIELD_BY_UUID(event, rmqClient)
 });
 
-itemsQueue.handle(ItemsQueueMessageTypes.FETCH_ITEMS_BY_USER_ID).subscribe({
-  next: (event: RmqEventMessage) => FETCH_ITEMS_BY_USER_ID(event, rmqClient)
+itemsQueue.handle(ItemsQueueMessageTypes.FETCH_ITEMS_BY_CLIENT_ID).subscribe({
+  next: (event: RmqEventMessage) => FETCH_ITEMS_BY_CLIENT_ID(event, rmqClient)
 });
 
-itemsQueue.handle(ItemsQueueMessageTypes.FETCH_ITEMS_BY_USER_ID_PAGINATE).subscribe({
-  next: (event: RmqEventMessage) => FETCH_ITEMS_BY_USER_ID_PAGINATE(event, rmqClient)
+itemsQueue.handle(ItemsQueueMessageTypes.FETCH_ITEMS_BY_CLIENT_ID_PAGINATE).subscribe({
+  next: (event: RmqEventMessage) => FETCH_ITEMS_BY_CLIENT_ID_PAGINATE(event, rmqClient)
 });
 
 itemsQueue.handle(ItemsQueueMessageTypes.FETCH_ITEMS_BY_ASSET_ID).subscribe({

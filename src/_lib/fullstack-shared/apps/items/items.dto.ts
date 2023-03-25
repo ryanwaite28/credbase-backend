@@ -16,6 +16,10 @@ import {
 
 
 export class ItemFieldDto {
+  @IsOptional()
+  @IsString()
+  key: string | null;
+
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -36,7 +40,7 @@ export class ItemFieldDto {
 export class CreateItemDto {
   @IsNotEmpty()
   @IsInt()
-  user_id: number;
+  client_id: number;
 
   @IsNotEmpty()
   @IsInt()

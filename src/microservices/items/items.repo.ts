@@ -70,20 +70,20 @@ export function get_item_field_by_uuid(uuid: string) {
 
 
 
-export async function get_items_by_user_id(user_id: number) {
+export async function get_items_by_client_id(client_id: number) {
   return item_crud.findAll({
-    where: { user_id },
+    where: { client_id },
   });
 }
 
-export async function get_items_by_user_id_paginate(params: {
-  user_id: number,
+export async function get_items_by_client_id_paginate(params: {
+  client_id: number,
   min_id?: number,
   limit?: number,
 }) {
   return item_crud.paginate({
-    parent_model_id_field: 'user_id',
-    parent_model_id: params.user_id,
+    parent_model_id_field: 'client_id',
+    parent_model_id: params.client_id,
     min_id: params.min_id,
     limit: params.limit,
   });
@@ -164,6 +164,7 @@ export async function create_children_fields(item: IItem, parent_field: IItemFie
         item_id: item.id,
         parent_field_id: parent_field.id,
         has_children: !!childFieldDto.fields && childFieldDto.fields.length > 0,
+        key: childFieldDto.key,
         name: childFieldDto.name,
         value: childFieldDto.value,
         type: childFieldDto.type,
@@ -176,7 +177,7 @@ export async function create_children_fields(item: IItem, parent_field: IItemFie
 }
 export async function create_item(params: CreateItemDto) {
   const item = await item_crud.create({
-    user_id: params.user_id,
+    client_id: params.client_id,
     asset_id: params.asset_id,
     title: params.title,
     description: params.description,
@@ -192,6 +193,7 @@ export async function create_item(params: CreateItemDto) {
       item_id: item.id,
       parent_field_id: null,
       has_children: !!fieldDto.fields && fieldDto.fields.length > 0,
+      key: fieldDto.key,
       name: fieldDto.name,
       value: fieldDto.value,
       type: fieldDto.type,

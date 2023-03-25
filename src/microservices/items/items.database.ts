@@ -69,7 +69,7 @@ export const items_db_init = async () => {
 export const Item = <MyModelStatic> sequelize.define('Item', {
   ...common_model_fields,
 
-  user_id:                             { type: INTEGER, allowNull: false },
+  client_id:                           { type: INTEGER, allowNull: false },
   asset_id:                            { type: INTEGER, allowNull: false },
   
   title:                               { type: STRING, allowNull: false },
@@ -85,6 +85,7 @@ export const ItemField = <MyModelStatic> sequelize.define('ItemField', {
   parent_field_id:                    { type: INTEGER, allowNull: true, references: { model: 'ItemField', key: 'id' } },
   has_children:                       { type: BOOLEAN, allowNull: false, defaultValue: false },
   
+  key:                                { type: STRING, allowNull: true },
   name:                               { type: STRING, allowNull: false },
   value:                              { type: STRING, allowNull: false },
   type:                               { type: STRING, allowNull: true },

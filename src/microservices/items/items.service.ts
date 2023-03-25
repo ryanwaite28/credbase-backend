@@ -16,8 +16,8 @@ import {
   create_item,
   get_items_by_asset_id,
   get_items_by_asset_id_paginate,
-  get_items_by_user_id,
-  get_items_by_user_id_paginate,
+  get_items_by_client_id,
+  get_items_by_client_id_paginate,
   get_item_by_id,
   get_item_by_uuid,
   get_item_fields_by_item_id,
@@ -171,10 +171,10 @@ export async function FETCH_ITEM_FIELD_BY_UUID(event: RmqEventMessage, rmqClient
   });
 }
 
-export async function FETCH_ITEMS_BY_USER_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
-  console.log(`[${ItemsQueueMessageTypes.FETCH_ITEMS_BY_USER_ID}] Received message:`);
+export async function FETCH_ITEMS_BY_CLIENT_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ItemsQueueMessageTypes.FETCH_ITEMS_BY_CLIENT_ID}] Received message:`);
 
-  const data = await get_items_by_user_id(event.data.id);
+  const data = await get_items_by_client_id(event.data.id);
 
   const serviceMethodResults: ServiceMethodResults = {
     status: HttpStatusCode.OK,
@@ -190,7 +190,7 @@ export async function FETCH_ITEMS_BY_USER_ID(event: RmqEventMessage, rmqClient: 
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
     publishOptions: {
-      type: ItemsQueueEventTypes.FETCHED_ITEMS_BY_USER_ID,
+      type: ItemsQueueEventTypes.FETCHED_ITEMS_BY_CLIENT_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
       replyTo: event.message.properties.replyTo,
@@ -198,11 +198,11 @@ export async function FETCH_ITEMS_BY_USER_ID(event: RmqEventMessage, rmqClient: 
   });
 }
 
-export async function FETCH_ITEMS_BY_USER_ID_PAGINATE(event: RmqEventMessage, rmqClient: RabbitMQClient) {
-  console.log(`[${ItemsQueueMessageTypes.FETCH_ITEMS_BY_USER_ID_PAGINATE}] Received message:`);
+export async function FETCH_ITEMS_BY_CLIENT_ID_PAGINATE(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+  console.log(`[${ItemsQueueMessageTypes.FETCH_ITEMS_BY_CLIENT_ID_PAGINATE}] Received message:`);
 
-  const data = await get_items_by_user_id_paginate({
-    user_id: event.data.user_id,
+  const data = await get_items_by_client_id_paginate({
+    client_id: event.data.client_id,
     min_id:  event.data.min_id,
     limit: event.data.limit,
   });
@@ -221,7 +221,7 @@ export async function FETCH_ITEMS_BY_USER_ID_PAGINATE(event: RmqEventMessage, rm
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
     publishOptions: {
-      type: ItemsQueueEventTypes.FETCHED_ITEMS_BY_USER_ID_PAGINATE,
+      type: ItemsQueueEventTypes.FETCHED_ITEMS_BY_CLIENT_ID_PAGINATE,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
       replyTo: event.message.properties.replyTo,
