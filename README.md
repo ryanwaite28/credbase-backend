@@ -50,7 +50,7 @@ An `Item` can have any arbitrary piece of information through fields (a name and
 {
   "id": 15,
   "uuid": "<uuid>",
-  "metadata": "{}", // JSON string
+  "metadata": "{}",
   "created_at": "<timestamp>",
   "updated_at": "<timestamp>",
   "deleted_at": "<timestamp>",
