@@ -11,6 +11,7 @@ import {
   Subject,
   Subscription,
   take,
+  tap,
 } from "rxjs";
 import { AppEnvironment } from "../environment/app.enviornment";
 import { ServiceMethodResults } from "../interfaces/common.interface";
@@ -205,12 +206,11 @@ export class RabbitMQClient {
   onQueue(queue: string, options?: amqplib.Options.Consume) {
     // listen for messages on the queue
     if (!this.queueListeners[queue]) {
-      const queueListener = new Observable<void>((observer) => {
+      console.log(`Registering messages/events listener for queue ${queue}:`);
+      const startQueueListener = () => {
         const handleCallback = (message: amqplib.ConsumeMessage | null) => {
           if (!message) {
-            console.log('Consumer cancelled by server');
-            observer.error();
-            return;
+            throw new Error('Consumer cancelled by server');
           }
           
           // see if a listener was created for the routing key
@@ -262,9 +262,13 @@ export class RabbitMQClient {
         const consumerTag = Date.now().toString();
   
         this.channel.consume(queue, handleCallback, { ...(options || {}), consumerTag: options?.consumerTag || consumerTag });
-      });
+      }
 
-      this.queueListeners[queue] = this.onReady.pipe(mergeMap((ready: boolean, index: number) => queueListener)).subscribe();
+      this.queueListeners[queue] = this.onReady.pipe(tap((readyState) => startQueueListener())).subscribe({
+        next: (readyState) => {
+          console.log(`Registered: Now listening to messages/events on queue ${queue}...`);
+        }
+      });
     }
     
     const handle = (messageType: string) => {
@@ -418,10 +422,11 @@ export class RabbitMQClient {
   }
 
   listen() {
+    // last resort to keeping the node.js process running
     const listenerCallback = () => {
-      // console.log(`--- listening... ---`);
+      console.log(`--- listening... ---`);
     };
-    const interval = setInterval(listenerCallback, 1000 * 60);
+    const interval = setInterval(listenerCallback, 1000 * 60 * 10);
     return interval;
   }
 }

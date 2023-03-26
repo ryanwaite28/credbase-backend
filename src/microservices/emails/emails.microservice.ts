@@ -77,12 +77,3 @@ emailsQueue.handle(AuthoritiesQueueEventTypes.AUTHORITY_CREATED).subscribe({
 emailsQueue.handle(AuthoritiesQueueEventTypes.AUTHORITY_DELETED).subscribe({
   next: (event: RmqEventMessage) => AUTHORITY_DELETED(event, rmqClient)
 });
-
-
-// // for other unwanted messages, get them from the default queue and ack
-// emailsQueue.handleDefault().subscribe({
-//   next: (event: RmqEventMessage) => {
-//     console.log(`Handling unwanted message`, event);
-//     rmqClient.ack(event.message);
-//   }
-// });
