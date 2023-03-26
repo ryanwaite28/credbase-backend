@@ -24,6 +24,9 @@ volumes:
   logging-ms-vol:
     driver: local
 
+  redis-cache-vol:
+    driver: local
+
   rabbitmq-db:
     driver: local
   rabbitmq-config:
@@ -106,6 +109,17 @@ services:
 
 
 
+
+  # Cache
+  redis-cache:
+    image: redis:latest
+    hostname: redis-cache
+    command: >
+      --requirepass REDIS_PASSWORD
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-cache-vol:/data
 
 
 
@@ -483,10 +497,33 @@ services:
       APP_ENV: LOCAL
     depends_on:
       - rabbitmq
-      - users-ms
-      - emails-ms
     volumes:
       - logging-ms-vol:/app/logs
+      - ./src:/app/src
+      - /app/node_modules
+
+
+
+  cache-ms:
+    build:
+      context: .
+      dockerfile: dockerfiles/node.prod.Dockerfile
+      args:
+        APP_ENTRY_POINT: microservices/cache/cache.microservice.ts
+        APP_FILE_NAME: cache.microservice.js
+        APP_DIR: cache-ms
+        APP_STATIC: 
+    env_file:
+      - env/common.env
+      - env/rabbitmq.env
+    environment:
+      APP_MACHINE_NAME: CACHE_MICROSERVICE
+      APP_DISPLAY_NAME: Cache Microservice
+      APP_ENV: LOCAL
+      REDIS_URL: redis://redis-cache?password=REDIS_PASSWORD
+    depends_on:
+      - rabbitmq
+    volumes:
       - ./src:/app/src
       - /app/node_modules
 

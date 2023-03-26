@@ -26,6 +26,7 @@ export class AppEnvironment {
   };
 
   public static readonly RABBIT_MQ_URL: string = process.env['RABBIT_MQ_URL']!;
+  public static readonly REDIS_URL: string = process.env['REDIS_URL']!;
 
   /*
   

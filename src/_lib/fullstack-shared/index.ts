@@ -5,6 +5,7 @@ export * from './enums/common.enum';
 export * from './enums/models.enum';
 export * from './enums/http-codes.enum';
 
+export * from './enums/microservices/cache.enum';
 export * from './enums/microservices/logging.enum';
 export * from './enums/microservices/emails.enum';
 export * from './enums/microservices/users.enum';

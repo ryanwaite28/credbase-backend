@@ -99,9 +99,12 @@ export enum Models {
 
 
 export enum MicroservicesQueues {
-  EMAILS = "EMAILS",
-  LOGGING = "LOGGING",
+  EMAILS = "EMAILS_QUEUE",
+  LOGGING = "LOGGING_QUEUE",
 
+  CACHE_MESSAGES = 'CACHE_MESSAGES_QUEUE',
+  CACHE_EVENTS = 'CACHE_EVENTS_QUEUE',
+  
   USER_MESSAGES = 'USER_MESSAGES_QUEUE',
   USER_EVENTS = 'USER_EVENTS_QUEUE',
 
@@ -131,8 +134,8 @@ export enum MicroservicesQueues {
 
 
 export enum MicroservicesExchanges {
-  EMAIL_EVENTS = "EMAIL_EVENTS",
-
+  EMAIL_EVENTS = "EMAIL_EVENTS_EXCHANGE",
+  CACHE_EVENTS = 'CACHE_EVENTS_EXCHANGE',
 
   
   USER_MESSAGES = 'USER_MESSAGES_EXCHANGE',
