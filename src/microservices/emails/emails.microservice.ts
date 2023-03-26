@@ -15,6 +15,9 @@ import {
 import {
   AUTHORITY_CREATED,
   AUTHORITY_DELETED,
+  RESET_AUTHORITY_PASSWORD,
+  RESET_USER_PASSWORD,
+  SEND_EMAIL,
   USER_CREATED,
   USER_DELETED
 } from "./emails.service";
@@ -58,6 +61,10 @@ const rmqClient = new RabbitMQClient({
 
 const emailsQueue = rmqClient.onQueue(MicroservicesQueues.EMAILS);
 
+emailsQueue.handle(EmailsQueueMessageTypes.SEND_EMAIL).subscribe({
+  next: (event: RmqEventMessage) => SEND_EMAIL(event, rmqClient)
+});
+
 
 
 emailsQueue.handle(UsersQueueEventTypes.USER_CREATED).subscribe({
@@ -76,4 +83,14 @@ emailsQueue.handle(AuthoritiesQueueEventTypes.AUTHORITY_CREATED).subscribe({
 
 emailsQueue.handle(AuthoritiesQueueEventTypes.AUTHORITY_DELETED).subscribe({
   next: (event: RmqEventMessage) => AUTHORITY_DELETED(event, rmqClient)
+});
+
+
+
+emailsQueue.handle(EmailsQueueMessageTypes.RESET_USER_PASSWORD).subscribe({
+  next: (event: RmqEventMessage) => RESET_USER_PASSWORD(event, rmqClient)
+});
+
+emailsQueue.handle(EmailsQueueMessageTypes.RESET_AUTHORITY_PASSWORD).subscribe({
+  next: (event: RmqEventMessage) => RESET_AUTHORITY_PASSWORD(event, rmqClient)
 });

@@ -1,6 +1,8 @@
 // Enums
 
 export * from './enums/microservices/_microservices.enum';
+export * from './enums/common.enum';
+export * from './enums/models.enum';
 export * from './enums/http-codes.enum';
 
 export * from './enums/microservices/logging.enum';
@@ -37,6 +39,9 @@ export * from './regex/common.regex';
 
 // Apps
 
+export * from './apps/emails/emails.dto';
+export * from './apps/emails/emails.interface';
+
 export * from './apps/users/users.interface';
 export * from './apps/users/users.dto';
 
@@ -54,3 +59,6 @@ export * from './apps/items/items.dto';
 
 export * from './apps/storage/storage.interface';
 export * from './apps/storage/storage.dto';
+
+export * from './apps/password-resets/password-resets.interface';
+export * from './apps/password-resets/password-resets.dto';

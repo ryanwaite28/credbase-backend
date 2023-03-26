@@ -19,6 +19,7 @@ export function sendAwsEmail(params: {
       Subject: {
         Data: params.subject,
       },
+      // if both are defined, html takes priority over message
       Body: !!params.html
         ? { Html: { Data: params.html, Charset: `utf-8` } }
         : { Text: { Data: params.message, Charset: `utf-8` } }

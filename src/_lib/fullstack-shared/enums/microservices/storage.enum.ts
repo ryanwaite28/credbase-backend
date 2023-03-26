@@ -14,7 +14,7 @@ export const S3ObjectContextToBucketMapping = Object.freeze({
  [S3ObjectContexts.ICON]: S3Buckets.ICONS,
  [S3ObjectContexts.WALLPAPER]: S3Buckets.WALLPAPERS,
  [S3ObjectContexts.ATTACHMENT]: S3Buckets.ATTACHMENTS,
-})
+});
 
 
 

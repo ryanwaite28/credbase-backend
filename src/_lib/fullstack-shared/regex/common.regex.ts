@@ -6,3 +6,13 @@ export const BASE64_REGEX = /^data:([A-Za-z-+\/]+);base64,(.+)$/;
 export const MENTIONS_REGEX = /@[a-zA-Z0-9\-\_\.]{2,50}/gi;
 
 export const PASSWORD_REGEX: RegExp = /^(.*){5,75}$/;
+
+
+
+export const YOUTUBE_URL_STANDARD = /http(s?):\/\/(www\.)?youtube\.com\/watch(.*)/gi;
+export const YOUTUBE_URL_SHORT = /http(s?):\/\/(www\.)?youtu\.be\/(.*)/gi;
+export const YOUTUBE_URL_EMBED = /http(s?):\/\/(www\.)?youtube\.com\/embed\/(.*)/gi;
+export const YOUTUBE_URL_ID = /(v=[a-zA-Z0-9\-\_]{7,}|\/[a-zA-Z0-9\-\_]{7,})/gi;
+
+// https://stackoverflow.com/questions/6903823/regex-for-youtube-id/6904504
+export const YOUTUBE_REGEX = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/gi;
