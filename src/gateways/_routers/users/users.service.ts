@@ -1,8 +1,19 @@
-
-import { ServiceMethodAsyncResults, ServiceMethodResults } from "@lib/backend-shared";
-import { ContentTypes, MicroservicesQueues, UserSignInDto, UserSignUpDto, UsersQueueEventTypes, UsersQueueMessageTypes, UserUpdatesDto } from "@lib/fullstack-shared";
+import {
+  ServiceMethodAsyncResults,
+  ServiceMethodResults,
+  UserAuthorizer,
+} from "@lib/backend-shared";
+import {
+  ContentTypes,
+  MicroservicesQueues,
+  UserSignInDto,
+  UserSignUpDto,
+  UsersQueueMessageTypes,
+  UserUpdatesDto,
+} from "@lib/fullstack-shared";
 import { AppEnvironment } from "@lib/backend-shared";
 import { rmqClient } from "../../web/web.rmq";
+import { Request } from "express";
 
 
 
@@ -10,6 +21,25 @@ import { rmqClient } from "../../web/web.rmq";
 
 
 export class UsersService {
+
+  static async check_session(request: Request): ServiceMethodAsyncResults {
+    const auth = UserAuthorizer(request, false);
+
+    console.log({ auth });
+
+    const serviceMethodResults: ServiceMethodResults = {
+      status: auth.status,
+      error: false,
+      info: {
+        message: auth.message,
+        data: {
+          ...auth,
+        },
+      }
+    };
+    console.log(`check session:`, { serviceMethodResults });
+    return serviceMethodResults;
+  }
 
   static get_users(): ServiceMethodAsyncResults {
     return rmqClient.sendRequest({

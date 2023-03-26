@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpStatusCode, IUser, MapType, USER_RECORDS } from '@lib/fullstack-shared';
+import { HttpStatusCode, IUser, MapType, UserSignInDto, UserSignUpDto, USER_RECORDS } from '@lib/fullstack-shared';
 import { BehaviorSubject, catchError, map, mergeMap, Observable, of } from 'rxjs';
 import { GetVerifySmsCode } from '../interfaces/responses.interface';
 import { UserStoreService } from '../stores/user-store.service';
@@ -39,14 +39,14 @@ export class UserService {
           ? of(you)
           : this.checkSession().pipe(
               map((response) => {
-                return response.data.you || null;
+                return response.data.user || null;
               })
             );
       })
     );
   }
 
-  private checkSession(): Observable<{ data: { you: IUser | null, token: string | null } }> {
+  private checkSession(): Observable<{ data: { user: IUser | null, token: string | null } }> {
     const jwt = window.localStorage.getItem(JWT_USER_TOKEN_NAME);
     const badJwt = !jwt || jwt === `undefined`;
     if (badJwt) {
@@ -55,7 +55,7 @@ export class UserService {
       return of({
         message: `no token found`,
         data: {
-          you: null,
+          user: null,
           token: null,
         }
       });
@@ -70,7 +70,7 @@ export class UserService {
           this.is_subscription_active = response.data.is_subscription_active;
           this.is_subscription_active_stream.next(this.is_subscription_active);
         }
-        this.userStore.setState(response.data!.you);
+        this.userStore.setState(response.data!.user);
         return response;
       }),
       catchError((error: HttpErrorResponse) => {
@@ -81,7 +81,7 @@ export class UserService {
         this.router.navigate(['/', 'user-login']);
         return of({
           data: {
-            you: null,
+            user: null,
             token: null,
           }
         });
@@ -343,11 +343,11 @@ export class UserService {
 
   /** POST */
 
-  sign_up(data: MapType) {
+  sign_up(data: UserSignUpDto) {
     return this.clientService.post<any>('/users', data).pipe(
       map((response: any) => {
         window.localStorage.setItem(JWT_USER_TOKEN_NAME, response.data.token);
-        this.userStore.setState(response.data.you);
+        this.userStore.setState(response.data.user);
         return response;
       })
     );
@@ -357,7 +357,7 @@ export class UserService {
     return this.clientService.sendRequest<any>(`/users/${you_id}/notifications/update-last-opened`, `POST`).pipe(
       map((response: any) => {
         window.localStorage.setItem(JWT_USER_TOKEN_NAME, response.data.token);
-        this.userStore.setState(response.data.you);
+        this.userStore.setState(response.data.user);
         return response;
       })
     );
@@ -383,11 +383,11 @@ export class UserService {
   /** PUT */
   
 
-  log_in(data: MapType) {
+  log_in(data: UserSignInDto) {
     return this.clientService.sendRequest<any>('/users', `PUT`, data).pipe(
       map((response: any) => {
         window.localStorage.setItem(JWT_USER_TOKEN_NAME, response.data.token);
-        this.userStore.setState(response.data.you);
+        this.userStore.setState(response.data.user);
         return response;
       })
     );
@@ -398,7 +398,7 @@ export class UserService {
     return this.clientService.sendRequest<any>(endpoint, `PUT`, data).pipe(
       map((response: any) => {
         window.localStorage.setItem(JWT_USER_TOKEN_NAME, response.data.token);
-        this.userStore.setState(response.data.you);
+        this.userStore.setState(response.data.user);
         return response;
       })
     );
@@ -409,7 +409,7 @@ export class UserService {
     return this.clientService.sendRequest<any>(endpoint, `PUT`, data).pipe(
       map((response: any) => {
         window.localStorage.setItem(JWT_USER_TOKEN_NAME, response.data.token);
-        this.userStore.setState(response.data.you);
+        this.userStore.setState(response.data.user);
         return response;
       })
     );
@@ -420,7 +420,7 @@ export class UserService {
     return this.clientService.sendRequest<any>(endpoint, `PUT`, data).pipe(
       map((response: any) => {
         window.localStorage.setItem(JWT_USER_TOKEN_NAME, response.data.token);
-        this.userStore.setState(response.data.you);
+        this.userStore.setState(response.data.user);
         return response;
       })
     );
@@ -431,7 +431,7 @@ export class UserService {
     return this.clientService.sendRequest<any>(endpoint, `PUT`, formData).pipe(
       map((response: any) => {
         window.localStorage.setItem(JWT_USER_TOKEN_NAME, response.data.token);
-        this.userStore.setState(response.data.you);
+        this.userStore.setState(response.data.user);
         return response;
       })
     );
@@ -442,7 +442,7 @@ export class UserService {
     return this.clientService.sendRequest<any>(endpoint, `PUT`, formData).pipe(
       map((response: any) => {
         window.localStorage.setItem(JWT_USER_TOKEN_NAME, response.data.token);
-        this.userStore.setState(response.data.you);
+        this.userStore.setState(response.data.user);
         return response;
       })
     );
@@ -511,7 +511,7 @@ export class UserService {
     return this.clientService.sendRequest<any>(endpoint, `POST`).pipe(
       map((response: any) => {
         window.localStorage.setItem(JWT_USER_TOKEN_NAME, response.data.token);
-        this.userStore.setState(response.data.you);
+        this.userStore.setState(response.data.user);
         this.is_subscription_active = true;
         this.is_subscription_active_stream.next(this.is_subscription_active);
         return response;

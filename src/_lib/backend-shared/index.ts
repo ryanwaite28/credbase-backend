@@ -18,6 +18,11 @@ export * from './interfaces/common.interface';
 export * from './types/common.type';
 
 
+// Express Guards
+
+export * from './express-guards/authorizations.guard';
+
+
 // Helpers
 
 export * from './helpers/rabbitmq-client.helper';

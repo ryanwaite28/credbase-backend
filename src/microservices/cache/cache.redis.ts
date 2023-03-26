@@ -11,6 +11,7 @@ export class RedisCacheClient {
 
   private static async checkConnection() {
     if (RedisCacheClient.isConnected) {
+      RedisCacheClient.timeoutCloseConnection();
       return;
     }
 
@@ -18,6 +19,8 @@ export class RedisCacheClient {
     await client.connect();
     RedisCacheClient.client = client;
     RedisCacheClient.isConnected = true;
+
+    RedisCacheClient.timeoutCloseConnection();
   }
 
   private static timeoutCloseConnection() {
@@ -45,28 +48,19 @@ export class RedisCacheClient {
   static async get(key: string) {
     await RedisCacheClient.checkConnection();
 
-    await RedisCacheClient.client!.get(key);
-
-    // start timeout to close connection if there was no recent activity
-    RedisCacheClient.timeoutCloseConnection();
+    return RedisCacheClient.client!.get(key);
   }
 
   static async set(key: string, value: any) {
     await RedisCacheClient.checkConnection();
 
-    await RedisCacheClient.client!.set(key, value);
-
-    // start timeout to close connection if there was no recent activity
-    RedisCacheClient.timeoutCloseConnection();
+    return RedisCacheClient.client!.set(key, value);
   }
 
   static async delete(key: string) {
     await RedisCacheClient.checkConnection();
 
-    await RedisCacheClient.client!.del(key);
-
-    // start timeout to close connection if there was no recent activity
-    RedisCacheClient.timeoutCloseConnection();
+    return RedisCacheClient.client!.del(key);
   }
 
 }

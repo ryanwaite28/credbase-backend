@@ -8,6 +8,12 @@ import { UsersService } from './users.service';
 export class UsersRequestHandler {
 
   @CatchRequestHandlerError()
+  static async check_session(request: Request, response: Response): ExpressResponse {
+    const serviceMethodResults: ServiceMethodResults = await UsersService.check_session(request);
+    return response.status(serviceMethodResults.status).json(serviceMethodResults.info);
+  }
+
+  @CatchRequestHandlerError()
   static async get_users(request: Request, response: Response): ExpressResponse {
     const serviceMethodResults: ServiceMethodResults = await UsersService.get_users();
     return response.status(serviceMethodResults.status).json(serviceMethodResults.info);

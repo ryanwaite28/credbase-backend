@@ -39,7 +39,8 @@ export const getUserFullName = (user: IUser) => {
 
     const displayName = `${firstname}${middle}${lastname}`;
     return displayName;
-  } else {
+  }
+  else {
     return '';
   }
 };

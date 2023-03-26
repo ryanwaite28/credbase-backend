@@ -3,7 +3,8 @@ import { AuthorizeJwtGuard, CreateJwtAuthGuard } from "../utils/authorize-reques
 
 
 
+export const UserAuthorizer = AuthorizeJwtGuard(AppEnvironment.JWT_SECRETS.USER.SECRET, 'user');
+export const UserAuthorizedGuard = CreateJwtAuthGuard(UserAuthorizer);
 
-export const UserAuthorizedGuard = CreateJwtAuthGuard(AuthorizeJwtGuard(AppEnvironment.JWT_SECRETS.USER.SECRET, 'user'));
-
-export const AuthorityAuthorizedGuard = CreateJwtAuthGuard(AuthorizeJwtGuard(AppEnvironment.JWT_SECRETS.AUTHORITY.SECRET, 'authority'));
+export const AuthorityAuthorizer = AuthorizeJwtGuard(AppEnvironment.JWT_SECRETS.AUTHORITY.SECRET, 'authority');
+export const AuthorityAuthorizedGuard = CreateJwtAuthGuard(AuthorityAuthorizer);

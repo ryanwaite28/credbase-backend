@@ -56,7 +56,7 @@ export function APP_INITIALIZER_FACTORY(
     resolve: (value: unknown) => void,
     reject: (reasom?: any) => any
   ) {
-    const promise = clientService.getXsrfToken()
+    const promise = clientService.getCsrfToken()
       .pipe(
         mergeMap((token, index) => {
           // console.log('APP_INITIALIZER (xsrf token) - admit one', clientService);
@@ -122,7 +122,7 @@ export const APP_INIT_PROVIDER = {
   multi: true,
   deps: [
     ClientService,
-    // UsersService,
+    UserService,
     // GoogleMapsService,
     // StripeService,
     // SocketEventsService,

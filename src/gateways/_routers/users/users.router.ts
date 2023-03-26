@@ -12,6 +12,9 @@ export const UsersRouter: Router = Router({ mergeParams: true });
 
 
 // GET
+
+UsersRouter.get('/check-session', UsersRequestHandler.check_session);
+
 UsersRouter.get('/', UsersRequestHandler.get_users);
 
 UsersRouter.get('/email/:email', UsersRequestHandler.get_user_by_email);

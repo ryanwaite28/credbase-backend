@@ -8,6 +8,7 @@ import {
   AppEnvironment,
   SendRequestToLoggingMicroservice,
   WebCsrfAuthGuard,
+  corsWebMiddleware,
 } from '@lib/backend-shared';
 
 import { AppRouter } from '../_routers/_app.router';
@@ -32,6 +33,9 @@ app.use(RequestLoggerMiddleware);
 app.use(SendRequestToLoggingMicroservice(rmqClient));
 app.use(CsrfSetCookieMiddle);
 app.use(WebCsrfAuthGuard);
+
+app.options(`*`, corsWebMiddleware);
+app.use(corsWebMiddleware);
 
 
 

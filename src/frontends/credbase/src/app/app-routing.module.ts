@@ -1,22 +1,31 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AboutPageComponent } from './components/pages/about-page/about-page.component';
+import { AuthorityAssetsPageComponent } from './components/pages/authority/authority-assets-page/authority-assets-page.component';
 import { AuthorityBasePageComponent } from './components/pages/authority/authority-base-page/authority-base-page.component';
+import { AuthorityClientsPageComponent } from './components/pages/authority/authority-clients-page/authority-clients-page.component';
+import { AuthorityHelpPageComponent } from './components/pages/authority/authority-help-page/authority-help-page.component';
 import { AuthorityHomePageComponent } from './components/pages/authority/authority-home-page/authority-home-page.component';
+import { AuthorityItemsPageComponent } from './components/pages/authority/authority-items-page/authority-items-page.component';
 import { AuthorityLoginPageComponent } from './components/pages/authority/authority-login-page/authority-login-page.component';
 import { AuthoritySettingsPageComponent } from './components/pages/authority/authority-settings-page/authority-settings-page.component';
 import { AuthoritySignupPageComponent } from './components/pages/authority/authority-signup-page/authority-signup-page.component';
 import { ContactPageComponent } from './components/pages/contact-page/contact-page.component';
 import { PrivacyPolicyPageComponent } from './components/pages/privacy-policy-page/privacy-policy-page.component';
 import { TermsAgreementsPageComponent } from './components/pages/terms-agreements-page/terms-agreements-page.component';
+import { UserAuthoritiesPageComponent } from './components/pages/user/user-authorities-page/user-authorities-page.component';
 import { UserBasePageComponent } from './components/pages/user/user-base-page/user-base-page.component';
+import { UserHelpPageComponent } from './components/pages/user/user-help-page/user-help-page.component';
 import { UserHomePageComponent } from './components/pages/user/user-home-page/user-home-page.component';
+import { UserItemsPageComponent } from './components/pages/user/user-items-page/user-items-page.component';
 import { UserLoginPageComponent } from './components/pages/user/user-login-page/user-login-page.component';
 import { UserSettingsPageComponent } from './components/pages/user/user-settings-page/user-settings-page.component';
 import { UserSignupPageComponent } from './components/pages/user/user-signup-page/user-signup-page.component';
 import { WelcomePageComponent } from './components/pages/welcome-page/welcome-page.component';
 import { AuthorityAuthGuard } from './guards/authority/authority-auth.guard';
+import { AuthorityLoggedoutGuard } from './guards/authority/authority-loggedout.guard';
 import { UserAuthGuard } from './guards/user/user-auth.guard';
+import { UserLoggedoutGuard } from './guards/user/user-loggedout.guard';
 import { AuthorityResolver } from './resolvers/authority.resolver';
 import { UserResolver } from './resolvers/user.resolver';
 
@@ -33,38 +42,41 @@ const main_routes: Routes = [
 
 
 const user_routes: Routes = [
-  { path: 'user-signup', pathMatch: 'full', component: UserSignupPageComponent, canActivate: [] },
-  { path: 'user-login', pathMatch: 'full', component: UserLoginPageComponent, canActivate: [] },
+  { path: 'user-signup', pathMatch: 'full', component: UserSignupPageComponent, canActivate: [UserLoggedoutGuard] },
+  { path: 'user-login', pathMatch: 'full', component: UserLoginPageComponent, canActivate: [UserLoggedoutGuard] },
   {
     path: 'users/:user_id',
     component: UserBasePageComponent,
-    resolve: {
-      user: UserResolver,
-    },
     data: { authParamsProp: 'user_id' },
+    canActivate: [UserAuthGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: UserHomePageComponent },
-      { path: 'settings', component: UserSettingsPageComponent, canActivate: [UserAuthGuard], data: { authParamsProp: 'user_id' } },
+      { path: 'settings', component: UserSettingsPageComponent, data: { authParamsProp: 'user_id' } },
+      { path: 'authorities', component: UserAuthoritiesPageComponent, data: { authParamsProp: 'user_id' } },
+      { path: 'items', component: UserItemsPageComponent, data: { authParamsProp: 'user_id' } },
+      { path: 'help', component: UserHelpPageComponent, data: { authParamsProp: 'user_id' } },
     ]
   },
 ];
 
 
 const authority_routes: Routes = [
-  { path: 'authority-signup', pathMatch: 'full', component: AuthoritySignupPageComponent, canActivate: [] },
-  { path: 'authority-login', pathMatch: 'full', component: AuthorityLoginPageComponent, canActivate: [] },
+  { path: 'authority-signup', pathMatch: 'full', component: AuthoritySignupPageComponent, canActivate: [AuthorityLoggedoutGuard] },
+  { path: 'authority-login', pathMatch: 'full', component: AuthorityLoginPageComponent, canActivate: [AuthorityLoggedoutGuard] },
   {
-    path: 'authoritys/:authority_id',
+    path: 'authorities/:authority_id',
     component: AuthorityBasePageComponent,
-    resolve: {
-      authority: AuthorityResolver,
-    },
     data: { authParamsProp: 'authority_id' },
+    canActivate: [AuthorityAuthGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: AuthorityHomePageComponent },
-      { path: 'settings', component: AuthoritySettingsPageComponent, canActivate: [AuthorityAuthGuard], data: { authParamsProp: 'authority_id' } },
+      { path: 'settings', component: AuthoritySettingsPageComponent, data: { authParamsProp: 'authority_id' } },
+      { path: 'clients', component: AuthorityClientsPageComponent, data: { authParamsProp: 'authority_id' } },
+      { path: 'assets', component: AuthorityAssetsPageComponent, data: { authParamsProp: 'authority_id' } },
+      { path: 'items', component: AuthorityItemsPageComponent, data: { authParamsProp: 'authority_id' } },
+      { path: 'help', component: AuthorityHelpPageComponent, data: { authParamsProp: 'authority_id' } },
     ]
   },
 ];

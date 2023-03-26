@@ -368,7 +368,7 @@ export class RabbitMQClient {
             const end_time = Date.now();
             const total_time = (end_time - start_time) / 1000;
             const time_in_seconds = total_time.toFixed();
-            console.log(`received response from request/rpc:`, { consumerTag, start_time, end_time, total_time, time_in_seconds });
+            console.log(`received response from request/rpc:`, { consumerTag, start_time, end_time, total_time, time_in_seconds, messageObj, options });
             (messageObj.data as ServiceMethodResults<T>).error ? reject(messageObj) : resolve(messageObj);
             this.ack(message);
             this.channel.cancel(consumerTag);

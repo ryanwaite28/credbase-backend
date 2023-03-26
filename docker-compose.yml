@@ -219,6 +219,7 @@ services:
       APP_MACHINE_NAME: WEB_GATEWAY
       APP_DISPLAY_NAME: Web Gateway
       APP_ENV: LOCAL
+      CORS_WHITELIST_ORIGINS: http://localhost:4200,http://localhost:7600
       PORT: 80
     env_file:
       - env/common.env
@@ -523,6 +524,7 @@ services:
       REDIS_URL: redis://redis-cache?password=REDIS_PASSWORD
     depends_on:
       - rabbitmq
+      - redis-cache
     volumes:
       - ./src:/app/src
       - /app/node_modules

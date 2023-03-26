@@ -19,7 +19,7 @@ export class ClientService {
     private readonly http: HttpClient,
     private environmentService: EnvironmentService,
   ) {
-    this.isProd = this.environmentService.environment.PRODUCTION;
+    this.isProd = this.environmentService.environment.production;
     this.DOMAIN = this.environmentService.environment.API_DOMAIN;
     const apiDomain = this.DOMAIN + '/web';
     this.API_PREFIX = apiDomain;
@@ -44,8 +44,8 @@ export class ClientService {
     return this.xsrf_token_ready.asObservable();
   }
 
-  getXsrfToken() {
-    return this.sendRequest<any>(`/common/utils/get-csrf-token`, 'GET')
+  getCsrfToken() {
+    return this.sendRequest<any>(`/csrf-token`, 'GET')
       .pipe(
         map((response: any) => {
           console.log(`CSRF Token Set.`);
