@@ -36,6 +36,10 @@ export class AppEnvironment {
     WHITELIST: process.env[`CORS_WHITELIST_ORIGINS`] ? process.env[`CORS_WHITELIST_ORIGINS`].split(',') : []
   };
 
+  public static readonly SOCKETS = {
+    WHITELIST: process.env[`SOCKET_WHITELIST_ORIGINS`] ? process.env[`SOCKET_WHITELIST_ORIGINS`].split(',') : []
+  };
+
 
   /*
   

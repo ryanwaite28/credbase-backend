@@ -5,6 +5,7 @@ export * from './enums/common.enum';
 export * from './enums/models.enum';
 export * from './enums/http-codes.enum';
 
+export * from './enums/microservices/notifications.enum';
 export * from './enums/microservices/cache.enum';
 export * from './enums/microservices/logging.enum';
 export * from './enums/microservices/emails.enum';
@@ -39,6 +40,9 @@ export * from './regex/common.regex';
 
 
 // Apps
+
+export * from './apps/notifications/notifications.dto';
+export * from './apps/notifications/notifications.interface';
 
 export * from './apps/emails/emails.dto';
 export * from './apps/emails/emails.interface';
