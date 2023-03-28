@@ -1,5 +1,6 @@
 import { HttpStatusCode } from '@lib/fullstack-shared';
 import { Request, Response, Router } from 'express';
+import { AuthoritiesRouter } from './authorities/authorities.router';
 import { UsersRouter } from './users/users.router';
 
 
@@ -14,3 +15,4 @@ AppRouter.get('/csrf-token', (request: Request, response: Response) => {
 
 
 AppRouter.use('/users', UsersRouter);
+AppRouter.use('/authorities', AuthoritiesRouter);

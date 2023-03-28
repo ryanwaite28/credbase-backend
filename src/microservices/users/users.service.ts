@@ -53,7 +53,8 @@ export async function FETCH_USERS(event: RmqEventMessage, rmqClient: RabbitMQCli
     publishOptions: {
       type: UsersQueueEventTypes.USERS_FETCHED,
       contentType: ContentTypes.JSON,
-      correlationId: event.message.properties.correlationId
+      correlationId: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -79,7 +80,8 @@ export async function FETCH_USER_BY_ID(event: RmqEventMessage, rmqClient: Rabbit
     publishOptions: {
       type: UsersQueueEventTypes.USER_FETCHED_BY_ID,
       contentType: ContentTypes.JSON,
-      correlationId: event.message.properties.correlationId
+      correlationId: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -105,7 +107,8 @@ export async function FETCH_USER_BY_UUID(event: RmqEventMessage, rmqClient: Rabb
     publishOptions: {
       type: UsersQueueEventTypes.USER_FETCHED_BY_UUID,
       contentType: ContentTypes.JSON,
-      correlationId: event.message.properties.correlationId
+      correlationId: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -131,7 +134,8 @@ export async function FETCH_USER_BY_EMAIL(event: RmqEventMessage, rmqClient: Rab
     publishOptions: {
       type: UsersQueueEventTypes.USER_FETCHED_BY_EMAIL,
       contentType: ContentTypes.JSON,
-      correlationId: event.message.properties.correlationId
+      correlationId: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -160,7 +164,7 @@ export async function CREATE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
         type: UsersQueueEventTypes.USER_CREATE_EXCEPTION,
         contentType: ContentTypes.JSON,
         correlationId: event.message.properties.correlationId,
-        // replyTo: event.message.properties.replyTo,
+        replyTo: event.message.properties.replyTo,
       }
     });
   }
@@ -190,7 +194,7 @@ export async function CREATE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
       type: UsersQueueEventTypes.USER_CREATED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      // replyTo: event.message.properties.correlationId,
+      replyTo: event.message.properties.correlationId,
     }
   });
 }
@@ -218,7 +222,7 @@ export async function UPDATE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
       type: UsersQueueEventTypes.USER_UPDATED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      // replyTo: event.message.properties.replyTo,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -246,7 +250,7 @@ export async function DELETE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
       type: UsersQueueEventTypes.USER_DELETED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      // replyTo: event.message.properties.replyTo,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -277,6 +281,7 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
         type: UsersQueueEventTypes.USER_LOGIN_EXCEPTION,
         contentType: ContentTypes.JSON,
         correlationId: event.message.properties.correlationId,
+        replyTo: event.message.properties.replyTo,
       }
     });
   }
@@ -303,6 +308,7 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
         type: UsersQueueEventTypes.USER_LOGIN_EXCEPTION,
         contentType: ContentTypes.JSON,
         correlationId: event.message.properties.correlationId,
+        replyTo: event.message.properties.replyTo,
       }
     });
   }
@@ -326,7 +332,7 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
       type: UsersQueueEventTypes.USER_LOGGED_IN,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      // replyTo: event.message.properties.correlationId,
+      replyTo: event.message.properties.correlationId,
     }
   });
 }

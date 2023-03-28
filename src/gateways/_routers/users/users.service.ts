@@ -41,6 +41,8 @@ export class UsersService {
     return serviceMethodResults;
   }
 
+
+
   static get_users(): ServiceMethodAsyncResults {
     return rmqClient.sendRequest({
       queue: MicroservicesQueues.USER_MESSAGES,
@@ -48,8 +50,6 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.FETCH_USERS,
         contentType: ContentTypes.JSON,
-        correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => event.data)
@@ -63,8 +63,6 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.FETCH_USER_BY_ID,
         contentType: ContentTypes.JSON,
-        correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => event.data)
@@ -78,8 +76,6 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.FETCH_USER_BY_EMAIL,
         contentType: ContentTypes.JSON,
-        correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => event.data as ServiceMethodResults)
@@ -93,8 +89,6 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.CREATE_USER,
         contentType: ContentTypes.JSON,
-        correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => {
@@ -114,8 +108,6 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.LOGIN_USER,
         contentType: ContentTypes.JSON,
-        correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => {
@@ -135,8 +127,6 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.UPDATE_USER,
         contentType: ContentTypes.JSON,
-        correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => {
@@ -156,8 +146,6 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.DELETE_USER,
         contentType: ContentTypes.JSON,
-        correlationId: Date.now().toString(),
-        replyTo: MicroservicesQueues.USER_EVENTS,
       }
     })
     .then((event) => event.data)
