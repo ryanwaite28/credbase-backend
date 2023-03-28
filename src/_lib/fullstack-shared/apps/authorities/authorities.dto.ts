@@ -1,3 +1,4 @@
+import { IconWallpaperDto } from '@lib/fullstack-shared/dto/common.dto';
 import {
   IsBoolean,
   IsEmail,
@@ -58,7 +59,7 @@ export class LoginAuthorityDto {
   password: string;
 }
 
-export class UpdateAuthorityDto {
+export class UpdateAuthorityDto extends IconWallpaperDto {
   @IsOptional()
   @IsEmail()
   email: string;
@@ -127,21 +128,21 @@ export class UpdateAuthorityDto {
   @IsPhoneNumber()
   temp_phone: string | null;
 
-  @IsOptional()
-  @IsString()
-  icon_link: string | null;
+  // @IsOptional()
+  // @IsString()
+  // icon_link: string | null;
   
-  @IsOptional()
-  @IsString()
-  icon_id: string | null;
+  // @IsOptional()
+  // @IsString()
+  // icon_id: string | null;
   
-  @IsOptional()
-  @IsString()
-  wallpaper_link: string | null;
+  // @IsOptional()
+  // @IsString()
+  // wallpaper_link: string | null;
   
-  @IsOptional()
-  @IsString()
-  wallpaper_id: string | null;
+  // @IsOptional()
+  // @IsString()
+  // wallpaper_id: string | null;
 
   @IsOptional()
   @IsBoolean()

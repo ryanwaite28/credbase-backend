@@ -5,6 +5,7 @@ import {
   get_common_model_options,
   MyModelStatic
 } from '@lib/backend-shared';
+import { COMMON_STATUSES } from '@lib/fullstack-shared';
 import {
   Sequelize,
   STRING,
@@ -76,4 +77,18 @@ export const Client = <MyModelStatic> sequelize.define('Client', {
 }, {
   ...common_model_options,
   indexes: [{ unique: true, fields: ['user_id', 'authority_id'] }]
+});
+
+
+export const ClientRequest = <MyModelStatic> sequelize.define('ClientRequest', {
+  ...common_model_fields,
+
+  user_id:                             { type: INTEGER, allowNull: false },
+  authority_id:                        { type: INTEGER, allowNull: false },
+  requester:                           { type: STRING, allowNull: false },
+  status:                              { type: STRING, allowNull: false, defaultValue: COMMON_STATUSES.PENDING },
+
+}, {
+  ...common_model_options,
+  indexes: [{ unique: true, fields: ['user_id', 'authority_id', 'requester'] }]
 });

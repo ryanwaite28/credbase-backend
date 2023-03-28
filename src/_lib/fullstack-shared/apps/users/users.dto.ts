@@ -1,6 +1,9 @@
+import { IconWallpaperDto } from '@lib/fullstack-shared/dto/common.dto';
 import {
   IsBoolean,
+  IsDateString,
   IsEmail,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
@@ -17,10 +20,18 @@ export class UserSignUpDto {
   @IsNotEmpty()
   @Matches(PERSON_NAME_REGEX)
   firstname: string;
+
+  @IsOptional()
+  @Matches(PERSON_NAME_REGEX)
+  middlename?: string | null;
   
   @IsNotEmpty()
   @Matches(PERSON_NAME_REGEX)
   lastname: string;
+
+  @IsOptional()
+  @IsDateString()
+  date_of_birth?: string | null;
 
   @IsNotEmpty()
   @IsEmail()
@@ -41,7 +52,7 @@ export class UserSignInDto {
   password: string;
 }
 
-export class UserUpdatesDto {
+export class UserUpdatesDto extends IconWallpaperDto {
   @IsOptional()
   @IsEmail()
   email?: string;
@@ -65,6 +76,22 @@ export class UserUpdatesDto {
   @IsOptional()
   @IsPhoneNumber()
   temp_phone?: string;
+
+  @IsOptional()
+  @IsString()
+  city: string | null;
+  
+  @IsOptional()
+  @IsString()
+  state: string | null;
+  
+  @IsOptional()
+  @IsString()
+  country: string | null;
+  
+  @IsOptional()
+  @IsInt()
+  zipcode: number | null;
   
   // @IsOptional()
   // @IsString()
@@ -82,37 +109,37 @@ export class UserUpdatesDto {
   // @IsString()
   // platform_subscription_id?: string;
 
-  @IsOptional()
-  @IsString()
-  icon_link?: string;
+  // @IsOptional()
+  // @IsString()
+  // icon_link?: string;
 
-  @IsOptional()
-  @IsString()
-  icon_id?: string;
+  // @IsOptional()
+  // @IsString()
+  // icon_id?: string;
 
-  @IsOptional()
-  @IsString()
-  wallpaper_link?: string;
+  // @IsOptional()
+  // @IsString()
+  // wallpaper_link?: string;
 
-  @IsOptional()
-  @IsString()
-  wallpaper_id?: string;
+  // @IsOptional()
+  // @IsString()
+  // wallpaper_id?: string;
 
-  @IsOptional()
-  @IsString()
-  id_card_front_link?: string;
+  // @IsOptional()
+  // @IsString()
+  // id_card_front_link?: string;
 
-  @IsOptional()
-  @IsString()
-  id_card_front_id?: string;
+  // @IsOptional()
+  // @IsString()
+  // id_card_front_id?: string;
 
-  @IsOptional()
-  @IsString()
-  id_card_back_link?: string;
+  // @IsOptional()
+  // @IsString()
+  // id_card_back_link?: string;
 
-  @IsOptional()
-  @IsString()
-  id_card_back_id?: string;
+  // @IsOptional()
+  // @IsString()
+  // id_card_back_id?: string;
 
   @IsOptional()
   @IsBoolean()

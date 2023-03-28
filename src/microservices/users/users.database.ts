@@ -10,6 +10,8 @@ import {
   STRING,
   BOOLEAN,
   SyncOptions,
+  DATE,
+  INTEGER,
 } from 'sequelize';
 
 console.log(`AppEnvironment.database.URL:`, AppEnvironment.database.URL);
@@ -71,12 +73,19 @@ export const User = <MyModelStatic> sequelize.define('User', {
   ...common_icon_wallpaper_fields,
 
   firstname:                           { type: STRING, allowNull: false },
+  middlename:                          { type: STRING, allowNull: true },
   lastname:                            { type: STRING, allowNull: false },
   email:                               { type: STRING, allowNull: false },
   password:                            { type: STRING, allowNull: false },
   
   phone:                               { type: STRING, allowNull: true, defaultValue: null },
   temp_phone:                          { type: STRING, allowNull: true, defaultValue: null },
+  date_of_birth:                       { type: DATE, allowNull: true },
+
+  city:                                { type: STRING, allowNull: true },
+  state:                               { type: STRING, allowNull: true },
+  country:                             { type: STRING, allowNull: true },
+  zipcode:                             { type: INTEGER, allowNull: true },
 
   person_verified:                     { type: BOOLEAN, allowNull: false, defaultValue: false },
   email_verified:                      { type: BOOLEAN, allowNull: false, defaultValue: false },

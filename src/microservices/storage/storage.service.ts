@@ -1,7 +1,8 @@
 import {
   RmqEventMessage,
   RabbitMQClient,
-  ServiceMethodResults
+  ServiceMethodResults,
+  AppEnvironment
 } from "@lib/backend-shared";
 import {
   StoragesQueueMessageTypes,
@@ -13,7 +14,6 @@ import {
   IS3ModelObjectParams,
   CreateS3ObjectDto,
   ICreateS3ObjectRmqMessage,
-  S3ObjectContextToBucketMapping,
   uniqueValue
 } from "@lib/fullstack-shared";
 import { AwsS3Service } from "./s3.utils";
@@ -138,7 +138,7 @@ export async function CREATE_S3OBJECT(event: RmqEventMessage, rmqClient: RabbitM
   const uploadS3Params = event.data as ICreateS3ObjectRmqMessage;
 
   // first, check if the designated bucket exists; if not, create it
-  const Bucket = S3ObjectContextToBucketMapping[uploadS3Params.context];
+  const Bucket = AppEnvironment.AWS.S3.BUCKET;
   const bucketExists = await AwsS3Service.bucketExists(Bucket);
   if (!bucketExists) {
     await AwsS3Service.createBucket(Bucket);
@@ -148,8 +148,8 @@ export async function CREATE_S3OBJECT(event: RmqEventMessage, rmqClient: RabbitM
   const unique_filename = `${uniqueValue()}.${uploadS3Params.createOptions.extension}`;
   // parse params to decide where file will be uploaded to 
   const Key = !!uploadS3Params.createOptions.model_type
-    ? `${uploadS3Params.createOptions.model_type}/${unique_filename}`
-    : unique_filename;
+    ? `${uploadS3Params.context}/${uploadS3Params.createOptions.model_type}/${unique_filename}`
+    : `${uploadS3Params.context}/${unique_filename}`;
 
   // upload the object
   const results = await AwsS3Service.createObject({ Bucket, Key, Body: uploadS3Params.buffer });

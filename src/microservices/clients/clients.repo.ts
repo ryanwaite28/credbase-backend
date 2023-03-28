@@ -1,9 +1,10 @@
 import { create_model_crud_repo_from_model_class } from '@lib/backend-shared';
-import { AddClientDto, IClient } from '@lib/fullstack-shared';
-import { Client } from './clients.database';
+import { AddClientDto, AddClientRequestDto, COMMON_STATUSES, IClient, IClientRequest } from '@lib/fullstack-shared';
+import { Client, ClientRequest } from './clients.database';
 
 
 export const client_crud = create_model_crud_repo_from_model_class<IClient>(Client);
+export const client_request_crud = create_model_crud_repo_from_model_class<IClientRequest>(ClientRequest);
 
 
 
@@ -59,8 +60,30 @@ export async function get_clients_by_user_id_paginate(params: {
 
 
 export async function add_client(params: AddClientDto) {
-  const createOptions = { ...params };
-  const new_client = await client_crud.create(createOptions);
-  const client = await get_client_by_id(new_client.id);
-  return client!;
+  return client_crud.create(params);
+}
+
+
+export async function add_client_request(params: AddClientRequestDto) {
+  return client_request_crud.create(params);
+}
+
+export async function check_client_request(params: AddClientDto) {
+  return client_request_crud.findOne({ where: { ...params } });
+}
+
+export async function check_pending_client_request(params: AddClientDto) {
+  return client_request_crud.findOne({ where: { ...params, status: COMMON_STATUSES.PENDING } });
+}
+
+export async function cancel_client_request(requet_id: number) {
+  return client_request_crud.updateById(requet_id, { status: COMMON_STATUSES.CANCELED });
+}
+
+export async function accept_client_request(requet_id: number) {
+  return client_request_crud.updateById(requet_id, { status: COMMON_STATUSES.ACCEPTED });
+}
+
+export async function decline_client_request(requet_id: number) {
+  return client_request_crud.updateById(requet_id, { status: COMMON_STATUSES.DECLINED });
 }

@@ -18,3 +18,16 @@ export interface IUserNotification extends INotification {
 export interface IAuthorityNotification extends INotification {
   for_authority_id: number,
 }
+
+
+export interface INotificationLastOpened extends ICommonModel {
+  last_opened: string,
+}
+
+export interface IUserNotificationLastOpened extends INotificationLastOpened {
+  user_id: number,
+}
+
+export interface IAuthorityNotificationLastOpened extends INotificationLastOpened {
+  authority_id: number,
+}

@@ -13,6 +13,12 @@ import {
   FETCH_CLIENT_BY_UUID,
   FETCH_CLIENTS_BY_USER_ID,
   FETCH_CLIENTS_BY_USER_ID_PAGINATE,
+  ACCEPT_CLIENT_REQUEST,
+  ADD_CLIENT_REQUEST,
+  CANCEL_CLIENT_REQUEST,
+  CHECK_CLIENT_REQUEST,
+  CHECK_PENDING_CLIENT_REQUEST,
+  DECLINE_CLIENT_REQUEST,
 } from "./clients.service";
 
 
@@ -71,4 +77,36 @@ clientsQueue.handle(ClientsQueueMessageTypes.FETCH_CLIENTS_BY_USER_ID_PAGINATE).
 
 clientsQueue.handle(ClientsQueueMessageTypes.ADD_CLIENT).subscribe({
   next: (event: RmqEventMessage) => ADD_CLIENT(event, rmqClient)
+});
+
+
+
+
+clientsQueue.handle(ClientsQueueMessageTypes.ADD_CLIENT_REQUEST).subscribe({
+  next: (event: RmqEventMessage) => ADD_CLIENT_REQUEST(event, rmqClient)
+});
+
+
+clientsQueue.handle(ClientsQueueMessageTypes.CHECK_CLIENT_REQUEST).subscribe({
+  next: (event: RmqEventMessage) => CHECK_CLIENT_REQUEST(event, rmqClient)
+});
+
+
+clientsQueue.handle(ClientsQueueMessageTypes.CHECK_PENDING_CLIENT_REQUEST).subscribe({
+  next: (event: RmqEventMessage) => CHECK_PENDING_CLIENT_REQUEST(event, rmqClient)
+});
+
+
+clientsQueue.handle(ClientsQueueMessageTypes.CANCEL_CLIENT_REQUEST).subscribe({
+  next: (event: RmqEventMessage) => CANCEL_CLIENT_REQUEST(event, rmqClient)
+});
+
+
+clientsQueue.handle(ClientsQueueMessageTypes.ACCEPT_CLIENT_REQUEST).subscribe({
+  next: (event: RmqEventMessage) => ACCEPT_CLIENT_REQUEST(event, rmqClient)
+});
+
+
+clientsQueue.handle(ClientsQueueMessageTypes.DECLINE_CLIENT_REQUEST).subscribe({
+  next: (event: RmqEventMessage) => DECLINE_CLIENT_REQUEST(event, rmqClient)
 });

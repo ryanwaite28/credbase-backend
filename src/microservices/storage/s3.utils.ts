@@ -7,6 +7,7 @@ import {
   DeleteBucketCommand,
   HeadBucketCommand
 } from "@aws-sdk/client-s3";
+import { AppEnvironment } from "@lib/backend-shared";
 
 // Set the AWS Region.
 const REGION = "us-east-1"; // e.g. "us-east-1"
@@ -17,6 +18,8 @@ const s3Client = new S3Client({ region: REGION });
 
 export class AwsS3Service {
   static readonly s3Client = s3Client;
+
+  static readonly Bucket = AppEnvironment.AWS.S3;
 
   // create
 

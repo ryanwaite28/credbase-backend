@@ -1,10 +1,5 @@
 /** Enums */
 
-export enum MODELS {
-  USER = `USER`,
-  AUTHORITY = `AUTHORITY`,
-}
-
 
 export enum USER_RECORDS {
   

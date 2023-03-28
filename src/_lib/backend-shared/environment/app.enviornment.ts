@@ -49,6 +49,9 @@ export class AppEnvironment {
     SES: {
       EMAIL: process.env[`PLATFORM_AWS_SES_EMAIL`]!,
       ARN: process.env[`PLATFORM_AWS_SES_ARN`]!,
+    },
+    S3: {
+      BUCKET: process.env[`PLATFORM_AWS_S3_BUCKET`]!,
     }
   };
 

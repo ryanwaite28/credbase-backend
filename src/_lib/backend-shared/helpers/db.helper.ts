@@ -40,13 +40,22 @@ export const convertModelsCurry = <T> () => (models: Model[]) => {
 
 /** Model Class Type */
 
+export interface IMyModelBase extends Model<any> {
+  readonly id: number;
+}
+
 export interface IMyModel extends Model<any> {
   readonly id: number;
   [key: string]: any;
 }
 
-export type MyModelStatic = typeof Model & {
-  new (values?: object, options?: BuildOptions): IMyModel;
+
+// export type IMyModelType <T> = {
+
+// }
+
+export type MyModelStatic <T = any> = typeof Model<any> & {
+  new (values?: object, options?: BuildOptions): IMyModel & T;
 };
 
 

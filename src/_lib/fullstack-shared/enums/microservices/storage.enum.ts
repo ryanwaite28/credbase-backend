@@ -1,8 +1,8 @@
-export enum S3Buckets {
-  ICONS = "credbase-icons",
-  WALLPAPERS = "credbase-wallpapers",
-  ATTACHMENTS = "credbase-attachments",
-}
+// export enum S3Buckets {
+//   ICONS = "credbase-icons",
+//   WALLPAPERS = "credbase-wallpapers",
+//   ATTACHMENTS = "credbase-attachments",
+// }
 
 export enum S3ObjectContexts {
   ICON = "ICON",
@@ -10,11 +10,11 @@ export enum S3ObjectContexts {
   ATTACHMENT = "ATTACHMENT",
 }
 
-export const S3ObjectContextToBucketMapping = Object.freeze({
- [S3ObjectContexts.ICON]: S3Buckets.ICONS,
- [S3ObjectContexts.WALLPAPER]: S3Buckets.WALLPAPERS,
- [S3ObjectContexts.ATTACHMENT]: S3Buckets.ATTACHMENTS,
-});
+// export const S3ObjectContextToBucketMapping = Object.freeze({
+//  [S3ObjectContexts.ICON]: S3Buckets.ICONS,
+//  [S3ObjectContexts.WALLPAPER]: S3Buckets.WALLPAPERS,
+//  [S3ObjectContexts.ATTACHMENT]: S3Buckets.ATTACHMENTS,
+// });
 
 
 
