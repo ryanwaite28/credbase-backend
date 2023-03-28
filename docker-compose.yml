@@ -228,7 +228,7 @@ services:
       - rabbitmq
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
   mobile-gw:
     build:
@@ -253,7 +253,7 @@ services:
       - rabbitmq
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
   developer-gw:
     build:
@@ -278,7 +278,7 @@ services:
       - rabbitmq
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
     
 
 
@@ -311,7 +311,7 @@ services:
       - users-db
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
   authorities-ms:
     build:
@@ -335,7 +335,7 @@ services:
       - authorities-db
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
   assets-ms:
     build:
@@ -359,7 +359,7 @@ services:
       - assets-db
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
   items-ms:
     build:
@@ -383,7 +383,7 @@ services:
       - items-db
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
   storage-ms:
     build:
@@ -407,7 +407,7 @@ services:
       - storage-db
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
   developer-ms:
     build:
@@ -431,7 +431,7 @@ services:
       - developer-db
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
   stripe-ms:
     build:
@@ -455,7 +455,7 @@ services:
       - stripe-db
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
   emails-ms:
     build:
@@ -477,7 +477,7 @@ services:
       - rabbitmq
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
 
   logging-ms:
@@ -501,7 +501,7 @@ services:
     volumes:
       - logging-ms-vol:/app/logs
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 
 
 
@@ -527,5 +527,5 @@ services:
       - redis-cache
     volumes:
       - ./src:/app/src
-      - /app/node_modules
+      # - /app/node_modules
 

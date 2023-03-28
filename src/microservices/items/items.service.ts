@@ -58,7 +58,7 @@ export async function FETCH_ITEM_WITH_FIELDS_BY_ID(event: RmqEventMessage, rmqCl
       type: ItemsQueueEventTypes.FETCHED_ITEM_WITH_FIELDS_BY_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -85,7 +85,7 @@ export async function FETCH_ITEM_BY_ID(event: RmqEventMessage, rmqClient: Rabbit
       type: ItemsQueueEventTypes.FETCHED_ITEM_BY_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -112,7 +112,7 @@ export async function FETCH_ITEM_BY_UUID(event: RmqEventMessage, rmqClient: Rabb
       type: ItemsQueueEventTypes.FETCHED_ITEM_BY_UUID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -139,7 +139,7 @@ export async function FETCH_ITEM_FIELD_BY_ID(event: RmqEventMessage, rmqClient: 
       type: ItemsQueueEventTypes.FETCHED_ITEM_FIELD_BY_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -166,7 +166,7 @@ export async function FETCH_ITEM_FIELD_BY_UUID(event: RmqEventMessage, rmqClient
       type: ItemsQueueEventTypes.FETCHED_ITEM_FIELD_BY_UUID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -193,7 +193,7 @@ export async function FETCH_ITEMS_BY_CLIENT_ID(event: RmqEventMessage, rmqClient
       type: ItemsQueueEventTypes.FETCHED_ITEMS_BY_CLIENT_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -224,7 +224,7 @@ export async function FETCH_ITEMS_BY_CLIENT_ID_PAGINATE(event: RmqEventMessage, 
       type: ItemsQueueEventTypes.FETCHED_ITEMS_BY_CLIENT_ID_PAGINATE,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -252,7 +252,7 @@ export async function FETCH_ITEMS_BY_ASSET_ID(event: RmqEventMessage, rmqClient:
       type: ItemsQueueEventTypes.FETCHED_ITEMS_BY_ASSET_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -283,7 +283,7 @@ export async function FETCH_ITEMS_BY_ASSET_ID_PAGINATE(event: RmqEventMessage, r
       type: ItemsQueueEventTypes.FETCHED_ITEMS_BY_ASSET_ID_PAGINATE,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -310,7 +310,7 @@ export async function FETCH_ITEM_FIELDS_BY_ITEM_ID(event: RmqEventMessage, rmqCl
       type: ItemsQueueEventTypes.FETCHED_ITEM_FIELDS_BY_ITEM_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -341,7 +341,7 @@ export async function FETCH_ITEM_FIELDS_BY_ITEM_ID_PAGIATE(event: RmqEventMessag
       type: ItemsQueueEventTypes.FETCHED_ITEM_FIELDS_BY_ITEM_ID_PAGIATE,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -368,7 +368,7 @@ export async function FETCH_ITEM_FIELDS_BY_PARENT_FIELD_ID(event: RmqEventMessag
       type: ItemsQueueEventTypes.FETCHED_ITEM_FIELDS_BY_PARENT_FIELD_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -399,7 +399,7 @@ export async function FETCH_ITEM_FIELDS_BY_PARENT_FIELD_ID_PAGINATE(event: RmqEv
       type: ItemsQueueEventTypes.FETCHED_ITEM_FIELDS_BY_PARENT_FIELD_ID_PAGINATE,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -426,7 +426,7 @@ export async function CREATE_ITEM(event: RmqEventMessage, rmqClient: RabbitMQCli
       type: ItemsQueueEventTypes.ITEM_CREATED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }

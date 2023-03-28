@@ -32,7 +32,7 @@ import { UserResolver } from './resolvers/user.resolver';
 
 const main_routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'welcome' },
-  { path: 'welcome', pathMatch: 'full', component: WelcomePageComponent },
+  { path: 'welcome', pathMatch: 'full', component: WelcomePageComponent, canActivate: [UserLoggedoutGuard, AuthorityLoggedoutGuard] },
   { path: 'about', pathMatch: 'full', component: AboutPageComponent },
   { path: 'contact', pathMatch: 'full', component: ContactPageComponent },
   { path: 'terms-agreements', pathMatch: 'full', component: TermsAgreementsPageComponent },
@@ -42,13 +42,13 @@ const main_routes: Routes = [
 
 
 const user_routes: Routes = [
-  { path: 'user-signup', pathMatch: 'full', component: UserSignupPageComponent, canActivate: [UserLoggedoutGuard] },
-  { path: 'user-login', pathMatch: 'full', component: UserLoginPageComponent, canActivate: [UserLoggedoutGuard] },
+  { path: 'user-signup', pathMatch: 'full', component: UserSignupPageComponent, canActivate: [UserLoggedoutGuard, AuthorityLoggedoutGuard] },
+  { path: 'user-login', pathMatch: 'full', component: UserLoginPageComponent, canActivate: [UserLoggedoutGuard, AuthorityLoggedoutGuard] },
   {
     path: 'users/:user_id',
     component: UserBasePageComponent,
     data: { authParamsProp: 'user_id' },
-    canActivate: [UserAuthGuard],
+    canActivate: [AuthorityLoggedoutGuard, UserAuthGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: UserHomePageComponent },
@@ -62,13 +62,13 @@ const user_routes: Routes = [
 
 
 const authority_routes: Routes = [
-  { path: 'authority-signup', pathMatch: 'full', component: AuthoritySignupPageComponent, canActivate: [AuthorityLoggedoutGuard] },
-  { path: 'authority-login', pathMatch: 'full', component: AuthorityLoginPageComponent, canActivate: [AuthorityLoggedoutGuard] },
+  { path: 'authority-signup', pathMatch: 'full', component: AuthoritySignupPageComponent, canActivate: [UserLoggedoutGuard, AuthorityLoggedoutGuard] },
+  { path: 'authority-login', pathMatch: 'full', component: AuthorityLoginPageComponent, canActivate: [UserLoggedoutGuard, AuthorityLoggedoutGuard] },
   {
     path: 'authorities/:authority_id',
     component: AuthorityBasePageComponent,
     data: { authParamsProp: 'authority_id' },
-    canActivate: [AuthorityAuthGuard],
+    canActivate: [UserLoggedoutGuard, AuthorityAuthGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'home' },
       { path: 'home', component: AuthorityHomePageComponent },

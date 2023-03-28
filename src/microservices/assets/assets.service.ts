@@ -48,7 +48,7 @@ export async function FETCH_ASSET_BY_ID(event: RmqEventMessage, rmqClient: Rabbi
       type: AssetsQueueEventTypes.FETCHED_ASSET_BY_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -75,7 +75,7 @@ export async function FETCH_ASSET_BY_UUID(event: RmqEventMessage, rmqClient: Rab
       type: AssetsQueueEventTypes.FETCHED_ASSET_BY_UUID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -102,7 +102,7 @@ export async function FETCH_ASSETS_BY_AUTHORITY_ID(event: RmqEventMessage, rmqCl
       type: AssetsQueueEventTypes.FETCHED_ASSETS_BY_AUTHORITY_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -133,7 +133,7 @@ export async function FETCH_ASSETS_BY_AUTHORITY_ID_PAGINATE(event: RmqEventMessa
       type: AssetsQueueEventTypes.FETCHED_ASSETS_BY_AUTHORITY_ID_PAGINATE,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -161,7 +161,7 @@ export async function CREATE_ASSET(event: RmqEventMessage, rmqClient: RabbitMQCl
       type: AssetsQueueEventTypes.ASSET_CREATED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -188,7 +188,7 @@ export async function UPDATE_ASSET(event: RmqEventMessage, rmqClient: RabbitMQCl
       type: AssetsQueueEventTypes.ASSET_UPDATED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -215,7 +215,7 @@ export async function DELETE_ASSET(event: RmqEventMessage, rmqClient: RabbitMQCl
       type: AssetsQueueEventTypes.ASSET_DELETED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }

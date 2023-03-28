@@ -52,7 +52,7 @@ export async function FETCH_USER_NOTIFICATIONS_LAST_OPENED(event: RmqEventMessag
       type: NotificationsQueueEventTypes.FETCHED_USER_NOTIFICATIONS_LAST_OPENED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -79,7 +79,7 @@ export async function FETCH_USER_NOTIFICATIONS(event: RmqEventMessage, rmqClient
       type: NotificationsQueueEventTypes.FETCHED_USER_NOTIFICATIONS,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -110,7 +110,7 @@ export async function FETCH_USER_NOTIFICATIONS_PAGINATE(event: RmqEventMessage, 
       type: NotificationsQueueEventTypes.FETCHED_USER_NOTIFICATIONS_PAGINATE,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -137,7 +137,7 @@ export async function CREATE_USER_NOTIFICATION(event: RmqEventMessage, rmqClient
       type: NotificationsQueueEventTypes.CREATED_USER_NOTIFICATION,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -166,7 +166,7 @@ export async function FETCH_AUTHORITY_NOTIFICATIONS_LAST_OPENED(event: RmqEventM
       type: NotificationsQueueEventTypes.FETCHED_AUTHORITY_NOTIFICATIONS_LAST_OPENED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -193,7 +193,7 @@ export async function FETCH_AUTHORITY_NOTIFICATIONS(event: RmqEventMessage, rmqC
       type: NotificationsQueueEventTypes.FETCHED_AUTHORITY_NOTIFICATIONS,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -224,7 +224,7 @@ export async function FETCH_AUTHORITY_NOTIFICATIONS_PAGINATE(event: RmqEventMess
       type: NotificationsQueueEventTypes.FETCHED_AUTHORITY_NOTIFICATIONS_PAGINATE,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -251,7 +251,7 @@ export async function CREATE_AUTHORITY_NOTIFICATION(event: RmqEventMessage, rmqC
       type: NotificationsQueueEventTypes.CREATED_AUTHORITY_NOTIFICATION,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }

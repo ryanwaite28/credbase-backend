@@ -361,6 +361,7 @@ export class RabbitMQClient {
         console.log(`request/rpc sent; awaiting response...`);
 
         const replyHandler = (message: amqplib.ConsumeMessage | null) => {
+          console.log(`\nReceived reply.\n`);
           const isReplyToRequest: boolean = !!message && message.properties.correlationId === correlationId;
           if (isReplyToRequest) {
             const useContentType = message!.properties.contentType;
@@ -412,6 +413,11 @@ export class RabbitMQClient {
       const useContentType = publishOptions.contentType || ContentTypes.TEXT;
       const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].serialize(data) : data;
       this.channel.publish(exchange, routingKey, useData, publishOptions);
+
+      if (publishOptions.replyTo && !this.clientInitConfig.dontSendToReplyQueueOnPublish) {
+        console.log(`sending copy to reply to queue ${publishOptions.replyTo}...`);
+        this.channel.sendToQueue(publishOptions.replyTo, useData, { type: publishOptions.type, contentType: publishOptions.contentType });
+      }
     };
 
     if (!this.isReady) {

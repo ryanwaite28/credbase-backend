@@ -281,7 +281,7 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
         type: UsersQueueEventTypes.USER_LOGIN_EXCEPTION,
         contentType: ContentTypes.JSON,
         correlationId: event.message.properties.correlationId,
-        replyTo: event.message.properties.replyTo,
+        // replyTo: event.message.properties.replyTo,
       }
     });
   }
@@ -308,7 +308,7 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
         type: UsersQueueEventTypes.USER_LOGIN_EXCEPTION,
         contentType: ContentTypes.JSON,
         correlationId: event.message.properties.correlationId,
-        replyTo: event.message.properties.replyTo,
+        // replyTo: event.message.properties.replyTo,
       }
     });
   }
@@ -332,7 +332,7 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
       type: UsersQueueEventTypes.USER_LOGGED_IN,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.correlationId,
+      // replyTo: event.message.properties.correlationId,
     }
   });
 }

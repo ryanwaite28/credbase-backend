@@ -46,7 +46,7 @@ export async function FETCH_S3OBJECT_BY_ID(event: RmqEventMessage, rmqClient: Ra
       type: StoragesQueueEventTypes.FETCHED_S3OBJECT_BY_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -73,7 +73,7 @@ export async function FETCH_S3OBJECTS_BY_MODEL(event: RmqEventMessage, rmqClient
       type: StoragesQueueEventTypes.FETCHED_S3OBJECTS_BY_MODEL,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -100,7 +100,7 @@ export async function DELETE_S3OBJECT_BY_ID(event: RmqEventMessage, rmqClient: R
       type: StoragesQueueEventTypes.DELETED_S3OBJECT_BY_ID,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -127,7 +127,7 @@ export async function DELETE_S3OBJECTS_BY_MODEL(event: RmqEventMessage, rmqClien
       type: StoragesQueueEventTypes.DELETED_S3OBJECTS_BY_MODEL,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }
@@ -181,7 +181,7 @@ export async function CREATE_S3OBJECT(event: RmqEventMessage, rmqClient: RabbitM
       type: StoragesQueueEventTypes.CREATED_S3OBJECT,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.replyTo,
+      // replyTo: event.message.properties.replyTo,
     }
   });
 }

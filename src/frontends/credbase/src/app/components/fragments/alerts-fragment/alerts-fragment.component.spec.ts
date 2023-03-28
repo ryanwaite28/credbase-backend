@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { AlertsFragmentComponent } from './alerts-fragment.component';
+import { CommonAlertsFragmentComponent } from './alerts-fragment.component';
 
-describe('AlertsFragmentComponent', () => {
-  let component: AlertsFragmentComponent;
-  let fixture: ComponentFixture<AlertsFragmentComponent>;
+describe('CommonAlertsFragmentComponent', () => {
+  let component: CommonAlertsFragmentComponent;
+  let fixture: ComponentFixture<CommonAlertsFragmentComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AlertsFragmentComponent ]
+      declarations: [ CommonAlertsFragmentComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AlertsFragmentComponent);
+    fixture = TestBed.createComponent(CommonAlertsFragmentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
