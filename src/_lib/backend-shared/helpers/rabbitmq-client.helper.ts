@@ -37,6 +37,7 @@ export type RmqEventMessage<T = any> = {
 export type AckFn = (message: amqplib.Message) => void;
 
 export type RabbitMqInitConfig = {
+  dontSendToReplyQueueOnPublish?: boolean,
   autoAckUnhandledMessageTypes?: boolean,
   pushUnhandledMessageTypesToDefaultHandler?: boolean,
   delayStart?: number,
@@ -125,9 +126,9 @@ export class RabbitMQClient {
         })
         .then(() => {
           // create an exclusive queue for this channel connection
-          console.log(`Creating exclusive queue ${this.EXCLUSIVE_QUEUE}...`);
+          console.log(`Creating exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}...`);
           return this.channel.assertQueue(this.EXCLUSIVE_QUEUE, { exclusive: true, durable: false }).then((response) => {
-            console.log(`Created exclusive queue ${this.EXCLUSIVE_QUEUE}.`);
+            console.log(`Created exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}.`);
           });
         })
         .then(() => {
@@ -157,7 +158,9 @@ export class RabbitMQClient {
         })
         .then(() => {
           const promises = bindings.map((config) => this.channel.bindQueue(config.queue, config.exchange, config.routingKey));
-          return Promise.all(promises).then(values => {
+          // bind the exclusive queue to all the exchanges
+          const exclusiveBindings = bindings.map((config) => this.channel.bindQueue(this.EXCLUSIVE_QUEUE, config.exchange, config.routingKey));
+          return Promise.all([promises, exclusiveBindings]).then(values => {
             console.log(`bindings created on channel`);
           });
         })
