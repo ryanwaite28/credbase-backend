@@ -1,4 +1,4 @@
-import { ContentTypes, mapify, MapType, wait } from "@lib/fullstack-shared";
+import { ContentTypes, mapify, MapType, uniqueValue, wait } from "@lib/fullstack-shared";
 import * as amqplib from "amqplib";
 import {
   BehaviorSubject,
@@ -16,6 +16,7 @@ import {
 import { AppEnvironment } from "../environment/app.enviornment";
 import { ServiceMethodResults } from "../interfaces/common.interface";
 import { SERIALIZERS } from "../utils/serializers.utils";
+import { v1 as uuidv1 } from 'uuid';
 
 
 
@@ -68,6 +69,8 @@ export class RabbitMQClient {
 
   private DEFAULT_LISTENER_TYPE = '__default';
 
+  private EXCLUSIVE_QUEUE: string = uuidv1();
+
   private queueListeners: MapType<Subscription> = {};
   private queueToEventHandleMapping: MapType<
     MapType<ReplaySubject<RmqEventMessage>>
@@ -119,6 +122,13 @@ export class RabbitMQClient {
             this.channel.prefetch(prefetch || 1);
           }
           console.log(`channel created on message server`);
+        })
+        .then(() => {
+          // create an exclusive queue for this channel connection
+          console.log(`Creating exclusive queue ${this.EXCLUSIVE_QUEUE}...`);
+          return this.channel.assertQueue(this.EXCLUSIVE_QUEUE, { exclusive: true, durable: false }).then((response) => {
+            console.log(`Created exclusive queue ${this.EXCLUSIVE_QUEUE}.`);
+          });
         })
         .then(() => {
           const promises: Promise<amqplib.Replies.AssertQueue>[] = [];
@@ -327,39 +337,34 @@ export class RabbitMQClient {
     });
   }
 
-  sendRequest <T = any> (options: {
+  async sendRequest <T = any> (options: {
     queue: string,
     data: any,
-    publishOptions: amqplib.Options.Publish
+    publishOptions: amqplib.Options.Publish,
   }) {
-    if (!options.publishOptions.replyTo) {
-      throw new Error(`replyTo queue must be specified`);
-    }
-    if (!options.publishOptions.correlationId) {
-      throw new Error(`correlationId queue must be specified`);
-    }
-
     return new Promise<RmqEventMessage<ServiceMethodResults<T>>>((resolve, reject) => {
       const start_time = Date.now();
+
+      const correlationId = uniqueValue();
 
       const send = () => {
         const { data, publishOptions, queue } = options;
         const useContentType = publishOptions.contentType || ContentTypes.TEXT;
         const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].serialize(data) : data;
-        this.channel.sendToQueue(queue, useData, publishOptions);
+        this.channel.sendToQueue(queue, useData, { ...publishOptions, correlationId, replyTo: this.EXCLUSIVE_QUEUE });
       };
 
       const awaitResponse = () => {
-        const consumerTag = Date.now().toString();
-        console.log(`request/rpc sent; awaiting response...`, { consumerTag });
+        console.log(`request/rpc sent; awaiting response...`);
 
-        this.channel.consume(options.publishOptions.replyTo!, (message: amqplib.ConsumeMessage | null) => {
-          if (message && message?.properties.correlationId === options.publishOptions.correlationId) {
-            const useContentType = message.properties.contentType;
-            const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(message.content) : message.content;
+        const replyHandler = (message: amqplib.ConsumeMessage | null) => {
+          const isReplyToRequest: boolean = !!message && message.properties.correlationId === correlationId;
+          if (isReplyToRequest) {
+            const useContentType = message!.properties.contentType;
+            const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(message!.content) : message!.content;
             const messageObj: RmqEventMessage = {
               data: useData,
-              message,
+              message: message!,
               metadata: {
                 env: AppEnvironment.APP_ENV,
                 isEnv: AppEnvironment.IS_ENV,
@@ -368,13 +373,13 @@ export class RabbitMQClient {
             const end_time = Date.now();
             const total_time = (end_time - start_time) / 1000;
             const time_in_seconds = total_time.toFixed();
-            console.log(`received response from request/rpc:`, { consumerTag, start_time, end_time, total_time, time_in_seconds, messageObj, options });
+            console.log(`received response from request/rpc:`, { start_time, end_time, total_time, time_in_seconds, messageObj, options });
             (messageObj.data as ServiceMethodResults<T>).error ? reject(messageObj) : resolve(messageObj);
-            this.ack(message);
-            this.channel.cancel(consumerTag);
-            console.log(`Closing consumer via tag.`, { consumerTag });
+            this.ack(message!);
           }
-        }, { consumerTag });
+        };
+
+        this.channel.consume(this.EXCLUSIVE_QUEUE, replyHandler);
       };
 
       if (!this.isReady) {
