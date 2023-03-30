@@ -6,6 +6,7 @@ import {
 import {
   ContentTypes,
   MicroservicesQueues,
+  uniqueValue,
   UserSignInDto,
   UserSignUpDto,
   UsersQueueMessageTypes,
@@ -50,6 +51,7 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.FETCH_USERS,
         contentType: ContentTypes.JSON,
+        correlationId: uniqueValue(),
       }
     })
     .then((event) => event.data)
@@ -63,6 +65,7 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.FETCH_USER_BY_ID,
         contentType: ContentTypes.JSON,
+        correlationId: uniqueValue(),
       }
     })
     .then((event) => event.data)
@@ -76,6 +79,7 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.FETCH_USER_BY_EMAIL,
         contentType: ContentTypes.JSON,
+        correlationId: uniqueValue(),
       }
     })
     .then((event) => event.data as ServiceMethodResults)
@@ -89,6 +93,7 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.CREATE_USER,
         contentType: ContentTypes.JSON,
+        correlationId: uniqueValue(),
       }
     })
     .then((event) => {
@@ -108,6 +113,7 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.LOGIN_USER,
         contentType: ContentTypes.JSON,
+        correlationId: uniqueValue(),
       }
     })
     .then((event) => {
@@ -127,6 +133,7 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.UPDATE_USER,
         contentType: ContentTypes.JSON,
+        correlationId: uniqueValue(),
       }
     })
     .then((event) => {
@@ -146,6 +153,7 @@ export class UsersService {
       publishOptions: {
         type: UsersQueueMessageTypes.DELETE_USER,
         contentType: ContentTypes.JSON,
+        correlationId: uniqueValue(),
       }
     })
     .then((event) => event.data)

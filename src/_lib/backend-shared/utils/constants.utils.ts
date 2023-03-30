@@ -41,7 +41,7 @@ export const corsOptions: CorsOptions = {
     //   whitelist_domains,
     // });
 
-    if (originIsAllowed) {
+    if (originIsAllowed || AppEnvironment.IS_ENV.LOCAL) {
       callback(null, true);
     } else {
       callback(new Error(`Origin "${origin}" Not allowed by CORS`));
@@ -64,7 +64,7 @@ export const corsMobileOptions: CorsOptions = {
     //   whitelist_domains,
     // });
 
-    if (originIsAllowed) {
+    if (originIsAllowed || AppEnvironment.IS_ENV.LOCAL) {
       callback(null, true);
     } else {
       callback(new Error(`Mobile Origin "${origin}" Not allowed by CORS`));
@@ -87,7 +87,7 @@ export const corsApiOptions: CorsOptions = {
     //   whitelist_domains,
     // });
 
-    if (originIsAllowed) {
+    if (originIsAllowed || AppEnvironment.IS_ENV.LOCAL) {
       callback(null, true);
     } else {
       callback(new Error(`API Origin "${origin}" Not allowed by CORS`));

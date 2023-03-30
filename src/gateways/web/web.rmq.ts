@@ -18,13 +18,13 @@ export const rmqClient = new RabbitMQClient({
   retryDelay: 3000,
   queues: [
     { name: MicroservicesQueues.USER_MESSAGES, handleMessageTypes: Object.values(UsersQueueMessageTypes), options: { durable: true } },
-    { name: MicroservicesQueues.USER_EVENTS, handleMessageTypes: Object.values(UsersQueueEventTypes), options: { durable: true } },
+    // { name: MicroservicesQueues.USER_EVENTS, handleMessageTypes: Object.values(UsersQueueEventTypes), options: { durable: true } },
   ],
   exchanges: [
-    { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
+    // { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
   ],
   bindings: [
-    { queue: MicroservicesQueues.USER_EVENTS, exchange: MicroservicesExchanges.USER_EVENTS, routingKey: RoutingKeys.EVENT },
+    // { queue: MicroservicesQueues.USER_EVENTS, exchange: MicroservicesExchanges.USER_EVENTS, routingKey: RoutingKeys.EVENT },
   ],
 
   pre_init_promises: []

@@ -94,6 +94,10 @@ export class RabbitMQClient {
   }
 
   constructor(clientInitConfig: RabbitMqInitConfig) {
+    this.init(clientInitConfig);
+  }
+
+  init(clientInitConfig: RabbitMqInitConfig) {
     this.clientInitConfig = clientInitConfig;
     const {
       delayStart,
@@ -126,10 +130,10 @@ export class RabbitMQClient {
         })
         .then(() => {
           // create an exclusive queue for this channel connection
-          console.log(`Creating exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}...`);
-          return this.channel.assertQueue(this.EXCLUSIVE_QUEUE, { exclusive: true, durable: false }).then((response) => {
-            console.log(`Created exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}.`);
-          });
+          // console.log(`Creating exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}...`);
+          // return this.channel.assertQueue(this.EXCLUSIVE_QUEUE, { exclusive: true, durable: false }).then((response) => {
+          //   console.log(`Created exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}.`);
+          // });
         })
         .then(() => {
           const promises: Promise<amqplib.Replies.AssertQueue>[] = [];
@@ -192,7 +196,7 @@ export class RabbitMQClient {
         });
     };
 
-    wait(delayStart || 0)
+    return wait(delayStart || 0)
     .then(() => {
       console.log(`Running pre init promises...`);
       return Promise.all(pre_init_promises?.map(p => p instanceof Promise ? p : p()) || []).then(() => {
@@ -225,6 +229,8 @@ export class RabbitMQClient {
           if (!message) {
             throw new Error('Consumer cancelled by server');
           }
+
+          console.log(`received queue message`, message);
           
           // see if a listener was created for the routing key
           const messageType = message.properties.type;
@@ -340,30 +346,42 @@ export class RabbitMQClient {
     });
   }
 
-  async sendRequest <T = any> (options: {
+  sendRequest <T = any> (options: {
     queue: string,
     data: any,
     publishOptions: amqplib.Options.Publish,
   }) {
-    return new Promise<RmqEventMessage<ServiceMethodResults<T>>>((resolve, reject) => {
+    if (!options.publishOptions.correlationId) {
+      throw new Error(`correlation ID required.`);
+    }
+    return new Promise<RmqEventMessage<ServiceMethodResults<T>>>(async (resolve, reject) => {
       const start_time = Date.now();
 
+      const consumerTag = uniqueValue();
       const correlationId = uniqueValue();
+      const replyTo = uuidv1();
+
+      await this.channel.assertQueue(replyTo, { exclusive: true, durable: false, autoDelete: true }).then((response) => {
+        console.log(`Created temp queue ${replyTo} for client ${AppEnvironment.APP_NAME.MACHINE}.`);
+      });
 
       const send = () => {
         const { data, publishOptions, queue } = options;
         const useContentType = publishOptions.contentType || ContentTypes.TEXT;
         const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].serialize(data) : data;
-        this.channel.sendToQueue(queue, useData, { ...publishOptions, correlationId, replyTo: this.EXCLUSIVE_QUEUE });
+        this.channel.sendToQueue(queue, useData, { ...publishOptions, correlationId, replyTo });
       };
 
       const awaitResponse = () => {
-        console.log(`request/rpc sent; awaiting response...`);
+        console.log(`request/rpc sent; awaiting response...`, { correlationId, consumerTag });
 
         const replyHandler = (message: amqplib.ConsumeMessage | null) => {
-          console.log(`\nReceived reply.\n`);
-          const isReplyToRequest: boolean = !!message && message.properties.correlationId === correlationId;
+          console.log(`\nReceived reply.\n`, { message });
+          const correlationIdMatch = message!.properties.correlationId == correlationId;
+          const isReplyToRequest: boolean = !!message && correlationIdMatch;
+          console.log({ isReplyToRequest, consumerTag, correlationIdMatch, requestCorrelationId: correlationId, responseCorrelationId: message!.properties.correlationId });
           if (isReplyToRequest) {
+            this.ack(message!);
             const useContentType = message!.properties.contentType;
             const useData = SERIALIZERS[useContentType] ? SERIALIZERS[useContentType].deserialize(message!.content) : message!.content;
             const messageObj: RmqEventMessage = {
@@ -379,11 +397,13 @@ export class RabbitMQClient {
             const time_in_seconds = total_time.toFixed();
             console.log(`received response from request/rpc:`, { start_time, end_time, total_time, time_in_seconds, messageObj, options });
             (messageObj.data as ServiceMethodResults<T>).error ? reject(messageObj) : resolve(messageObj);
-            this.ack(message!);
+            this.channel.cancel(consumerTag).then(() => {
+              console.log(`removed consumer via consumerTag`);
+            });
           }
         };
 
-        this.channel.consume(this.EXCLUSIVE_QUEUE, replyHandler);
+        this.channel.consume(replyTo, replyHandler, { consumerTag });
       };
 
       if (!this.isReady) {
@@ -416,7 +436,7 @@ export class RabbitMQClient {
 
       if (publishOptions.replyTo && !this.clientInitConfig.dontSendToReplyQueueOnPublish) {
         console.log(`sending copy to reply to queue ${publishOptions.replyTo}...`);
-        this.channel.sendToQueue(publishOptions.replyTo, useData, { type: publishOptions.type, contentType: publishOptions.contentType });
+        this.channel.sendToQueue(publishOptions.replyTo, useData, publishOptions);
       }
     };
 
