@@ -20,7 +20,7 @@ Entity - company / organization / institution / etc.
 
 
 CredBase has a few main concepts to achieve this mission and vision:
-* **Authority** - This is an entity that defines **Assets** and issues **Items**, such as c.
+* **Authority** - This is an entity that defines **Assets** and issues **Items**.
 * **Asset** - This is a definition/construct/blueprint/etc for some piece of information.
 * **Item** - This is a body of information that is in instance of an **Asset**.
 * **User** - People who use the platform
