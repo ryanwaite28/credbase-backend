@@ -359,7 +359,7 @@ export class RabbitMQClient {
 
       const consumerTag = uniqueValue();
       const correlationId = uniqueValue();
-      const replyTo = uuidv1();
+      const replyTo = `${AppEnvironment.APP_NAME.MACHINE}-${uuidv1()}`;
 
       await this.channel.assertQueue(replyTo, { exclusive: true, durable: false, autoDelete: true }).then((response) => {
         console.log(`Created temp queue ${replyTo} for client ${AppEnvironment.APP_NAME.MACHINE}.`);
