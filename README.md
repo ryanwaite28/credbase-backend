@@ -24,7 +24,7 @@ CredBase has a few main concepts to achieve this mission and vision:
 * **Asset** - This is a definition/construct/blueprint/etc for some piece of information.
 * **Item** - This is a body of information that is in instance of an **Asset**.
 * **User** - People who use the platform
-* **Client** - This is the link bewteen a `User` and an `Authority` (a User can have items from many different Authorities and an Authority can issue items to many different Users). An `Authority` creates a `Client` profile for a User and adds `Items` to their Client profile.
+* **Client** - This is the link between a `User` and an `Authority` (a User can have items from many different Authorities and an Authority can issue items to many different Users). An `Authority` creates a `Client` profile for a User and adds `Items` to their Client profile.
 
 
 
