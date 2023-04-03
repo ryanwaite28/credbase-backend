@@ -20,9 +20,35 @@ import { v1 as uuidv1 } from 'uuid';
 
 
 
-export interface QueueConfig { name: string, handleMessageTypes: string[], options?: amqplib.Options.AssertQueue }
+
+export type RmqMessageTypeHandler = (event: RmqEventMessage) => Promise<void>;
+export type RmqHandleMessageTypeConfig = { messageType: string, callbackHandler: RmqMessageTypeHandler };
+export type RmqHandleMessageTypeConfigs = string[] | RmqHandleMessageTypeConfig[];
+
+export interface QueueConfig { name: string, handleMessageTypes: RmqHandleMessageTypeConfigs, options?: amqplib.Options.AssertQueue }
 export interface ExchangeConfig { name: string, type: string, options?: amqplib.Options.AssertExchange }
 export interface QueueExchangeBindingConfig { queue: string, exchange: string, routingKey: string }
+
+export type RmqEventRequestResponse <T = any> = Promise<RmqEventMessage<ServiceMethodResults<T>>>;
+
+export type RmqSendMessageParams = {
+  queue: string,
+  data: any,
+  publishOptions: amqplib.Options.Publish
+}
+
+export type RmqSendRequestParams = {
+  queue: string,
+  data: any,
+  publishOptions: amqplib.Options.Publish,
+}
+
+export type RmqPublishEventParams = {
+  exchange: string,
+  data: ServiceMethodResults,
+  routingKey: string,
+  publishOptions: amqplib.Options.Publish
+}
 
 export type RmqEventMessage<T = any> = {
   data: T,
@@ -31,7 +57,11 @@ export type RmqEventMessage<T = any> = {
     env?: string,
     // appName?: any,
     isEnv?: any,
-  }
+  },
+  ack: () => void;
+  publishEvent: (options: RmqPublishEventParams) => void,
+  sendMessage: (options: RmqSendMessageParams) => void,
+  sendRequest: <T = any> (options: RmqSendRequestParams) => Promise<RmqEventMessage<ServiceMethodResults<T>>>,
 };
 
 export type AckFn = (message: amqplib.Message) => void;
@@ -73,10 +103,13 @@ export class RabbitMQClient {
   private EXCLUSIVE_QUEUE: string = uuidv1();
 
   private queueListeners: MapType<Subscription> = {};
+  
   private queueToEventHandleMapping: MapType<
     MapType<ReplaySubject<RmqEventMessage>>
   > = {};
-
+  private queueToEventCallbackMapping: MapType<
+    MapType<RmqMessageTypeHandler>
+  > = {};
 
   get onReady(): Observable<boolean> {
     return this.isReadyStream.asObservable().pipe(
@@ -130,22 +163,37 @@ export class RabbitMQClient {
         })
         .then(() => {
           // create an exclusive queue for this channel connection
-          // console.log(`Creating exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}...`);
-          // return this.channel.assertQueue(this.EXCLUSIVE_QUEUE, { exclusive: true, durable: false }).then((response) => {
-          //   console.log(`Created exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}.`);
-          // });
+          console.log(`Creating exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}...`);
+          return this.channel.assertQueue(this.EXCLUSIVE_QUEUE, { exclusive: true, durable: false }).then((response) => {
+            console.log(`Created exclusive queue ${this.EXCLUSIVE_QUEUE} for client ${AppEnvironment.APP_NAME.MACHINE}.`);
+          });
         })
         .then(() => {
           const promises: Promise<amqplib.Replies.AssertQueue>[] = [];
           // by default, create an observable stream on the queue for unidentified/null routing keys
           for (const queueConfig of queues) {
             this.queueToEventHandleMapping[queueConfig.name] = {};
+            this.queueToEventCallbackMapping[queueConfig.name] = {};
 
             const queueListenersMap = this.queueToEventHandleMapping[queueConfig.name];
+            const queueCallbacksMap = this.queueToEventCallbackMapping[queueConfig.name];
+
             queueListenersMap[this.DEFAULT_LISTENER_TYPE] = new ReplaySubject();
-            for (const messageType of queueConfig.handleMessageTypes) {
-              queueListenersMap[messageType] = new ReplaySubject();
+
+            const isStringList = typeof queueConfig.handleMessageTypes[0] === 'string';
+            if (isStringList) {
+              for (const messageType of queueConfig.handleMessageTypes) {
+                queueListenersMap[messageType as string] = new ReplaySubject();
+              }
             }
+            else {
+              for (const messageType of queueConfig.handleMessageTypes) {
+                const config: RmqHandleMessageTypeConfig = (messageType as any) as RmqHandleMessageTypeConfig;
+                queueCallbacksMap[config.messageType] = config.callbackHandler;
+              }
+              this.onQueue(queueConfig.name);
+            }
+
             promises.push(this.channel.assertQueue(queueConfig.name, queueConfig.options));
           }
           return Promise.all(promises).then((values) => {
@@ -163,8 +211,8 @@ export class RabbitMQClient {
         .then(() => {
           const promises = bindings.map((config) => this.channel.bindQueue(config.queue, config.exchange, config.routingKey));
           // bind the exclusive queue to all the exchanges
-          const exclusiveBindings = bindings.map((config) => this.channel.bindQueue(this.EXCLUSIVE_QUEUE, config.exchange, config.routingKey));
-          return Promise.all([promises, exclusiveBindings]).then(values => {
+          // const exclusiveBindings = bindings.map((config) => this.channel.bindQueue(this.EXCLUSIVE_QUEUE, config.exchange, config.routingKey));
+          return Promise.all(promises).then(values => {
             console.log(`bindings created on channel`);
           });
         })
@@ -242,7 +290,13 @@ export class RabbitMQClient {
             metadata: {
               env: AppEnvironment.APP_ENV,
               isEnv: AppEnvironment.IS_ENV,
-            }
+            },
+            ack: () => {
+              this.ack(message);
+            },
+            sendMessage: this.sendMessage.bind(this),
+            sendRequest: this.sendRequest.bind(this),
+            publishEvent: this.publishEvent.bind(this),
           };
           
           // console.log(`Message on queue ${queue}:`, messageObj);
@@ -259,6 +313,12 @@ export class RabbitMQClient {
               console.log(`message type handler found; pushing to ${messageType} handler on queue ${queue}`);
               this.queueToEventHandleMapping[queue][messageType].next(messageObj);
             }
+            else if (this.queueToEventCallbackMapping[queue][messageType]) {
+              // there is a registered listener for the type, push to that stream
+              console.log(`message type callback found; pushing to ${messageType} callback on queue ${queue}`);
+              const callbackHandler = this.queueToEventCallbackMapping[queue][messageType];
+              callbackHandler(messageObj);
+            }
             else {
               // no registered listener
               if (this.clientInitConfig.autoAckUnhandledMessageTypes) {
@@ -272,7 +332,7 @@ export class RabbitMQClient {
                 return;
               }
               else {
-                throw new Error(`Message received with unregistered message type handler. Please add message type "${messageType}" in the list of message types for the queue config in the constructor.`);
+                throw new Error(`Message received with unregistered message type handler/callback. Please add message type "${messageType}" in the list of message types for the queue config in the constructor.`);
               }
             }
           }
@@ -305,12 +365,12 @@ export class RabbitMQClient {
       return this.onReady.pipe(
         mergeMap((ready: boolean, index: number) => this.queueToEventHandleMapping[queue][this.DEFAULT_LISTENER_TYPE].asObservable())
       );
-    }
+    };
 
     return {
       handle,
       handleDefault
-    }
+    };
   }
 
   ack(message: amqplib.ConsumeMessage) {
@@ -318,11 +378,7 @@ export class RabbitMQClient {
     console.log(`Acknoledged rmq message.`);
   }
 
-  sendMessage(options: {
-    queue: string,
-    data: any,
-    publishOptions: amqplib.Options.Publish
-  }) {
+  sendMessage(options: RmqSendMessageParams) {
     return new Promise((resolve, reject) => {
       const send = () => {
         const { data, publishOptions, queue } = options;
@@ -351,14 +407,14 @@ export class RabbitMQClient {
     data: any,
     publishOptions: amqplib.Options.Publish,
   }) {
-    if (!options.publishOptions.correlationId) {
-      throw new Error(`correlation ID required.`);
-    }
+    console.log(`sendRequest:`, options);
+
+
     return new Promise<RmqEventMessage<ServiceMethodResults<T>>>(async (resolve, reject) => {
       const start_time = Date.now();
 
       const consumerTag = uniqueValue();
-      const correlationId = uniqueValue();
+      const correlationId = options.publishOptions.correlationId || uniqueValue();
       const replyTo = `${AppEnvironment.APP_NAME.MACHINE}-${uuidv1()}`;
 
       await this.channel.assertQueue(replyTo, { exclusive: true, durable: false, autoDelete: true }).then((response) => {
@@ -390,7 +446,13 @@ export class RabbitMQClient {
               metadata: {
                 env: AppEnvironment.APP_ENV,
                 isEnv: AppEnvironment.IS_ENV,
-              }
+              },
+              ack: () => {
+                this.ack(message!);
+              },
+              sendMessage: this.sendMessage.bind(this),
+              sendRequest: this.sendRequest.bind(this),
+              publishEvent: this.publishEvent.bind(this),
             };
             const end_time = Date.now();
             const total_time = (end_time - start_time) / 1000;
@@ -422,12 +484,7 @@ export class RabbitMQClient {
     });
   }
 
-  publishEvent(options: {
-    exchange: string,
-    data: ServiceMethodResults,
-    routingKey: string,
-    publishOptions: amqplib.Options.Publish
-  }) {
+  publishEvent(options: RmqPublishEventParams) {
     const publish = () => {
       const { data, routingKey, publishOptions, exchange } = options;
       const useContentType = publishOptions.contentType || ContentTypes.TEXT;

@@ -1,11 +1,13 @@
 
-import { RmqEventMessage, RabbitMQClient, AppEnvironment } from "@lib/backend-shared";
+import {
+  RabbitMQClient,
+  AppEnvironment,
+  RmqHandleMessageTypeConfigs
+} from "@lib/backend-shared";
 import {
   MicroservicesQueues,
   UsersQueueMessageTypes,
-  UsersQueueEventTypes,
   MicroservicesExchanges,
-  RoutingKeys
 } from "@lib/fullstack-shared";
 import {
   CREATE_USER,
@@ -21,60 +23,35 @@ import { users_db_init } from "./users.database";
 
 
 
+
+const handleMessageTypes: RmqHandleMessageTypeConfigs = [
+  { messageType: UsersQueueMessageTypes.FETCH_USERS, callbackHandler: FETCH_USERS },
+  { messageType: UsersQueueMessageTypes.FETCH_USER_BY_ID, callbackHandler: FETCH_USER_BY_ID },
+  { messageType: UsersQueueMessageTypes.FETCH_USER_BY_UUID, callbackHandler: FETCH_USER_BY_UUID },
+  { messageType: UsersQueueMessageTypes.FETCH_USER_BY_EMAIL, callbackHandler: FETCH_USER_BY_EMAIL },
+  { messageType: UsersQueueMessageTypes.LOGIN_USER, callbackHandler: LOGIN_USER },
+  { messageType: UsersQueueMessageTypes.CREATE_USER, callbackHandler: CREATE_USER },
+  { messageType: UsersQueueMessageTypes.UPDATE_USER, callbackHandler: UPDATE_USER },
+  { messageType: UsersQueueMessageTypes.DELETE_USER, callbackHandler: DELETE_USER },
+];
+
 const rmqClient = new RabbitMQClient({
   connection_url: AppEnvironment.RABBIT_MQ_URL,
   delayStart: 5000,
   prefetch: 5,
   retryAttempts: 3,
   retryDelay: 3000,
+  // autoAckUnhandledMessageTypes: true,
+
   queues: [
-    { name: MicroservicesQueues.USER_MESSAGES, handleMessageTypes: Object.values(UsersQueueMessageTypes), options: { durable: true } },
+    { name: MicroservicesQueues.USER_MESSAGES, handleMessageTypes, options: { durable: true } },
   ],
   exchanges: [
     { name: MicroservicesExchanges.USER_EVENTS, type: 'fanout', options: { durable: true } },
   ],
-  bindings: [
-  ],
+  bindings: [],
 
   pre_init_promises: [
     users_db_init
   ]
-});
-
-
-
-const usersQueue = rmqClient.onQueue(MicroservicesQueues.USER_MESSAGES);
-
-
-
-usersQueue.handle(UsersQueueMessageTypes.FETCH_USERS).subscribe({
-  next: (event: RmqEventMessage) => FETCH_USERS(event, rmqClient)
-});
-
-usersQueue.handle(UsersQueueMessageTypes.FETCH_USER_BY_UUID).subscribe({
-  next: (event: RmqEventMessage) => FETCH_USER_BY_UUID(event, rmqClient)
-});
-
-usersQueue.handle(UsersQueueMessageTypes.FETCH_USER_BY_ID).subscribe({
-  next: (event: RmqEventMessage) => FETCH_USER_BY_ID(event, rmqClient)
-});
-
-usersQueue.handle(UsersQueueMessageTypes.FETCH_USER_BY_EMAIL).subscribe({
-  next: (event: RmqEventMessage) => FETCH_USER_BY_EMAIL(event, rmqClient)
-});
-
-usersQueue.handle(UsersQueueMessageTypes.LOGIN_USER).subscribe({
-  next: (event: RmqEventMessage) => LOGIN_USER(event, rmqClient)
-});
-
-usersQueue.handle(UsersQueueMessageTypes.CREATE_USER).subscribe({
-  next: (event: RmqEventMessage) => CREATE_USER(event, rmqClient)
-});
-
-usersQueue.handle(UsersQueueMessageTypes.UPDATE_USER).subscribe({
-  next: (event: RmqEventMessage) => UPDATE_USER(event, rmqClient)
-});
-
-usersQueue.handle(UsersQueueMessageTypes.DELETE_USER).subscribe({
-  next: (event: RmqEventMessage) => DELETE_USER(event, rmqClient)
 });

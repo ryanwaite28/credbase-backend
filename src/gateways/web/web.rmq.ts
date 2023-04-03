@@ -16,6 +16,7 @@ export const rmqClient = new RabbitMQClient({
   prefetch: 5,
   retryAttempts: 3,
   retryDelay: 3000,
+
   queues: [
     { name: MicroservicesQueues.USER_MESSAGES, handleMessageTypes: Object.values(UsersQueueMessageTypes), options: { durable: true } },
     // { name: MicroservicesQueues.USER_EVENTS, handleMessageTypes: Object.values(UsersQueueEventTypes), options: { durable: true } },

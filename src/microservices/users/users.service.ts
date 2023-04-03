@@ -14,7 +14,6 @@ import {
 } from 'bcryptjs';
 import {
   RmqEventMessage,
-  RabbitMQClient,
   ServiceMethodResults
 } from "@lib/backend-shared";
 import {
@@ -32,7 +31,7 @@ import {
 
 
 
-export async function FETCH_USERS(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_USERS(event: RmqEventMessage) {
   console.log(`[${UsersQueueMessageTypes.FETCH_USERS}] Received fetch users message:`);
 
   const users = await get_users();
@@ -45,8 +44,8 @@ export async function FETCH_USERS(event: RmqEventMessage, rmqClient: RabbitMQCli
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.USER_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -59,7 +58,7 @@ export async function FETCH_USERS(event: RmqEventMessage, rmqClient: RabbitMQCli
   });
 }
 
-export async function FETCH_USER_BY_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_USER_BY_ID(event: RmqEventMessage) {
   console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_ID}] Received message:`, { data: event.data });
 
   const user = await get_user_by_id(event.data.id);
@@ -72,8 +71,8 @@ export async function FETCH_USER_BY_ID(event: RmqEventMessage, rmqClient: Rabbit
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.USER_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -86,7 +85,7 @@ export async function FETCH_USER_BY_ID(event: RmqEventMessage, rmqClient: Rabbit
   });
 }
 
-export async function FETCH_USER_BY_UUID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_USER_BY_UUID(event: RmqEventMessage) {
   console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_UUID}] Received message:`, { data: event.data });
 
   const user = await get_user_by_uuid(event.data.uuid);
@@ -99,8 +98,8 @@ export async function FETCH_USER_BY_UUID(event: RmqEventMessage, rmqClient: Rabb
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.USER_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -113,7 +112,7 @@ export async function FETCH_USER_BY_UUID(event: RmqEventMessage, rmqClient: Rabb
   });
 }
 
-export async function FETCH_USER_BY_EMAIL(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_USER_BY_EMAIL(event: RmqEventMessage) {
   console.log(`[${UsersQueueMessageTypes.FETCH_USER_BY_EMAIL}] Received message:`, { data: event.data });
 
   const user = await get_user_by_email(event.data.email);
@@ -126,8 +125,8 @@ export async function FETCH_USER_BY_EMAIL(event: RmqEventMessage, rmqClient: Rab
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.USER_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -141,7 +140,7 @@ export async function FETCH_USER_BY_EMAIL(event: RmqEventMessage, rmqClient: Rab
 }
 
 
-export async function CREATE_USER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function CREATE_USER(event: RmqEventMessage) {
   const data = event.data as UserSignUpDto;
   console.log(`[${UsersQueueMessageTypes.CREATE_USER}] Received message:`, { data });
 
@@ -155,8 +154,8 @@ export async function CREATE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
       }
     };
 
-    rmqClient.ack(event.message);
-    return rmqClient.publishEvent({
+    event.ack();
+    return event.publishEvent({
       exchange: MicroservicesExchanges.USER_EVENTS,
       routingKey: RoutingKeys.EVENT,
       data: serviceMethodResults,
@@ -185,8 +184,8 @@ export async function CREATE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.USER_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -194,12 +193,12 @@ export async function CREATE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
       type: UsersQueueEventTypes.USER_CREATED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }
 
-export async function UPDATE_USER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function UPDATE_USER(event: RmqEventMessage) {
   const data = event.data as { user_id: number, updates: UserUpdatesDto };
   console.log(`[${UsersQueueMessageTypes.UPDATE_USER}] Received message:`);
 
@@ -213,8 +212,8 @@ export async function UPDATE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.USER_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -227,7 +226,7 @@ export async function UPDATE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
   });
 }
 
-export async function DELETE_USER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function DELETE_USER(event: RmqEventMessage) {
   const data = event.data as { user_id: number };
   console.log(`[${UsersQueueMessageTypes.DELETE_USER}] Received message:`);
 
@@ -241,8 +240,8 @@ export async function DELETE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.USER_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -255,7 +254,7 @@ export async function DELETE_USER(event: RmqEventMessage, rmqClient: RabbitMQCli
   });
 }
 
-export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function LOGIN_USER(event: RmqEventMessage) {
   const data = event.data as UserSignInDto;
   console.log(`[${UsersQueueMessageTypes.LOGIN_USER}] Received message:`, { data });
 
@@ -272,8 +271,8 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
       }
     };
 
-    rmqClient.ack(event.message);
-    return rmqClient.publishEvent({
+    event.ack();
+    return event.publishEvent({
       exchange: MicroservicesExchanges.USER_EVENTS,
       routingKey: RoutingKeys.EVENT,
       data: serviceMethodResults,
@@ -281,7 +280,7 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
         type: UsersQueueEventTypes.USER_LOGIN_EXCEPTION,
         contentType: ContentTypes.JSON,
         correlationId: event.message.properties.correlationId,
-        // replyTo: event.message.properties.replyTo,
+        replyTo: event.message.properties.replyTo,
       }
     });
   }
@@ -299,8 +298,8 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
       }
     };
 
-    rmqClient.ack(event.message);
-    return rmqClient.publishEvent({
+    event.ack();
+    return event.publishEvent({
       exchange: MicroservicesExchanges.USER_EVENTS,
       routingKey: RoutingKeys.EVENT,
       data: serviceMethodResults,
@@ -308,7 +307,7 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
         type: UsersQueueEventTypes.USER_LOGIN_EXCEPTION,
         contentType: ContentTypes.JSON,
         correlationId: event.message.properties.correlationId,
-        // replyTo: event.message.properties.replyTo,
+        replyTo: event.message.properties.replyTo,
       }
     });
   }
@@ -323,8 +322,8 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.USER_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -332,7 +331,7 @@ export async function LOGIN_USER(event: RmqEventMessage, rmqClient: RabbitMQClie
       type: UsersQueueEventTypes.USER_LOGGED_IN,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      // replyTo: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }

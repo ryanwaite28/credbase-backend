@@ -1,6 +1,7 @@
 import { GatewayEndpointPrefixes, HttpStatusCode } from "@lib/fullstack-shared";
 import { Request, Response, NextFunction, CookieOptions } from "express";
 import { v1 as uuidv1 } from "uuid";
+import { AppEnvironment } from "../environment/app.enviornment";
 
 
 
@@ -37,7 +38,7 @@ export function CreateCsrfAuthGuard(params?: {
     
     console.log(`CSRF Validating:`, { isWhitelistedRequest, isSafeMethod, csrf_token_cookie, csrf_token_header, valid, url: request.url, method: request.method });
     
-    if (isSafeMethod || isWhitelistedRequest) {
+    if (isSafeMethod || isWhitelistedRequest || AppEnvironment.IS_ENV.LOCAL) {
       return next();
     }
     

@@ -1,4 +1,10 @@
-import { RmqEventMessage, RabbitMQClient, AppEnvironment } from "@lib/backend-shared";
+import {
+  RmqEventMessage,
+  RabbitMQClient,
+  AppEnvironment,
+  RmqHandleMessageTypeConfig,
+  RmqHandleMessageTypeConfigs
+} from "@lib/backend-shared";
 import {
   MicroservicesExchanges,
   MicroservicesQueues,
@@ -20,6 +26,18 @@ import {
 
 
 
+
+const handleMessageTypes: RmqHandleMessageTypeConfigs = [
+  { messageType: AuthoritiesQueueMessageTypes.FETCH_AUTHORITIES, callbackHandler: FETCH_AUTHORITIES },
+  { messageType: AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_ID, callbackHandler: FETCH_AUTHORITY_BY_ID },
+  { messageType: AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_UUID, callbackHandler: FETCH_AUTHORITY_BY_UUID },
+  { messageType: AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_EMAIL, callbackHandler: FETCH_AUTHORITY_BY_EMAIL },
+  { messageType: AuthoritiesQueueMessageTypes.LOGIN_AUTHORITY, callbackHandler: LOGIN_AUTHORITY },
+  { messageType: AuthoritiesQueueMessageTypes.CREATE_AUTHORITY, callbackHandler: CREATE_AUTHORITY },
+  { messageType: AuthoritiesQueueMessageTypes.UPDATE_AUTHORITY, callbackHandler: UPDATE_AUTHORITY },
+  { messageType: AuthoritiesQueueMessageTypes.DELETE_AUTHORITY, callbackHandler: DELETE_AUTHORITY },
+];
+
 const rmqClient = new RabbitMQClient({
   connection_url: AppEnvironment.RABBIT_MQ_URL,
   delayStart: 5000,
@@ -27,7 +45,7 @@ const rmqClient = new RabbitMQClient({
   retryAttempts: 3,
   retryDelay: 3000,
   queues: [
-    { name: MicroservicesQueues.AUTHORITY_MESSAGES, handleMessageTypes: Object.values(AuthoritiesQueueMessageTypes), options: { durable: true } },
+    { name: MicroservicesQueues.AUTHORITY_MESSAGES, handleMessageTypes, options: { durable: true } },
   ],
   exchanges: [
     { name: MicroservicesExchanges.AUTHORITY_EVENTS, type: 'fanout', options: { durable: true } },
@@ -40,40 +58,3 @@ const rmqClient = new RabbitMQClient({
   ]
 });
 
-
-
-const authoritiesQueue = rmqClient.onQueue(MicroservicesQueues.AUTHORITY_MESSAGES);
-
-
-
-authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITIES).subscribe({
-  next: (event: RmqEventMessage) => FETCH_AUTHORITIES(event, rmqClient)
-});
-
-authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_ID).subscribe({
-  next: (event: RmqEventMessage) => FETCH_AUTHORITY_BY_ID(event, rmqClient)
-});
-
-authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_UUID).subscribe({
-  next: (event: RmqEventMessage) => FETCH_AUTHORITY_BY_UUID(event, rmqClient)
-});
-
-authoritiesQueue.handle(AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_EMAIL).subscribe({
-  next: (event: RmqEventMessage) => FETCH_AUTHORITY_BY_EMAIL(event, rmqClient)
-});
-
-authoritiesQueue.handle(AuthoritiesQueueMessageTypes.LOGIN_AUTHORITY).subscribe({
-  next: (event: RmqEventMessage) => LOGIN_AUTHORITY(event, rmqClient)
-});
-
-authoritiesQueue.handle(AuthoritiesQueueMessageTypes.CREATE_AUTHORITY).subscribe({
-  next: (event: RmqEventMessage) => CREATE_AUTHORITY(event, rmqClient)
-});
-
-authoritiesQueue.handle(AuthoritiesQueueMessageTypes.UPDATE_AUTHORITY).subscribe({
-  next: (event: RmqEventMessage) => UPDATE_AUTHORITY(event, rmqClient)
-});
-
-authoritiesQueue.handle(AuthoritiesQueueMessageTypes.DELETE_AUTHORITY).subscribe({
-  next: (event: RmqEventMessage) => DELETE_AUTHORITY(event, rmqClient)
-});

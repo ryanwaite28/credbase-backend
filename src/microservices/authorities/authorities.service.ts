@@ -32,7 +32,7 @@ import {
 
 
 
-export async function FETCH_AUTHORITIES(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_AUTHORITIES(event: RmqEventMessage) {
   console.log(`[${AuthoritiesQueueMessageTypes.FETCH_AUTHORITIES}] Received fetch authorities message:`);
 
   const authorities = await get_authorities();
@@ -45,8 +45,8 @@ export async function FETCH_AUTHORITIES(event: RmqEventMessage, rmqClient: Rabbi
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -59,7 +59,39 @@ export async function FETCH_AUTHORITIES(event: RmqEventMessage, rmqClient: Rabbi
   });
 }
 
-export async function FETCH_AUTHORITY_BY_ID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+
+
+
+
+
+// export async function FETCH_AUTHORITIES(event: RmqEventMessage) {
+//   console.log(`[${AuthoritiesQueueMessageTypes.FETCH_AUTHORITIES}] Received fetch authorities message:`);
+
+//   const authorities = await get_authorities();
+
+//   const serviceMethodResults: ServiceMethodResults = {
+//     status: HttpStatusCode.OK,
+//     error: false,
+//     info: {
+//       data: authorities
+//     }
+//   };
+
+//   event.ack();
+//   return event.publishEvent({
+//     exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
+//     routingKey: RoutingKeys.EVENT,
+//     data: serviceMethodResults,
+//     publishOptions: {
+//       type: AuthoritiesQueueEventTypes.AUTHORITIES_FETCHED,
+//       contentType: ContentTypes.JSON,
+//       correlationId: event.message.properties.correlationId,
+//       replyTo: event.message.properties.replyTo,
+//     }
+//   });
+// }
+
+export async function FETCH_AUTHORITY_BY_ID(event: RmqEventMessage) {
   console.log(`[${AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_ID}] Received message:`, { data: event.data });
 
   const authority = await get_authority_by_id(event.data.id);
@@ -72,8 +104,8 @@ export async function FETCH_AUTHORITY_BY_ID(event: RmqEventMessage, rmqClient: R
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -86,7 +118,7 @@ export async function FETCH_AUTHORITY_BY_ID(event: RmqEventMessage, rmqClient: R
   });
 }
 
-export async function FETCH_AUTHORITY_BY_UUID(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_AUTHORITY_BY_UUID(event: RmqEventMessage) {
   console.log(`[${AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_UUID}] Received message:`, { data: event.data });
 
   const authority = await get_authority_by_uuid(event.data.uuid);
@@ -99,8 +131,8 @@ export async function FETCH_AUTHORITY_BY_UUID(event: RmqEventMessage, rmqClient:
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -113,7 +145,7 @@ export async function FETCH_AUTHORITY_BY_UUID(event: RmqEventMessage, rmqClient:
   });
 }
 
-export async function FETCH_AUTHORITY_BY_EMAIL(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function FETCH_AUTHORITY_BY_EMAIL(event: RmqEventMessage) {
   console.log(`[${AuthoritiesQueueMessageTypes.FETCH_AUTHORITY_BY_EMAIL}] Received message:`, { data: event.data });
 
   const authority = await get_authority_by_email(event.data.email);
@@ -126,8 +158,8 @@ export async function FETCH_AUTHORITY_BY_EMAIL(event: RmqEventMessage, rmqClient
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -141,7 +173,7 @@ export async function FETCH_AUTHORITY_BY_EMAIL(event: RmqEventMessage, rmqClient
 }
 
 
-export async function CREATE_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function CREATE_AUTHORITY(event: RmqEventMessage) {
   const data = event.data as CreateAuthorityDto;
   console.log(`[${AuthoritiesQueueMessageTypes.CREATE_AUTHORITY}] Received message:`, { data });
 
@@ -158,8 +190,8 @@ export async function CREATE_AUTHORITY(event: RmqEventMessage, rmqClient: Rabbit
       }
     };
 
-    rmqClient.ack(event.message);
-    return rmqClient.publishEvent({
+    event.ack();
+    return event.publishEvent({
       exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
       routingKey: RoutingKeys.EVENT,
       data: serviceMethodResults,
@@ -188,8 +220,8 @@ export async function CREATE_AUTHORITY(event: RmqEventMessage, rmqClient: Rabbit
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -197,12 +229,12 @@ export async function CREATE_AUTHORITY(event: RmqEventMessage, rmqClient: Rabbit
       type: AuthoritiesQueueEventTypes.AUTHORITY_CREATED,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }
 
-export async function UPDATE_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function UPDATE_AUTHORITY(event: RmqEventMessage) {
   const data = event.data as { authority_id: number, updates: UpdateAuthorityDto };
   console.log(`[${AuthoritiesQueueMessageTypes.UPDATE_AUTHORITY}] Received message:`);
 
@@ -216,8 +248,8 @@ export async function UPDATE_AUTHORITY(event: RmqEventMessage, rmqClient: Rabbit
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -230,7 +262,7 @@ export async function UPDATE_AUTHORITY(event: RmqEventMessage, rmqClient: Rabbit
   });
 }
 
-export async function DELETE_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function DELETE_AUTHORITY(event: RmqEventMessage) {
   const data = event.data as { authority_id: number };
   console.log(`[${AuthoritiesQueueMessageTypes.DELETE_AUTHORITY}] Received message:`);
 
@@ -244,8 +276,8 @@ export async function DELETE_AUTHORITY(event: RmqEventMessage, rmqClient: Rabbit
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -258,7 +290,7 @@ export async function DELETE_AUTHORITY(event: RmqEventMessage, rmqClient: Rabbit
   });
 }
 
-export async function LOGIN_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitMQClient) {
+export async function LOGIN_AUTHORITY(event: RmqEventMessage) {
   const data = event.data as LoginAuthorityDto;
   console.log(`[${AuthoritiesQueueMessageTypes.LOGIN_AUTHORITY}] Received message:`, { data });
 
@@ -275,8 +307,8 @@ export async function LOGIN_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitM
       }
     };
 
-    rmqClient.ack(event.message);
-    return rmqClient.publishEvent({
+    event.ack();
+    return event.publishEvent({
       exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
       routingKey: RoutingKeys.EVENT,
       data: serviceMethodResults,
@@ -302,8 +334,8 @@ export async function LOGIN_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitM
       }
     };
 
-    rmqClient.ack(event.message);
-    return rmqClient.publishEvent({
+    event.ack();
+    return event.publishEvent({
       exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
       routingKey: RoutingKeys.EVENT,
       data: serviceMethodResults,
@@ -326,8 +358,8 @@ export async function LOGIN_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitM
     }
   };
 
-  rmqClient.ack(event.message);
-  return rmqClient.publishEvent({
+  event.ack();
+  return event.publishEvent({
     exchange: MicroservicesExchanges.AUTHORITY_EVENTS,
     routingKey: RoutingKeys.EVENT,
     data: serviceMethodResults,
@@ -335,7 +367,7 @@ export async function LOGIN_AUTHORITY(event: RmqEventMessage, rmqClient: RabbitM
       type: AuthoritiesQueueEventTypes.AUTHORITY_LOGGED_IN,
       contentType: ContentTypes.JSON,
       correlationId: event.message.properties.correlationId,
-      replyTo: event.message.properties.correlationId,
+      replyTo: event.message.properties.replyTo,
     }
   });
 }
